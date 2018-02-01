@@ -2,6 +2,8 @@
 
 Project Abalone works on creating an AI abalone player who can beat human players or other AI players.
 
+# Environment Setup
+
 ## Python
 Install [Python](https://www.python.org/downloads/), version 3.6
 
@@ -22,4 +24,10 @@ Install [Thorpy](http://www.thorpy.org/index.html)
 '''
 Settings -> Project: ProjectAbalone -> Project Interpreter ->
 Click the + Sign on the Right -> Search Thorpy -> Install Package
+'''
+
+# Execution
+
+'''
+In Pycharm IDE, open main.py file -> Click the right button -> Select "Run main.py"
 '''
