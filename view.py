@@ -52,7 +52,7 @@ class GUI:
         pygame.display.set_caption('AIAbalone - Sandwich')
 
         # Set up the background.
-        self.main_display_surface.fill(colors.WHITE)
+        self.main_display_surface.fill(colors.BACKGROUND)
 
         self.create_pieces_standard()
         self.populate_gui_coordinates()
