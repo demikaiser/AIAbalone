@@ -24,7 +24,7 @@ Install [Thorpy](http://www.thorpy.org/index.html)
 ```
 Settings -> Project: ProjectAbalone -> Project Interpreter ->
 Click the + Sign on the Right -> Search Thorpy -> Install Package
-``
+```
 
 # Execution
 
