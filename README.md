@@ -14,20 +14,20 @@ Install [Pycharm IDE](https://www.jetbrains.com/pycharm/download/#section=window
 
 ### Pygame (Game Engine)
 Install [Pygame](https://www.pygame.org)
-'''
+```
 Settings -> Project: ProjectAbalone -> Project Interpreter ->
 Click the + Sign on the Right -> Search Pygame -> Install Package
-'''
+```
 
 ### Thorpy (Widgets for Pygame)
 Install [Thorpy](http://www.thorpy.org/index.html)
-'''
+```
 Settings -> Project: ProjectAbalone -> Project Interpreter ->
 Click the + Sign on the Right -> Search Thorpy -> Install Package
-'''
+``
 
 # Execution
 
-'''
+```
 In Pycharm IDE, open main.py file -> Click the right button -> Select "Run main.py"
-'''
+```
