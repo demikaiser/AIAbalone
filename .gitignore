@@ -1,0 +1,8 @@
+# Environment Directory
+venv/
+
+# IDE Specific Directory
+.idea/
+
+# IDE Caching Directory
+__pycache__
