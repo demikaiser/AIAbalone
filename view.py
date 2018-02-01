@@ -52,7 +52,7 @@ class GUI:
         pygame.display.set_caption('AIAbalone - Sandwich')
 
         # Set up the background.
-        self.main_display_surface.fill(colors.WHITE)
+        self.main_display_surface.fill(colors.BACKGROUND)
 
         self.create_pieces_standard()
         self.populate_gui_coordinates()
@@ -193,7 +193,7 @@ class GUI:
                                        radius, 0)
                 else:
                     pygame.draw.circle(self.main_display_surface,
-                                       colors.CYAN,
+                                       colors.SELECTION_HIGHLIGHT,
                                        (row * distance_between_elements + x_beginning,
                                         column_increment * distance_between_elements),
                                        radius, 0)
