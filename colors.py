@@ -8,4 +8,4 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 
 
-CYAN = (195, 98, 92)
+SELECTION_HIGHLIGHT = (195, 98, 92)

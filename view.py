@@ -193,7 +193,7 @@ class GUI:
                                        radius, 0)
                 else:
                     pygame.draw.circle(self.main_display_surface,
-                                       colors.CYAN,
+                                       colors.SELECTION_HIGHLIGHT,
                                        (row * distance_between_elements + x_beginning,
                                         column_increment * distance_between_elements),
                                        radius, 0)
