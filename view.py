@@ -70,6 +70,9 @@ class GUI:
         self.create_log_console()
         self.create_buttons()
 
+        self.show_game_board()
+
+    # ================ ================ Main GUI Loop for Pygame ================ ================
     # Start the GUI main loop.
     def start_gui(self):
 
@@ -87,6 +90,7 @@ class GUI:
             # Thorpy reaction.
             self.thorpy_menu.react(event)
 
+    # ================ ================ Event Handler ================ ================
     # Mouse button listener.
     def mouse_button_down(self):
         pos = pygame.mouse.get_pos()
@@ -137,11 +141,7 @@ class GUI:
 
             index += 1
 
-        # Process mouse input for buttons.
-        # for button in self.buttons:
-        #     if button.rect.collidepoint(pos):
-        #         button.call_back()
-
+    # ================ ================ Piece Controls ================ ================
     # Move one piece.
     def move_one_piece(self, location_from, location_to, piece):
         self.COORDINATES_CARTESIAN[location_from][2] = 0
@@ -176,6 +176,39 @@ class GUI:
     def clear_stored_pieces(self):
         self.stored_pieces.clear()
 
+    # Populate gui coordinates for handling mouse events.
+    def populate_gui_coordinates(self):
+        x_beginning = 240
+        x_decrement_increment = 40
+        distance_between_elements = 80
+
+        column_increment = 1
+        coordinates_increment = 0
+        for column in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
+            for row in range(0, column):
+                self.COORDINATES_CARTESIAN[coordinates_increment][3] = row * distance_between_elements + x_beginning
+                self.COORDINATES_CARTESIAN[coordinates_increment][4] = column_increment * distance_between_elements
+
+                coordinates_increment += 1
+
+            column_increment += 1
+            if column_increment <= 5:
+                x_beginning -= x_decrement_increment
+            else:
+                x_beginning += x_decrement_increment
+
+    # Display coordinates for the locations of Abalone.
+    def display_coordinates(self, text, x, y, size = 20, color = colors.BLACK):
+        text = str(text)
+        font = pygame.font.SysFont('Consolas', 20)
+        text = font.render(text, True, color)
+        self.main_display_surface.blit(text, (x, y))
+
+    # Calculate distance between two points.
+    def calculate_distance(self, x1, y1, x2, y2):
+        return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
+
+    # ================ ================ Canvas Rendering ================ ================
     # Initialize canvas with basic drawings.
     def update_canvas(self):
 
@@ -236,6 +269,7 @@ class GUI:
             else:
                 x_beginning += x_decrement_increment
 
+    # ================ ================ Logging System ================ ================
     # Initialize a log console.
     def create_log_console(self):
         # Draw console background.
@@ -248,12 +282,12 @@ class GUI:
         x_log = 20
         y_log = 820
 
-        font = pygame.font.SysFont('Consolas', 20)
+        self.font_text = pygame.font.SysFont('Consolas', 20)
 
         # Display messages in the message list.
         for m in message:
             text = str(m)
-            text = font.render(text, True, colors.GREEN)
+            text = self.font_text.render(text, True, colors.GREEN)
             self.main_display_surface.blit(text, (x_log, y_log))
             y_log += 20
 
@@ -263,13 +297,59 @@ class GUI:
         pygame.draw.rect(self.main_display_surface,
                          colors.BLACK, (0, 800, 1200, 200))
 
-    # Display coordinates for the locations of Abalone.
-    def display_coordinates(self, text, x, y, size = 20, color = (0, 0, 0)):
-        text = str(text)
-        font = pygame.font.SysFont('Consolas', 20)
-        text = font.render(text, True, color)
-        self.main_display_surface.blit(text, (x, y))
+    # ================ ================ Game Board ================ ================
+    # Show the game board.
+    def show_game_board(self):
+        self.show_player_labels()
+        self.show_time_label()
+        self.update_time('black', 1)
+        self.update_time('white', 1)
 
+    # Show the player labels.
+    def show_player_labels(self):
+        font_player_label = pygame.font.SysFont('Consolas', 32)
+        player_label_black = font_player_label.render("Black", True, colors.BLACK)
+        player_label_white = font_player_label.render("White", True, colors.BLACK)
+        self.main_display_surface.blit(player_label_black, (30, 20))
+        self.main_display_surface.blit(player_label_white, (685, 20))
+
+    # Show the time label.
+    def show_time_label(self):
+        font_text_time_label = pygame.font.SysFont('Consolas', 24)
+        time_label_black = font_text_time_label.render("Time", True, colors.BLACK)
+        time_label_white = font_text_time_label.render("Time", True, colors.BLACK)
+        self.main_display_surface.blit(time_label_black, (50, 60))
+        self.main_display_surface.blit(time_label_white, (705, 60))
+
+    # Update the time.
+    def update_time(self, player, time):
+        font_text_time = pygame.font.SysFont('Consolas', 48)
+
+        text = str(time)
+        text = font_text_time.render(text, True, colors.BLACK)
+
+        if player == 'black':
+            self.main_display_surface.blit(text, (45, 85))
+        elif player == 'white':
+            self.main_display_surface.blit(text, (700, 85))
+
+    # Show the score label.
+    def show_score_label(self):
+        pass
+
+    # Update the score.
+    def update_score(self):
+        pass
+
+    # Show the moves taken label.
+    def show_moves_taken_label(self):
+        pass
+
+    # Update the moves taken.
+    def update_moves_taken(self):
+        pass
+
+    # ================ ================ Initial Board Setup ================ ================
     # Create the initial pieces arranged (Standard).
     def create_pieces_standard(self):
         for index in [45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]:
@@ -285,30 +365,8 @@ class GUI:
     def create_pieces_belgian_daisy(self):
         pass
 
-    # Populate gui coordinates for handling mouse events.
-    def populate_gui_coordinates(self):
-        x_beginning = 240
-        x_decrement_increment = 40
-        distance_between_elements = 80
 
-        column_increment = 1
-        coordinates_increment = 0
-        for column in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
-            for row in range(0, column):
-                self.COORDINATES_CARTESIAN[coordinates_increment][3] = row * distance_between_elements + x_beginning
-                self.COORDINATES_CARTESIAN[coordinates_increment][4] = column_increment * distance_between_elements
-
-                coordinates_increment += 1
-
-            column_increment += 1
-            if column_increment <= 5:
-                x_beginning -= x_decrement_increment
-            else:
-                x_beginning += x_decrement_increment
-
-    def calculate_distance(self, x1, y1, x2, y2):
-        return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
-
+    # ================ ================ Widgets (Thorpy) ================ ================
     # Initialize buttons.
     def create_buttons(self):
         # Draw buttons background.
@@ -319,12 +377,12 @@ class GUI:
 
         # Draw texts for teams.
         font = pygame.font.SysFont('Consolas', 20)
-        text_for_black_team = font.render("<Black Player>", True, colors.GREY)
+        text_for_black_team = font.render("<Black Player>", True, colors.GREEN)
         self.main_display_surface.blit(text_for_black_team, (820, 30))
-        text_for_white_team = font.render("<White Player>", True, colors.GREY)
+        text_for_white_team = font.render("<White Player>", True, colors.GREEN)
         self.main_display_surface.blit(text_for_white_team, (1020, 30))
 
-        # ================ ================ Widgets (Thorpy) ================ ================
+        # ================ ================ Thorpy Section ================ ================
 
         # ThorPy elements for black.
         button_step_back_black = thorpy.make_button("Black Step Back",

@@ -10,7 +10,7 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
 BLACK = (21, 21, 21)
-GREY = (106, 200, 112)
+GREY = (120, 120, 120)
 WHITE = (222, 222, 222)
 
 RED = (255, 0, 0)
@@ -19,5 +19,6 @@ BLUE = (0, 0, 255)
 
 BROWN = (87, 65, 47)
 
-BACKGROUND = (135, 211, 140)
+
+BACKGROUND = (160, 250, 170)
 SELECTION_HIGHLIGHT = (195, 98, 92)
