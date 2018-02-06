@@ -329,8 +329,10 @@ class GUI:
         text = font_text_time.render(text, True, colors.BLACK)
 
         if player == 'black':
+            #TODO Make clear box
             self.main_display_surface.blit(text, (45, 85))
         elif player == 'white':
+            #TODO Make clear box
             self.main_display_surface.blit(text, (700, 85))
 
     # Show the score label.
