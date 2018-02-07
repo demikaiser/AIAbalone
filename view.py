@@ -289,7 +289,7 @@ class GUI:
         # Draw console background to erase the previous messages.
         self.log_clear()
         x_log = 20
-        y_log = 820
+        y_log = self.master_window_height - 195
 
         self.font_text = pygame.font.SysFont('Consolas', 20)
 
