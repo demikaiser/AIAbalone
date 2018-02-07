@@ -9,10 +9,18 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import controller
 import view
-import model
+import pygame
 
-# Start Graphic User Interface
-view = view.GUI()
-view.start_gui()
+# Take this out of main later.
+pygame.init()
+pygame.mixer.init()
+# pygame.mixer.music.load('music/getDown.ogg')
+pygame.mixer.music.load('music/getDown.ogg')
+pygame.mixer.music.play(-1)
+
+while pygame.mixer.music.get_busy():
+    pygame.time.Clock().tick(10)
+    pygame.event.get()
+    view = view.GUI()
+    view.start_gui()
