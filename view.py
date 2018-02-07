@@ -44,7 +44,13 @@ class GUI:
 
     # Windows size setup.
     master_window_width = 1200
-    master_window_height = 1000
+    master_window_height = 1080
+
+    #board start size
+    master_board_start_x = 240
+
+    #background x
+    master_background_x = master_window_width - 1920; #1920 is the background width
 
     # Constructor.
     def __init__(self):
@@ -62,7 +68,10 @@ class GUI:
 
         # Set up the background.
         self.main_display_surface.fill(colors.BACKGROUND)
+        bg = pygame.image.load("background.jpeg")
 
+        # INSIDE OF THE GAME LOOP
+        self.main_display_surface.blit(bg, (self.master_background_x, 0))
         self.create_pieces_standard()
         self.populate_gui_coordinates()
 
@@ -178,7 +187,7 @@ class GUI:
 
     # Populate gui coordinates for handling mouse events.
     def populate_gui_coordinates(self):
-        x_beginning = 240
+        x_beginning = self.master_board_start_x
         x_decrement_increment = 40
         distance_between_elements = 80
 
@@ -198,7 +207,7 @@ class GUI:
                 x_beginning += x_decrement_increment
 
     # Display coordinates for the locations of Abalone.
-    def display_coordinates(self, text, x, y, size = 20, color = colors.BLACK):
+    def display_coordinates(self, text, x, y, size = 20, color = colors.ORANGE):
         text = str(text)
         font = pygame.font.SysFont('Consolas', 20)
         text = font.render(text, True, color)
@@ -213,7 +222,7 @@ class GUI:
     def update_canvas(self):
 
         # Draw the fundamental game setup.
-        x_beginning = 240
+        x_beginning = self.master_board_start_x
         radius = 30
         radius_piece = 25
         x_decrement_increment = 40
@@ -229,7 +238,7 @@ class GUI:
                 # Draw background.
                 if self.COORDINATES_CARTESIAN[coordinates_increment][5] == 0:
                     pygame.draw.circle(self.main_display_surface,
-                                       colors.GREY,
+                                       colors.ROW[row],
                                        (row * distance_between_elements + x_beginning,
                                         column_increment * distance_between_elements),
                                        radius, 0)
@@ -293,9 +302,10 @@ class GUI:
 
     # Print text to the log console.
     def log_clear(self):
+        log_height = 200
         # Draw console background to erase the previous messages.
         pygame.draw.rect(self.main_display_surface,
-                         colors.BLACK, (0, 800, 1200, 200))
+                         colors.BLACK, (0, self.master_window_height - log_height, self.master_window_width, log_height))
 
     # ================ ================ Game Board ================ ================
     # Show the game board.
@@ -308,32 +318,32 @@ class GUI:
     # Show the player labels.
     def show_player_labels(self):
         font_player_label = pygame.font.SysFont('Consolas', 32)
-        player_label_black = font_player_label.render("Black", True, colors.BLACK)
-        player_label_white = font_player_label.render("White", True, colors.BLACK)
-        self.main_display_surface.blit(player_label_black, (30, 20))
-        self.main_display_surface.blit(player_label_white, (685, 20))
+        player_label_black = font_player_label.render("Black", True, colors.ORANGE)
+        player_label_white = font_player_label.render("White", True, colors.ORANGE)
+        self.main_display_surface.blit(player_label_black, (self.master_board_start_x - 200, 20))
+        self.main_display_surface.blit(player_label_white, (self.master_board_start_x + 485, 20))
 
     # Show the time label.
     def show_time_label(self):
         font_text_time_label = pygame.font.SysFont('Consolas', 24)
-        time_label_black = font_text_time_label.render("Time", True, colors.BLACK)
-        time_label_white = font_text_time_label.render("Time", True, colors.BLACK)
-        self.main_display_surface.blit(time_label_black, (50, 60))
-        self.main_display_surface.blit(time_label_white, (705, 60))
+        time_label_black = font_text_time_label.render("Time", True, colors.ORANGE)
+        time_label_white = font_text_time_label.render("Time", True, colors.ORANGE)
+        self.main_display_surface.blit(time_label_black, (self.master_board_start_x - 180, 60))
+        self.main_display_surface.blit(time_label_white, (self.master_board_start_x + 500, 60))
 
     # Update the time.
     def update_time(self, player, time):
         font_text_time = pygame.font.SysFont('Consolas', 48)
 
         text = str(time)
-        text = font_text_time.render(text, True, colors.BLACK)
+        text = font_text_time.render(text, True, colors.ORANGE)
 
         if player == 'black':
             #TODO Make clear box
-            self.main_display_surface.blit(text, (45, 85))
+            self.main_display_surface.blit(text, (self.master_board_start_x - 180, 85))
         elif player == 'white':
             #TODO Make clear box
-            self.main_display_surface.blit(text, (700, 85))
+            self.main_display_surface.blit(text, (self.master_board_start_x + 500, 85))
 
     # Show the score label.
     def show_score_label(self):
@@ -361,27 +371,34 @@ class GUI:
 
     # Create the initial pieces arranged (German Daisy).
     def create_pieces_german_daisy(self):
-        pass
+        for index in [45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]:
+            self.COORDINATES_CARTESIAN[index][2] = 1
+        for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15]:
+            self.COORDINATES_CARTESIAN[index][2] = 2
 
     # Create the initial pieces arranged (Belgian Daisy).
     def create_pieces_belgian_daisy(self):
-        pass
+        for index in [45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]:
+            self.COORDINATES_CARTESIAN[index][2] = 1
+        for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15]:
+            self.COORDINATES_CARTESIAN[index][2] = 2
 
 
     # ================ ================ Widgets (Thorpy) ================ ================
     # Initialize buttons.
     def create_buttons(self):
         # Draw buttons background.
+        '''
         pygame.draw.rect(self.main_display_surface,
-                         colors.BLACK, (800, 0, 200, 800))
+                         colors.NO_MARBLE_SPOT, (800, 0, 200, 800))
         pygame.draw.rect(self.main_display_surface,
-                         colors.WHITE, (1000, 0, 200, 800))
-
+                         colors.BACKGROUND, (1000, 0, 200, 800))
+        '''
         # Draw texts for teams.
         font = pygame.font.SysFont('Consolas', 20)
-        text_for_black_team = font.render("<Black Player>", True, colors.GREEN)
+        text_for_black_team = font.render("Black Player", True, colors.BLACK)
         self.main_display_surface.blit(text_for_black_team, (820, 30))
-        text_for_white_team = font.render("<White Player>", True, colors.GREEN)
+        text_for_white_team = font.render("White Player", True, colors.BLACK)
         self.main_display_surface.blit(text_for_white_team, (1020, 30))
 
         # ================ ================ Thorpy Section ================ ================
@@ -519,15 +536,15 @@ class GUI:
         ])
 
         # Place the elements.
-        box_black.set_topleft((800, 80))
+        box_black.set_topleft((self.master_window_width - 400, 80))
         box_black.blit()
         box_black.update()
 
-        box_white.set_topleft((1000, 80))
+        box_white.set_topleft((self.master_window_width - 200, 80))
         box_white.blit()
         box_white.update()
 
-        box_all.set_topleft((800, 505))
+        box_all.set_topleft((self.master_window_width - 400, 505))
         box_all.blit()
         box_all.update()
 
