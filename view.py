@@ -396,9 +396,9 @@ class GUI:
         '''
         # Draw texts for teams.
         font = pygame.font.SysFont('Consolas', 20)
-        text_for_black_team = font.render("Black Player", True, colors.BLACK)
+        text_for_black_team = font.render("Black Player", True, colors.ORANGE)
         self.main_display_surface.blit(text_for_black_team, (820, 30))
-        text_for_white_team = font.render("White Player", True, colors.BLACK)
+        text_for_white_team = font.render("White Player", True, colors.ORANGE)
         self.main_display_surface.blit(text_for_white_team, (1020, 30))
 
         # ================ ================ Thorpy Section ================ ================
