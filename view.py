@@ -1,9 +1,18 @@
+'''
+Copyright (C) BCIT AI/ML Option 2018 Team with Members Following - All Rights Reserved.
+- Jake Jonghun Choi     jchoi179@my.bcit.ca
+- Justin Carey          justinthomascarey@gmail.com
+- Pashan Irani          pashanirani@gmail.com
+- Tony Huang	        tonyhuang1996@hotmail.ca
+- Chil Yuqing Qiu       yuqingqiu93@gmail.com
+Unauthorized copying of this file, via any medium is strictly prohibited.
+Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
+'''
+
 import pygame, sys, math
-import view_button
 import controller
 import colors
 import thorpy
-import _thread
 from pygame.locals import *
 
 class GUI:
@@ -34,7 +43,7 @@ class GUI:
     stored_pieces = []
 
     # Windows size setup.
-    master_window_width = 1000
+    master_window_width = 1200
     master_window_height = 1000
 
     # Constructor.
@@ -42,7 +51,7 @@ class GUI:
         pygame.init()
         pygame.font.init()
 
-        self.font_coordinates = pygame.font.SysFont('Comic Sans MS', 30)
+        self.font_coordinates = pygame.font.SysFont('Consolas', 30)
 
         self.main_display_surface = pygame.display.set_mode(
             (self.master_window_width,
@@ -61,6 +70,9 @@ class GUI:
         self.create_log_console()
         self.create_buttons()
 
+        self.show_game_board()
+
+    # ================ ================ Main GUI Loop for Pygame ================ ================
     # Start the GUI main loop.
     def start_gui(self):
 
@@ -78,6 +90,7 @@ class GUI:
             # Thorpy reaction.
             self.thorpy_menu.react(event)
 
+    # ================ ================ Event Handler ================ ================
     # Mouse button listener.
     def mouse_button_down(self):
         pos = pygame.mouse.get_pos()
@@ -128,11 +141,7 @@ class GUI:
 
             index += 1
 
-        # Process mouse input for buttons.
-        # for button in self.buttons:
-        #     if button.rect.collidepoint(pos):
-        #         button.call_back()
-
+    # ================ ================ Piece Controls ================ ================
     # Move one piece.
     def move_one_piece(self, location_from, location_to, piece):
         self.COORDINATES_CARTESIAN[location_from][2] = 0
@@ -167,6 +176,39 @@ class GUI:
     def clear_stored_pieces(self):
         self.stored_pieces.clear()
 
+    # Populate gui coordinates for handling mouse events.
+    def populate_gui_coordinates(self):
+        x_beginning = 240
+        x_decrement_increment = 40
+        distance_between_elements = 80
+
+        column_increment = 1
+        coordinates_increment = 0
+        for column in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
+            for row in range(0, column):
+                self.COORDINATES_CARTESIAN[coordinates_increment][3] = row * distance_between_elements + x_beginning
+                self.COORDINATES_CARTESIAN[coordinates_increment][4] = column_increment * distance_between_elements
+
+                coordinates_increment += 1
+
+            column_increment += 1
+            if column_increment <= 5:
+                x_beginning -= x_decrement_increment
+            else:
+                x_beginning += x_decrement_increment
+
+    # Display coordinates for the locations of Abalone.
+    def display_coordinates(self, text, x, y, size = 20, color = colors.BLACK):
+        text = str(text)
+        font = pygame.font.SysFont('Consolas', 20)
+        text = font.render(text, True, color)
+        self.main_display_surface.blit(text, (x, y))
+
+    # Calculate distance between two points.
+    def calculate_distance(self, x1, y1, x2, y2):
+        return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
+
+    # ================ ================ Canvas Rendering ================ ================
     # Initialize canvas with basic drawings.
     def update_canvas(self):
 
@@ -227,26 +269,25 @@ class GUI:
             else:
                 x_beginning += x_decrement_increment
 
+    # ================ ================ Logging System ================ ================
     # Initialize a log console.
     def create_log_console(self):
         # Draw console background.
-        pygame.draw.rect(self.main_display_surface,
-                         colors.BLACK, (0, 800, 1000, 200))
+        self.log_clear()
 
     # Print text to the log console.
     def log(self, message):
         # Draw console background to erase the previous messages.
-        pygame.draw.rect(self.main_display_surface,
-                         colors.BLACK, (0, 800, 1000, 200))
+        self.log_clear()
         x_log = 20
         y_log = 820
 
-        font = pygame.font.SysFont('Consolas', 20)
+        self.font_text = pygame.font.SysFont('Consolas', 20)
 
         # Display messages in the message list.
         for m in message:
             text = str(m)
-            text = font.render(text, True, colors.GREEN)
+            text = self.font_text.render(text, True, colors.GREEN)
             self.main_display_surface.blit(text, (x_log, y_log))
             y_log += 20
 
@@ -254,15 +295,63 @@ class GUI:
     def log_clear(self):
         # Draw console background to erase the previous messages.
         pygame.draw.rect(self.main_display_surface,
-                         colors.BLACK, (0, 800, 1000, 200))
+                         colors.BLACK, (0, 800, 1200, 200))
 
-    # Display coordinates for the locations of Abalone.
-    def display_coordinates(self, text, x, y, size = 20, color = (0, 0, 0)):
-        text = str(text)
-        font = pygame.font.SysFont('Consolas', 20)
-        text = font.render(text, True, color)
-        self.main_display_surface.blit(text, (x, y))
+    # ================ ================ Game Board ================ ================
+    # Show the game board.
+    def show_game_board(self):
+        self.show_player_labels()
+        self.show_time_label()
+        self.update_time('black', 1)
+        self.update_time('white', 1)
 
+    # Show the player labels.
+    def show_player_labels(self):
+        font_player_label = pygame.font.SysFont('Consolas', 32)
+        player_label_black = font_player_label.render("Black", True, colors.BLACK)
+        player_label_white = font_player_label.render("White", True, colors.BLACK)
+        self.main_display_surface.blit(player_label_black, (30, 20))
+        self.main_display_surface.blit(player_label_white, (685, 20))
+
+    # Show the time label.
+    def show_time_label(self):
+        font_text_time_label = pygame.font.SysFont('Consolas', 24)
+        time_label_black = font_text_time_label.render("Time", True, colors.BLACK)
+        time_label_white = font_text_time_label.render("Time", True, colors.BLACK)
+        self.main_display_surface.blit(time_label_black, (50, 60))
+        self.main_display_surface.blit(time_label_white, (705, 60))
+
+    # Update the time.
+    def update_time(self, player, time):
+        font_text_time = pygame.font.SysFont('Consolas', 48)
+
+        text = str(time)
+        text = font_text_time.render(text, True, colors.BLACK)
+
+        if player == 'black':
+            #TODO Make clear box
+            self.main_display_surface.blit(text, (45, 85))
+        elif player == 'white':
+            #TODO Make clear box
+            self.main_display_surface.blit(text, (700, 85))
+
+    # Show the score label.
+    def show_score_label(self):
+        pass
+
+    # Update the score.
+    def update_score(self):
+        pass
+
+    # Show the moves taken label.
+    def show_moves_taken_label(self):
+        pass
+
+    # Update the moves taken.
+    def update_moves_taken(self):
+        pass
+
+    # ================ ================ Initial Board Setup ================ ================
     # Create the initial pieces arranged (Standard).
     def create_pieces_standard(self):
         for index in [45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]:
@@ -278,91 +367,167 @@ class GUI:
     def create_pieces_belgian_daisy(self):
         pass
 
-    # Populate gui coordinates for handling mouse events.
-    def populate_gui_coordinates(self):
-        x_beginning = 240
-        x_decrement_increment = 40
-        distance_between_elements = 80
 
-        column_increment = 1
-        coordinates_increment = 0
-        for column in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
-            for row in range(0, column):
-                self.COORDINATES_CARTESIAN[coordinates_increment][3] = row * distance_between_elements + x_beginning
-                self.COORDINATES_CARTESIAN[coordinates_increment][4] = column_increment * distance_between_elements
-
-                coordinates_increment += 1
-
-            column_increment += 1
-            if column_increment <= 5:
-                x_beginning -= x_decrement_increment
-            else:
-                x_beginning += x_decrement_increment
-
-    def calculate_distance(self, x1, y1, x2, y2):
-        return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
-
+    # ================ ================ Widgets (Thorpy) ================ ================
     # Initialize buttons.
     def create_buttons(self):
         # Draw buttons background.
         pygame.draw.rect(self.main_display_surface,
-                         colors.BLACK, (800, 0, 100, 800))
+                         colors.BLACK, (800, 0, 200, 800))
         pygame.draw.rect(self.main_display_surface,
-                         colors.WHITE, (900, 0, 100, 800))
+                         colors.WHITE, (1000, 0, 200, 800))
 
         # Draw texts for teams.
         font = pygame.font.SysFont('Consolas', 20)
-        text_for_black_team = font.render("<Black>", True, colors.GREY)
-        self.main_display_surface.blit(text_for_black_team, (805, 30))
-        text_for_white_team = font.render("<White>", True, colors.GREY)
-        self.main_display_surface.blit(text_for_white_team, (900, 30))
+        text_for_black_team = font.render("<Black Player>", True, colors.GREEN)
+        self.main_display_surface.blit(text_for_black_team, (820, 30))
+        text_for_white_team = font.render("<White Player>", True, colors.GREEN)
+        self.main_display_surface.blit(text_for_white_team, (1020, 30))
 
-        # ================ Widgets (Thorpy) ================
+        # ================ ================ Thorpy Section ================ ================
 
         # ThorPy elements for black.
-        button00 = thorpy.make_button("Button00", func=lambda: controller.button_01_callback(self))
-        button00.set_size((90, 40))
+        button_step_back_black = thorpy.make_button("Black Step Back",
+                                                    func=lambda: controller.button_step_back_black_callback(self))
+        button_step_back_black.set_size((190, 40))
 
-        checker_radio = thorpy.Checker.make("Radio", type_="radio")
-        checker_check = thorpy.Checker.make("Checker")
+        separation_line_black = thorpy.Line.make(size=190, type_="horizontal")
 
-        label = thorpy.make_text("Label", 22, (255, 255, 0))
-        inserter = thorpy.Inserter.make(name="", value="")
+        label_for_agent_selection_black = thorpy.make_text("Agent Selection", 16, colors.BROWN)
 
-        slider = thorpy.SliderX.make(40, (0, 100), "", type_=int, initial_value=0)
+        self.radio_human_black = thorpy.Checker.make("Human", type_="radio")
+        self.radio_computer_black = thorpy.Checker.make("Computer", type_="radio")
+
+        radios_for_agent_selection_black = [self.radio_human_black, self.radio_computer_black]
+        radio_group_agent_selection_black = thorpy.RadioPool(radios_for_agent_selection_black,
+                                                             first_value=radios_for_agent_selection_black[0],
+                                                             always_value=True)
+
+
+        label_for_move_limit_black = thorpy.make_text("Move Limitation", 16, colors.BROWN)
+        self.slider_for_move_limit_black = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=0)
+
+        label_for_time_limit_black = thorpy.make_text("Time Limitation", 16, colors.BROWN)
+        self.slider_for_time_limit_black = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=0)
+
+        separation_line_strategy_black = thorpy.Line.make(size=190, type_="horizontal")
+
+        label_for_strategy_black = thorpy.make_text("AI Strategy", 16, colors.BROWN)
+        self.radio_default_strategy_black = thorpy.Checker.make("Default Strategy", type_="radio")
+
+        radios_for_strategy_selection_black = [self.radio_default_strategy_black]
+        radio_group_strategy_selection_black = thorpy.RadioPool(radios_for_strategy_selection_black,
+                                                             first_value=radios_for_strategy_selection_black[0],
+                                                             always_value=True)
+
+        box_black = thorpy.Box.make(elements=[
+            button_step_back_black,
+            separation_line_black,
+            label_for_agent_selection_black,
+            self.radio_human_black,
+            self.radio_computer_black,
+            label_for_move_limit_black,
+            self.slider_for_move_limit_black,
+            label_for_time_limit_black,
+            self.slider_for_time_limit_black,
+            separation_line_strategy_black,
+            label_for_strategy_black,
+            self.radio_default_strategy_black
+        ])
 
         # ThorPy elements for white.
-        button01 = thorpy.make_button("Button00", func=lambda: controller.button_02_callback(self))
-        button01.set_size((90, 40))
+        button_step_back_white = thorpy.make_button("White Step Back",
+                                                    func=lambda: controller.button_step_back_white_callback(self))
+        button_step_back_white.set_size((190, 40))
+
+        separation_line_white = thorpy.Line.make(size=190, type_="horizontal")
+
+        label_for_agent_selection_white = thorpy.make_text("Agent Selection", 16, colors.BROWN)
+
+        self.radio_human_white = thorpy.Checker.make("Human", type_="radio")
+        self.radio_computer_white = thorpy.Checker.make("Computer", type_="radio")
+
+        radios_for_agent_selection_white = [self.radio_human_white, self.radio_computer_white]
+        radio_group_agent_selection_white = thorpy.RadioPool(radios_for_agent_selection_white,
+                                                             first_value=radios_for_agent_selection_white[0],
+                                                             always_value=True)
+
+        label_for_move_limit_white = thorpy.make_text("Move Limitation", 16, colors.BROWN)
+        self.slider_for_move_limit_white = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=0)
+
+        label_for_time_limit_white = thorpy.make_text("Time Limitation", 16, colors.BROWN)
+        self.slider_for_time_limit_white = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=0)
+
+        separation_line_strategy_white = thorpy.Line.make(size=190, type_="horizontal")
+
+        label_for_strategy_white = thorpy.make_text("AI Strategy", 16, colors.BROWN)
+        self.radio_default_strategy_white = thorpy.Checker.make("Default Strategy", type_="radio")
+
+        radios_for_strategy_selection_white = [self.radio_default_strategy_white]
+        radio_group_strategy_selection_white = thorpy.RadioPool(radios_for_strategy_selection_white,
+                                                                first_value=radios_for_strategy_selection_white[0],
+                                                                always_value=True)
+
+        box_white = thorpy.Box.make(elements=[
+            button_step_back_white,
+            separation_line_white,
+            label_for_agent_selection_white,
+            self.radio_human_white,
+            self.radio_computer_white,
+            label_for_move_limit_white,
+            self.slider_for_move_limit_white,
+            label_for_time_limit_white,
+            self.slider_for_time_limit_white,
+            separation_line_strategy_white,
+            label_for_strategy_white,
+            self.radio_default_strategy_white
+        ])
 
         # ThorPy elements for all.
-        button_start = thorpy.make_button("Start", func=lambda: controller.button_02_callback(self))
-        button_start.set_size((190, 40))
+        separation_line_all_board_selection = thorpy.Line.make(size=390, type_="horizontal")
 
-        button_pause = thorpy.make_button("Pause", func=lambda: controller.button_02_callback(self))
-        button_pause.set_size((190, 40))
+        label_for_board_selection = thorpy.make_text("Board Selection", 16, colors.BROWN)
+        self.radio_standard = thorpy.Checker.make("Standard", type_="radio")
+        self.radio_german_daisy = thorpy.Checker.make("German Daisy", type_="radio")
+        self.radio_belgian_daisy = thorpy.Checker.make("Belgian Daisy", type_="radio")
+        radios = [self.radio_standard, self.radio_german_daisy, self.radio_belgian_daisy]
+        radio_group_board_selection = thorpy.RadioPool(radios, first_value=radios[0], always_value=True)
 
-        button_stop = thorpy.make_button("Stop", func=lambda: controller.button_02_callback(self))
-        button_stop.set_size((190, 40))
+        separation_line_all_main = thorpy.Line.make(size=390, type_="horizontal")
 
-        button_reset = thorpy.make_button("Reset", func=lambda: controller.button_02_callback(self))
-        button_reset.set_size((190, 40))
+        button_start = thorpy.make_button("Start", func=lambda: controller.button_game_start_callback(self))
+        button_start.set_size((390, 40))
 
-        # Pack the buttons to each box.
-        box_black = thorpy.Box.make(elements=[button00, checker_radio, checker_check, label, inserter, slider])
-        box_white = thorpy.Box.make(elements=[button01])
-        box_all = thorpy.Box.make(elements=[button_start, button_pause, button_stop, button_reset])
+        button_pause = thorpy.make_button("Pause", func=lambda: controller.button_game_pause_callback(self))
+        button_pause.set_size((390, 40))
+
+        button_stop = thorpy.make_button("Stop", func=lambda: controller.button_game_stop_callback(self))
+        button_stop.set_size((390, 40))
+
+        button_reset = thorpy.make_button("Reset", func=lambda: controller.button_game_reset_callback(self))
+        button_reset.set_size((390, 40))
+
+        separation_line_all_end = thorpy.Line.make(size=390, type_="horizontal")
+
+        box_all = thorpy.Box.make(elements=[
+            separation_line_all_board_selection,
+            label_for_board_selection,
+            self.radio_standard, self.radio_german_daisy, self.radio_belgian_daisy,
+            separation_line_all_main,
+            button_start, button_pause, button_stop, button_reset,
+            separation_line_all_end
+        ])
 
         # Place the elements.
         box_black.set_topleft((800, 80))
         box_black.blit()
         box_black.update()
 
-        box_white.set_topleft((900, 80))
+        box_white.set_topleft((1000, 80))
         box_white.blit()
         box_white.update()
 
-        box_all.set_topleft((800, 615))
+        box_all.set_topleft((800, 505))
         box_all.blit()
         box_all.update()
 
