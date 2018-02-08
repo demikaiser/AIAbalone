@@ -10,13 +10,8 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
 
+class AIMachine:
 
-
-
-
-
-def apply_rules():
-    #TODO
-    return True
-
-
+    def calculate_next_move(self):
+        pass
+        #TODO

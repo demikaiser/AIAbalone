@@ -13,10 +13,3 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 
 
 
-
-
-def apply_rules():
-    #TODO
-    return True
-
-
