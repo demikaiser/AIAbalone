@@ -14,13 +14,13 @@ import pygame
 
 # Take this out of main later.
 pygame.init()
-pygame.mixer.init()
+# pygame.mixer.init()
 # pygame.mixer.music.load('music/getDown.ogg')
-pygame.mixer.music.load('music/getDown.ogg')
-pygame.mixer.music.play(-1)
+# pygame.mixer.music.load('music/getDown.ogg')
+# pygame.mixer.music.play(-1)
 
-while pygame.mixer.music.get_busy():
-    pygame.time.Clock().tick(10)
-    pygame.event.get()
+while 1:
+    # pygame.time.Clock().tick(10)
+    # pygame.event.get()
     view = view.GUI()
     view.start_gui()
