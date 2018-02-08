@@ -9,10 +9,14 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import view
 
-view = view.GUI()
-view.start_gui()
 
+
+
+
+
+def apply_rules():
+    #TODO
+    return True
 
 
