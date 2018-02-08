@@ -13,7 +13,7 @@ import pygame, sys, math
 import controller
 import colors
 import thorpy
-import bgm
+import bgm, model, rules
 from pygame.locals import *
 
 class GUI:
@@ -109,7 +109,32 @@ class GUI:
     # Mouse button listener.
     def mouse_button_down(self):
         pos = pygame.mouse.get_pos()
+        state = model.global_game_play_state.get('all').get('game_state')
 
+        # Mouse button click works according to the state status.
+        # started_B_Human | started_B_Computer | started_W_Human | started_W_Computer | paused | stopped
+        if state == 'started_B_Human':
+            self.process_mouse_input(pos)
+        elif state == 'started_B_Computer':
+            messages = []
+            messages.append("Black Computer is thinking...")
+            self.log(messages)
+        elif state == 'started_W_Human':
+            self.process_mouse_input(pos)
+        elif state == 'started_W_Computer':
+            messages = []
+            messages.append("White Computer is thinking...")
+            self.log(messages)
+        elif state == 'paused':
+            messages = []
+            messages.append("Game is paused.")
+            self.log(messages)
+        elif state == 'stopped':
+            messages = []
+            messages.append("Game is stopped.")
+            self.log(messages)
+
+    def process_mouse_input(self, pos):
         # Process mouse input to get an index of clicked circle.
         index = 0
         for coordinate in self.COORDINATES_CARTESIAN:
@@ -159,19 +184,43 @@ class GUI:
     # ================ ================ Piece Controls ================ ================
     # Move one piece.
     def move_one_piece(self, location_from, location_to, piece):
-        self.COORDINATES_CARTESIAN[location_from][2] = 0
-        self.COORDINATES_CARTESIAN[location_to][2] = piece
-        self.update_canvas()
+
+        if rules.apply_rules() == True:
+
+            self.COORDINATES_CARTESIAN[location_from][2] = 0
+            self.COORDINATES_CARTESIAN[location_to][2] = piece
+
+            messages = []
+            messages.append("Moved!")
+            self.log(messages)
+            self.update_canvas()
+            model.update_turn_state(self)
+        else:
+            pass
 
     # Move two pieces.
     def move_two_pieces(self):
-        pass
-        self.update_canvas()
+        if rules.apply_rules() == True:
+            #TODO
+            messages = []
+            messages.append("Moved!")
+            self.log(messages)
+            self.update_canvas()
+            model.update_turn_state(self)
+        else:
+            pass
 
     # Move three pieces.
     def move_three_pieces(self):
-        pass
-        self.update_canvas()
+        if rules.apply_rules() == True:
+            #TODO
+            messages = []
+            messages.append("Moved!")
+            self.log(messages)
+            self.update_canvas()
+            model.update_turn_state(self)
+        else:
+            pass
 
     # Select the position to indicate the position is selected.
     def select_position(self, position):
@@ -425,7 +474,7 @@ class GUI:
         text = str(state)
         text = font_text_state.render(text, True, colors.GREEN)
 
-        pygame.draw.ellipse(self.main_display_surface, colors.ORANGE, (25, 20, 100, 50))
+        pygame.draw.ellipse(self.main_display_surface, colors.ORANGE, (25, 20, 140, 50))
         self.main_display_surface.blit(text, (40, 35))
 
     # ================ ================ Initial Board Setup ================ ================
