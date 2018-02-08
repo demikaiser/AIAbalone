@@ -17,17 +17,14 @@ global_game_configuration = {
         'agent':'',    # human | computer
         'move_limitation':-1,
         'time_limitation':-1,
-        'AI_strategy':''    # defualt | etc...
     },
     'white': {
         'agent': '',  # human | computer
         'move_limitation': -1,
         'time_limitation': -1,
-        'AI_strategy': ''  # defualt | etc...
     },
     'all': {
         'initial_board_layout':'', # standard | german_daisy | belgian_daisy
-        'recent_game_state':'',    # started | paused | stopped | reset
     }
 }
 
@@ -39,14 +36,17 @@ global_game_play_state = {
         'score': 0,
         'moves_taken': 0,
         'time_taken_for_last_move': 0,
+        'time_taken_total': 0
     },
     'white': {
         'score': 0,
         'moves_taken': 0,
         'time_taken_for_last_move': 0,
+        'time_taken_total': 0
     },
     'all': {
-        'turn':''    # black | white
+        'turn': '',    # black | white
+        'game_state':''  # started_B | started_W | paused | stopped
     }
 }
 
@@ -78,9 +78,6 @@ def set_global_game_configuration_from_gui(context):
     global_game_configuration['black']['time_limitation'] \
         = context.slider_for_time_limit_black.get_value()
 
-    if context.radio_default_strategy_black.get_value():
-        global_game_configuration['black']['AI_strategy'] = 'default'
-
     # Get status from white
     if context.radio_human_white.get_value():
         global_game_configuration['white']['agent'] = 'human'
@@ -92,9 +89,6 @@ def set_global_game_configuration_from_gui(context):
 
     global_game_configuration['white']['time_limitation'] \
         = context.slider_for_time_limit_white.get_value()
-
-    if context.radio_default_strategy_white.get_value():
-        global_game_configuration['white']['AI_strategy'] = 'default'
 
     # Get status from all
     if context.radio_standard.get_value():
