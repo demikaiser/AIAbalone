@@ -194,7 +194,7 @@ def is_the_position_empty_or_going_to_be_empty(positions, exceptions):
                 return False
     return True
 
-#
+# Search if the coordinates is in the list.
 def search_in_coordinates_tuples_list(key, list):
     for item in list:
         if key == item:
