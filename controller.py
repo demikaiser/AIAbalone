@@ -37,11 +37,21 @@ def button_stop_music_callback(context):
 def button_next_music_callback(context):
     context.bgm_instance.next_music()
 
+# Button callback function for "Volume Up".
+def button_volume_up_callback(context):
+    context.bgm_instance.volume_up()
+
+# Button callback function for "Volume Down".
+def button_volume_down_callback(context):
+    context.bgm_instance.volume_down()
+
 # Button callback function for "Get Funk".
 def button_get_funk_callback(context):
     context.bgm_instance.get_funk()
 
-
+# Button callback function for "Secret".
+def button_secret_callback(context):
+    context.bgm_instance.secret()
 
 # ================ ================ Game Controller ================ ================
 
