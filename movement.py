@@ -60,6 +60,20 @@ def move_three_pieces(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, ne
 
 
 
+# Move 2 to 1 sumito.
+def move_2_to_1_sumito():
+    pass
+
+
+# Move 3 to 1 sumito.
+def move_3_to_1_sumito():
+    pass
+
+
+# Move 3 to 2 sumito.
+def move_3_to_2_sumito():
+    pass
+
 
 
 

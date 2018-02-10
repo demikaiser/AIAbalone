@@ -40,7 +40,11 @@ class GUI:
         coordinate[1] += 4
 
     # Stored pieces for processing the mouse input.
-    # [index1, index2, index3 ...]
+    # [
+    #   (coordinate[0], coordinate[1], index1),
+    #   (coordinate[0], coordinate[1], index2),
+    #   (coordinate[0], coordinate[1], index3), ...
+    # ]
     stored_pieces = []
 
     # Windows size setup.
@@ -144,19 +148,22 @@ class GUI:
 
                 # Determine who's turn (Black is 1, white is 2).
                 turn = 0
+                opponent = 0
                 if state == 'started_B_Human':
                     turn = 1
+                    opponent = 2
                 elif state == 'started_W_Human':
                     turn = 2
+                    opponent = 1
 
-                # If there is a piece,
+                # If there is a piece (Selection or Deselection),
                 if coordinate[2] == turn:
                     # If this hasn't been selected, (You can't select more than 3 pieces)
                     if coordinate[5] == 0 and len(self.stored_pieces) < 3:
                         # If the user clicked the piece, then highlight it.
                         self.select_position(index)
                         # Memorize the piece.
-                        self.stored_pieces.append(index)
+                        self.stored_pieces.append((coordinate[0], coordinate[1], index))
                         # Log messages.
                         messages = []
                         messages.append("Selected at (" + str(coordinate[0]) + "," + str(coordinate[1]) + ")")
@@ -167,93 +174,156 @@ class GUI:
                         # Cancel the selection.
                         self.select_position(index)
                         # Throw away the piece in the list.
-                        self.stored_pieces.remove(index)
+                        self.stored_pieces.remove((coordinate[0], coordinate[1], index))
                         # Log messages.
                         messages = []
                         messages.append("Unselected at (" + str(coordinate[0]) + "," + str(coordinate[1]) + ")")
                         messages.append("Stored_pieces: " + str(len(self.stored_pieces)))
                         self.log(messages)
-                # If there is NOT a piece,
+                # If there is NOT a piece (Move a piece or pieces),
                 elif coordinate[2] == 0:
                     # Move the piece according to the number of pieces in the stored_pieces.
                     if len(self.stored_pieces) == 1:
-                        old_index = self.stored_pieces.pop()
-
-                        self.move_one_piece(old_index, index)
-
+                        stored_piece1 = self.stored_pieces.pop()
+                        self.move_one_piece(stored_piece1, (coordinate[0], coordinate[1], index))
                         self.clear_all_selection()
                     elif len(self.stored_pieces) == 2:
-                        pass
-                        #TODO
+                        stored_piece1 = self.stored_pieces.pop()
+                        stored_piece2 = self.stored_pieces.pop()
+                        self.move_two_pieces(stored_piece1, stored_piece2, (coordinate[0], coordinate[1], index))
                         self.clear_all_selection()
                     elif len(self.stored_pieces) == 3:
-                        pass
-                        #TODO
+                        stored_piece1 = self.stored_pieces.pop()
+                        stored_piece2 = self.stored_pieces.pop()
+                        stored_piece3 = self.stored_pieces.pop()
+                        self.move_three_pieces(stored_piece1, stored_piece2, stored_piece3, (coordinate[0], coordinate[1], index))
                         self.clear_all_selection()
+                # If there is a piece of the opponent (Sumito),
+                elif coordinate[2] == opponent:
+                    if len(self.stored_pieces) == 2:
+                        stored_piece1 = self.stored_pieces.pop()
+                        stored_piece2 = self.stored_pieces.pop()
+                        self.move_2_to_1_sumito(stored_piece1, stored_piece2, (coordinate[0], coordinate[1], index))
+                        self.clear_all_selection()
+                    elif len(self.stored_pieces) == 3:
+                        stored_piece1 = self.stored_pieces.pop()
+                        stored_piece2 = self.stored_pieces.pop()
+                        stored_piece3 = self.stored_pieces.pop()
+                        self.move_3_to_1_or_3_to_2_sumito(stored_piece1, stored_piece2, stored_piece3, (coordinate[0], coordinate[1], index))
+                        self.clear_all_selection()
+
 
             index += 1
 
     # ================ ================ Piece Controls ================ ================
     # Move one piece.
-    def move_one_piece(self, old_index, new_index):
+    def move_one_piece(self, stored_piece1, clicked_info):
 
         # Verify the legality of the move.
-        if rules.apply_rules() == True:
+        if rules.apply_rules_for_move_one_piece(stored_piece1, clicked_info):
 
-            movement.move_one_piece(
-                self.COORDINATES_CARTESIAN[old_index][0],
-                self.COORDINATES_CARTESIAN[old_index][1],
-                self.COORDINATES_CARTESIAN[new_index][0],
-                self.COORDINATES_CARTESIAN[new_index][1]
-            )
+            # Move the piece.
+            movement.move_one_piece(stored_piece1[0], stored_piece1[1], clicked_info[0], clicked_info[1])
 
             # Show the move log.
             messages = []
-            messages.append("Moved!")
+            messages.append("move_one_piece!")
             self.log(messages)
+
+            # Prolog.
             self.update_canvas()
             model.update_turn_state(self)
         else:
             pass
 
     # Move two pieces.
-    def move_two_pieces(self):
+    def move_two_pieces(self, stored_piece1, stored_piece2, clicked_info):
 
         # Verify the legality of the move.
-        if rules.apply_rules() == True:
-            #TODO
+        where_to_move = rules.apply_rules_for_move_two_pieces(stored_piece1, stored_piece2, clicked_info)
+        if where_to_move != (-9, -9, -9, -9):
 
-
-
+            # Move the pieces.
+            movement.move_two_pieces(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
+                                     stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3])
 
             # Show the move log.
             messages = []
-            messages.append("Moved!")
+            messages.append("move_two_pieces!")
             self.log(messages)
+
+            # Prolog.
             self.update_canvas()
             model.update_turn_state(self)
         else:
             pass
 
     # Move three pieces.
-    def move_three_pieces(self):
+    def move_three_pieces(self, stored_piece1, stored_piece2, stored_piece3, clicked_info):
 
         # Verify the legality of the move.
-        if rules.apply_rules() == True:
-            #TODO
+        where_to_move = rules.apply_rules_for_move_three_pieces(stored_piece1, stored_piece2, stored_piece3, clicked_info)
+        if where_to_move != (-9, -9, -9, -9):
 
-
-
+            # Move the pieces.
+            movement.move_three_pieces(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
+                                       stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3],
+                                       stored_piece3[0], stored_piece3[1], where_to_move[4], where_to_move[5])
 
             # Show the move log.
             messages = []
-            messages.append("Moved!")
+            messages.append("move_three_pieces!")
             self.log(messages)
+
+            # Prolog.
             self.update_canvas()
             model.update_turn_state(self)
         else:
             pass
 
+
+    # Move 2 to 1 sumito.
+    def move_2_to_1_sumito(self, stored_piece1, stored_piece2, clicked_info):
+
+        # Verify the legality of the move.
+        if rules.apply_rules_for_move_2_to_1_sumito():
+
+            # Move the pieces.
+            #TODO
+
+            # Show the move log.
+            messages = []
+            messages.append("move_2_to_1_sumito!")
+            self.log(messages)
+
+            # Prolog.
+            self.update_canvas()
+            model.update_turn_state(self)
+        else:
+            pass
+
+
+    # Move 3 to 1 or 3 to 2 sumito.
+    def move_3_to_1_or_3_to_2_sumito(self, stored_piece1, stored_piece2, stored_piece3, clicked_info):
+
+        # Verify the legality of the move.
+        if rules.apply_rules_for_move_3_to_1_or_3_to_2_sumito():
+
+            # Move the pieces.
+            # TODO
+
+            # Show the move log.
+            messages = []
+            messages.append("move_3_to_1_or_3_to_2_sumito!")
+            self.log(messages)
+
+            # Prolog.
+            self.update_canvas()
+            model.update_turn_state(self)
+        else:
+            pass
+
+    # ================ ================ Movement Visualization ================ ================
     # Select the position to indicate the position is selected.
     def select_position(self, position):
         if self.COORDINATES_CARTESIAN[position][5] == 0:
