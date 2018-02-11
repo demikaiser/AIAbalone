@@ -55,35 +55,21 @@ global_game_play_state = {
 # Global game state representation (Standard Setup).
 # 1 is black, 2 is white, -9 is the non-use position.
 # WARNING: This convention should be strictly followed.
-# global_game_board_state = [
-#     [-9, -9, -9, -9,  0,  0,  0,  1,  1],
-#     [-9, -9, -9,  0,  0,  0,  0,  1,  1],
-#     [-9, -9,  0,  0,  0,  0,  1,  1,  1],
-#     [-9,  2,  0,  0,  0,  0,  1,  1,  1],
-#     [ 2,  2,  2,  0,  0,  0,  1,  1,  1],
-#     [ 2,  2,  2,  0,  0,  0,  0,  1, -9],
-#     [ 2,  2,  2,  0,  0,  0,  0, -9, -9],
-#     [ 2,  2,  0,  0,  0,  0, -9, -9, -9],
-#     [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
-# ]
-
-
-##### DEBUG
 global_game_board_state = [
-    [-9, -9, -9, -9, 0, 0, 0, 0, 1],
-    [-9, -9, -9, 2, 1, 1, 0, 0, 1],
-    [-9, -9, 0, 0, 0, 0, 0, 1, 0],
-    [-9, 0, 0, 0, 2, 1, 1, 1, 1],
-    [2, 2, 0, 0, 0, 0, 0, 0, 1],
-    [2, 2, 0, 1, 1, 2, 0, 0, -9],
-    [2, 2, 0, 0, 0, 0, 0, -9, -9],
-    [2, 2, 0, 1, 1, 2, -9, -9, -9],
-    [2, 2, 0, 0, 0, -9, -9, -9, -9]
+    [-9, -9, -9, -9,  0,  0,  0,  1,  1],
+    [-9, -9, -9,  0,  0,  0,  0,  1,  1],
+    [-9, -9,  0,  0,  0,  0,  1,  1,  1],
+    [-9,  2,  0,  0,  0,  0,  1,  1,  1],
+    [ 2,  2,  2,  0,  0,  0,  1,  1,  1],
+    [ 2,  2,  2,  0,  0,  0,  0,  1, -9],
+    [ 2,  2,  2,  0,  0,  0,  0, -9, -9],
+    [ 2,  2,  0,  0,  0,  0, -9, -9, -9],
+    [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
 ]
 
 
 
-
+# Set global game configuration from gui.
 def set_global_game_configuration_from_gui(context):
     # Get status from black
     if context.radio_human_black.get_value():
