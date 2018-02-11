@@ -22,7 +22,6 @@ def button_step_back_white_callback(context):
     context.log(["Hello Jake", "Button button_step_back_WHITE is clicked!", "Processing..."])
 
 
-
 # ================ ================ Music Controller ================ ================
 
 # Button callback function for "Start Music".
