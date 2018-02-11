@@ -399,6 +399,8 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(x1, y1, x2, y2):
     elif model.global_game_board_state[x1][y1] == 2:
         ally = 2
         opponent = 1
+    else:
+        return set()
 
     sumito_coordinates = set()
 
@@ -450,6 +452,8 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2,
     elif model.global_game_board_state[x1][y1] == 2:
         ally = 2
         opponent = 1
+    else:
+        return set()
 
     sumito_coordinates = set()
 
@@ -502,6 +506,8 @@ def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2,
     elif model.global_game_board_state[x1][y1] == 2:
         ally = 2
         opponent = 1
+    else:
+        return set()
 
     sumito_coordinates = set()
 
@@ -560,6 +566,8 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_y_axis(x1, y1, x2, y2):
     elif model.global_game_board_state[x1][y1] == 2:
         ally = 2
         opponent = 1
+    else:
+        return set()
 
     sumito_coordinates = set()
 
@@ -610,6 +618,8 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2,
     elif model.global_game_board_state[x1][y1] == 2:
         ally = 2
         opponent = 1
+    else:
+        return set()
 
     sumito_coordinates = set()
 
@@ -662,6 +672,8 @@ def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2,
     elif model.global_game_board_state[x1][y1] == 2:
         ally = 2
         opponent = 1
+    else:
+        return set()
 
     sumito_coordinates = set()
 
@@ -720,6 +732,8 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_z_axis(x1, y1, x2, y2):
     elif model.global_game_board_state[x1][y1] == 2:
         ally = 2
         opponent = 1
+    else:
+        return set()
 
     sumito_coordinates = set()
 
@@ -777,6 +791,74 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2,
     elif model.global_game_board_state[x1][y1] == 2:
         ally = 2
         opponent = 1
+    else:
+        return set()
+
+    sumito_coordinates = set()
+
+    if get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3) == set() and \
+            get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2, x3, y3) == set():
+
+
+        x_adv_max_0 = max_from_three_elements(x1, x2, x3) + 0
+        x_adv_max_1 = max_from_three_elements(x1, x2, x3) + 1
+        x_adv_max_2 = max_from_three_elements(x1, x2, x3) + 2
+
+        x_adv_mid_0 = mid_from_three_elements(x1, x2, x3)
+
+        x_adv_min_0 = min_from_three_elements(x1, x2, x3) - 0
+        x_adv_min_1 = min_from_three_elements(x1, x2, x3) - 1
+        x_adv_min_2 = min_from_three_elements(x1, x2, x3) - 2
+
+        y_adv_max_0 = min_from_three_elements(y1, y2, y3) - 0
+        y_adv_max_1 = min_from_three_elements(y1, y2, y3) - 1
+        y_adv_max_2 = min_from_three_elements(y1, y2, y3) - 2
+
+        y_adv_mid_0 = mid_from_three_elements(y1, y2, y3)
+
+        y_adv_min_0 = max_from_three_elements(y1, y2, y3) + 0
+        y_adv_min_1 = max_from_three_elements(y1, y2, y3) + 1
+        y_adv_min_2 = max_from_three_elements(y1, y2, y3) + 2
+
+        # a. Plus direction, and the enemy is on the boundary.
+        if is_the_position_inside_of_the_board([(x_adv_max_1, y_adv_max_1)]):
+            if model.global_game_board_state[x_adv_max_1][y_adv_max_1] == opponent:
+                if is_the_location_boundary(x_adv_max_1, y_adv_max_1):
+                    sumito_coordinates.add((x_adv_max_0, y_adv_max_0, x_adv_max_1, y_adv_max_1, x_adv_mid_0, y_adv_mid_0))
+
+        # b. Plus direction, and the enemy will be pushed further.
+        if is_the_position_inside_of_the_board([(x_adv_max_2, y_adv_max_2)]):
+            if model.global_game_board_state[x_adv_max_1][y_adv_max_1] == opponent:
+                if is_the_location_empty(x_adv_max_2, y_adv_max_2):
+                    sumito_coordinates.add((x_adv_max_0, y_adv_max_0, x_adv_max_1, y_adv_max_1, x_adv_mid_0, y_adv_mid_0))
+
+        # c. Minus direction, and the enemy is on the boundary.
+        if is_the_position_inside_of_the_board([(x_adv_min_1, y_adv_min_1)]):
+            if model.global_game_board_state[x_adv_min_1][y_adv_min_1] == opponent:
+                if is_the_location_boundary(x_adv_min_1, y_adv_min_1):
+                    sumito_coordinates.add((x_adv_min_0, y_adv_min_0, x_adv_min_1, y_adv_min_1, x_adv_mid_0, y_adv_mid_0))
+
+        # d. Minus direction, and the enemy will be pushed further.
+        if is_the_position_inside_of_the_board([(x_adv_min_2, y_adv_min_2)]):
+            if model.global_game_board_state[x_adv_min_1][y_adv_min_1] == opponent:
+                if is_the_location_empty(x_adv_min_2, y_adv_min_2):
+                    sumito_coordinates.add((x_adv_min_0, y_adv_min_0, x_adv_min_1, y_adv_min_1, x_adv_mid_0, y_adv_mid_0))
+
+    return sumito_coordinates
+
+
+# Calculate 3 to 2 sumito coordinates on the direction z (multi-factored with x and y).
+def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2, x3, y3):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+    else:
+        return set()
 
     sumito_coordinates = set()
 
@@ -834,69 +916,6 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2,
                 if model.global_game_board_state[x_adv_min_2][y_adv_min_2] == opponent:
                     if is_the_location_empty(x_adv_min_3, y_adv_min_3):
                         sumito_coordinates.add((x_adv_min_0, y_adv_min_0, x_adv_min_1, y_adv_min_1, x_adv_mid_0, y_adv_mid_0))
-
-    return sumito_coordinates
-
-# Calculate 3 to 2 sumito coordinates on the direction z (multi-factored with x and y).
-def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2, x3, y3):
-
-    # Get the color of the player.
-    if model.global_game_board_state[x1][y1] == 1:
-        ally = 1
-        opponent = 2
-    elif model.global_game_board_state[x1][y1] == 2:
-        ally = 2
-        opponent = 1
-
-    sumito_coordinates = set()
-
-    if get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3) == set() and \
-            get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2, x3, y3) == set():
-
-
-        x_adv_max_0 = max_from_three_elements(x1, x2, x3) + 0
-        x_adv_max_1 = max_from_three_elements(x1, x2, x3) + 1
-        x_adv_max_2 = max_from_three_elements(x1, x2, x3) + 2
-
-        x_adv_mid_0 = mid_from_three_elements(x1, x2, x3)
-
-        x_adv_min_0 = min_from_three_elements(x1, x2, x3) - 0
-        x_adv_min_1 = min_from_three_elements(x1, x2, x3) - 1
-        x_adv_min_2 = min_from_three_elements(x1, x2, x3) - 2
-
-        y_adv_max_0 = min_from_three_elements(y1, y2, y3) - 0
-        y_adv_max_1 = min_from_three_elements(y1, y2, y3) - 1
-        y_adv_max_2 = min_from_three_elements(y1, y2, y3) - 2
-
-        y_adv_mid_0 = mid_from_three_elements(y1, y2, y3)
-
-        y_adv_min_0 = max_from_three_elements(y1, y2, y3) + 0
-        y_adv_min_1 = max_from_three_elements(y1, y2, y3) + 1
-        y_adv_min_2 = max_from_three_elements(y1, y2, y3) + 2
-
-        # a. Plus direction, and the enemy is on the boundary.
-        if is_the_position_inside_of_the_board([(x_adv_max_1, y_adv_max_1)]):
-            if model.global_game_board_state[x_adv_max_1][y_adv_max_1] == opponent:
-                if is_the_location_boundary(x_adv_max_1, y_adv_max_1):
-                    sumito_coordinates.add((x_adv_max_0, y_adv_max_0, x_adv_max_1, y_adv_max_1, x_adv_mid_0, y_adv_mid_0))
-
-        # b. Plus direction, and the enemy will be pushed further.
-        if is_the_position_inside_of_the_board([(x_adv_max_2, y_adv_max_2)]):
-            if model.global_game_board_state[x_adv_max_1][y_adv_max_1] == opponent:
-                if is_the_location_empty(x_adv_max_2, y_adv_max_2):
-                    sumito_coordinates.add((x_adv_max_0, y_adv_max_0, x_adv_max_1, y_adv_max_1, x_adv_mid_0, y_adv_mid_0))
-
-        # c. Minus direction, and the enemy is on the boundary.
-        if is_the_position_inside_of_the_board([(x_adv_min_1, y_adv_min_1)]):
-            if model.global_game_board_state[x_adv_min_1][y_adv_min_1] == opponent:
-                if is_the_location_boundary(x_adv_min_1, y_adv_min_1):
-                    sumito_coordinates.add((x_adv_min_0, y_adv_min_0, x_adv_min_1, y_adv_min_1, x_adv_mid_0, y_adv_mid_0))
-
-        # d. Minus direction, and the enemy will be pushed further.
-        if is_the_position_inside_of_the_board([(x_adv_min_2, y_adv_min_2)]):
-            if model.global_game_board_state[x_adv_min_1][y_adv_min_1] == opponent:
-                if is_the_location_empty(x_adv_min_2, y_adv_min_2):
-                    sumito_coordinates.add((x_adv_min_0, y_adv_min_0, x_adv_min_1, y_adv_min_1, x_adv_mid_0, y_adv_mid_0))
 
     return sumito_coordinates
 
