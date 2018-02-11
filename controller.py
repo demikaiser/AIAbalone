@@ -51,6 +51,8 @@ def button_get_funk_callback(context):
 
 # Button callback function for "Secret".
 def button_secret_callback(context):
+    # DEBUG
+    print(model.global_game_board_state)
     context.bgm_instance.secret()
 
 # ================ ================ Game Controller ================ ================

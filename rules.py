@@ -11,6 +11,16 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 
 import model
 
+# Global game boundary object (Set).
+global_game_board_boundary = {
+    (4, 0), (5, 0), (6, 0), (7, 0),
+    (8, 0), (8, 1), (8, 2), (8, 3),
+    (8, 4), (7, 5), (6, 6), (5, 7),
+    (4, 8), (3, 8), (2, 8), (1, 8),
+    (0, 8), (0, 7), (0, 6), (0, 5),
+    (0, 4), (1, 3), (2, 2), (3, 1)
+}
+
 # ================ ================ Rules Application for GUI ================ ================
 
 # Apply rules for move one piece.
@@ -219,6 +229,7 @@ def generate_all_possible_legal_moves_for_three_pieces(x1, y1, x2, y2, x3, y3):
 def generate_all_2_to_1_legal_sumitos(x1, y1, x2, y2):
     possible_moves = set()
     if is_two_pieces_inline(x1, y1, x2, y2):
+
         pass
         #TODO
 
@@ -241,8 +252,284 @@ def generate_all_3_to_2_legal_sumitos(x1, y1, x2, y2, x3, y3):
     return possible_moves
 
 
+# ================ ================ Sumito Coordinates Calculation ================ ================
+
+# Examine pieces on the direction x (y coordinates are same).
+def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(x1, y1, x2, y2):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if y1 == y2:
+        y_common = y1
+
+        x_adv_max_0 = max_from_two_elements(x1, x2) + 0
+        x_adv_max_1 = max_from_two_elements(x1, x2) + 1
+        x_adv_max_2 = max_from_two_elements(x1, x2) + 2
+
+        x_adv_min_0 = min_from_two_elements(x1, x2) - 0
+        x_adv_min_1 = min_from_two_elements(x1, x2) - 1
+        x_adv_min_2 = min_from_two_elements(x1, x2) - 2
+
+        if is_the_position_inside_of_the_board([(x_adv_max_1, y_common)]):
+            if model.global_game_board_state[x_adv_max_1][y_common] == opponent:
+                if is_the_location_boundary(x_adv_max_1, y_common):
+                    sumito_coordinates.add((x_adv_max_0, y_common, x_adv_max_1, y_common))
+
+        if is_the_position_inside_of_the_board([(x_adv_max_2, y_common)]):
+            if model.global_game_board_state[x_adv_max_1][y_common] == opponent:
+                if is_the_location_empty(x_adv_max_2, y_common):
+                    sumito_coordinates.add((x_adv_max_0, y_common, x_adv_max_1, y_common))
+
+        if is_the_position_inside_of_the_board([(x_adv_min_1, y_common)]):
+            if model.global_game_board_state[x_adv_min_1][y_common] == opponent:
+                if is_the_location_boundary(x_adv_min_1, y_common):
+                    sumito_coordinates.add((x_adv_min_0, y_common, x_adv_min_1, y_common))
+
+        if is_the_position_inside_of_the_board([(x_adv_min_2, y_common)]):
+            if model.global_game_board_state[x_adv_min_1][y_common] == opponent:
+                if is_the_location_empty(x_adv_min_2, y_common):
+                    sumito_coordinates.add((x_adv_min_0, y_common, x_adv_min_1, y_common))
+
+    return sumito_coordinates
+
+
+
+def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if y1 == y2 and y2 == y3:
+        pass
+
+    return sumito_coordinates
+
+def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if y1 == y2 and y2 == y3:
+        pass
+
+    return sumito_coordinates
+
+# Examine pieces on the direction y (x coordinates are same).
+def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_y_axis(x1, y1, x2, y2):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if x1 == x2:
+        x_common = x1
+
+        y_adv_max_0 = max_from_two_elements(y1, y2) + 0
+        y_adv_max_1 = max_from_two_elements(y1, y2) + 1
+        y_adv_max_2 = max_from_two_elements(y1, y2) + 2
+
+        y_adv_min_0 = min_from_two_elements(y1, y2) - 0
+        y_adv_min_1 = min_from_two_elements(y1, y2) - 1
+        y_adv_min_2 = min_from_two_elements(y1, y2) - 2
+
+        if is_the_position_inside_of_the_board([(x_common, y_adv_max_1)]):
+            if model.global_game_board_state[x_common][y_adv_max_1] == opponent:
+                if is_the_location_boundary(x_common, y_adv_max_1):
+                    sumito_coordinates.add((x_common, y_adv_max_0, x_common, y_adv_max_1))
+
+        if is_the_position_inside_of_the_board([(x_common, y_adv_max_2)]):
+            if model.global_game_board_state[x_common][y_adv_max_1] == opponent:
+                if is_the_location_empty(x_common, y_adv_max_2):
+                    sumito_coordinates.add((x_common, y_adv_max_0, x_common, y_adv_max_1))
+
+        if is_the_position_inside_of_the_board([(x_common, y_adv_min_1)]):
+            if model.global_game_board_state[x_common][y_adv_min_1] == opponent:
+                if is_the_location_boundary(x_common, y_adv_min_1):
+                    sumito_coordinates.add((x_common, y_adv_min_0, x_common, y_adv_min_1))
+
+        if is_the_position_inside_of_the_board([(x_common, y_adv_min_2)]):
+            if model.global_game_board_state[x_common][y_adv_min_1] == opponent:
+                if is_the_location_empty(x_common, y_adv_min_2):
+                    sumito_coordinates.add((x_common, y_adv_min_0, x_common, y_adv_min_1))
+
+    return sumito_coordinates
+
+def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2, x3, y3):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if x1 == x2 and x2 == x3:
+        pass
+
+    return sumito_coordinates
+
+def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2, x3, y3):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if x1 == x2 and x2 == x3:
+        pass
+
+    return sumito_coordinates
+
+# Examine pieces on the direction z (z - needs some calculation).
+def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_z_axis(x1, y1, x2, y2):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if (x1 + 1 == x2 and y1 - 1 == y2) or (x2 + 1 == x1 and y2 - 1 == y1):
+        pass
+
+    return sumito_coordinates
+
+def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2, x3, y3):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3) == [] and \
+            get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis == []:
+        pass
+
+    return sumito_coordinates
+
+def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2, x3, y3):
+
+    # Get the color of the player.
+    if model.global_game_board_state[x1][y1] == 1:
+        ally = 1
+        opponent = 2
+    elif model.global_game_board_state[x1][y1] == 2:
+        ally = 2
+        opponent = 1
+
+    sumito_coordinates = set()
+
+    if get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3) == [] and \
+            get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis == []:
+
+        pass
+
+    return sumito_coordinates
+
+
+
+
+
+
+
+
+
 # ================ ================ Utility Functions ================ ================
 
+
+# Determine whether the location is currently empty.
+def is_the_location_empty(x, y):
+    if model.global_game_board_state[x][y] == 0:
+        return True
+    return False
+
+# Determine whether the location is on the boundary.
+def is_the_location_boundary(x, y):
+
+    global global_game_board_boundary
+
+    if (x, y) in global_game_board_boundary:
+        return True
+    return False
+
+# Find the maximum value from two elements.
+def max_from_two_elements(a, b):
+    if a > b:
+        return a
+    elif b > a:
+        return b
+
+# Find the maximum value from three elements.
+def max_from_three_elements(a, b, c):
+    if a > b and a > c:
+        return a
+    elif b > a and b > c:
+        return b
+    elif c > a and c > b:
+        return c
+
+# Find the minimum value from two elements.
+def min_from_two_elements(a, b):
+    if a < b:
+        return a
+    elif b < a:
+        return b
+
+# Find the minimum value from three elements.
+def min_from_three_elements(a, b, c):
+    if a < b and a < c:
+        return a
+    elif b < a and b < c:
+        return b
+    elif c < a and c < b:
+        return c
+
+# Determine whether two pieces inline.
 def is_two_pieces_inline(x1, y1, x2, y2):
 
     # Find out if it's inline.
@@ -261,6 +548,7 @@ def is_two_pieces_inline(x1, y1, x2, y2):
 
     return False
 
+# Determine whether three pieces inline.
 def is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
 
     # If all the pieces are not all inlines, then return false.
@@ -315,9 +603,6 @@ def is_the_position_inside_of_the_board(positions):
         if model.global_game_board_state[position[0]][position[1]] == -9:
             return False
     return True
-
-
-
 
 
 
