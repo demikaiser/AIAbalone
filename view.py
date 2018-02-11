@@ -13,7 +13,7 @@ import pygame, sys, math
 import controller
 import colors
 import thorpy
-import bgm, model, rules
+import bgm, model, rules, movement, gui_adapter
 from pygame.locals import *
 
 class GUI:
@@ -39,16 +39,21 @@ class GUI:
         coordinate[0] += 4
         coordinate[1] += 4
 
-    # Stored pieces.
-    # [index, piece]
+    # Stored pieces for processing the mouse input.
+    # [
+    #   (coordinate[0], coordinate[1], index1),
+    #   (coordinate[0], coordinate[1], index2),
+    #   (coordinate[0], coordinate[1], index3), ...
+    # ]
     stored_pieces = []
 
     # Windows size setup.
     master_window_width = 1200
-    master_window_height = 1080
+    master_window_height = 980
 
     #board start size
     master_board_start_x = 240
+
 
     #background x
     master_background_x = 0
@@ -65,10 +70,12 @@ class GUI:
              self.master_window_height)
         )
 
+        # Set up the window title.
         pygame.display.set_caption('AIAbalone - Sandwich')
 
         # Set up the background.
         self.main_display_surface.fill(colors.BACKGROUND)
+
         bg = pygame.image.load("dark_background.jpg")
 
         # INSIDE OF THE GAME LOOP
@@ -88,7 +95,7 @@ class GUI:
 
         # Start initial BGM.
         self.bgm_instance = bgm.BGM()
-        self.bgm_instance.initial_play()
+        #self.bgm_instance.initial_play() # ENABLE THIS FOR THE PRODUCTION.
 
         # Event loop to be examined for an user action.
         while True:
@@ -99,6 +106,7 @@ class GUI:
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     self.mouse_button_down()
 
+            # Update pygame display.
             pygame.display.update()
 
             # Thorpy reaction.
@@ -114,13 +122,13 @@ class GUI:
         # Mouse button click works according to the state status.
         # started_B_Human | started_B_Computer | started_W_Human | started_W_Computer | paused | stopped
         if state == 'started_B_Human':
-            self.process_mouse_input(pos)
+            self.process_mouse_input(pos, 'started_B_Human')
         elif state == 'started_B_Computer':
             messages = []
             messages.append("Black Computer is thinking...")
             self.log(messages)
         elif state == 'started_W_Human':
-            self.process_mouse_input(pos)
+            self.process_mouse_input(pos, 'started_W_Human')
         elif state == 'started_W_Computer':
             messages = []
             messages.append("White Computer is thinking...")
@@ -134,19 +142,30 @@ class GUI:
             messages.append("Game is stopped.")
             self.log(messages)
 
-    def process_mouse_input(self, pos):
+    def process_mouse_input(self, pos, state):
         # Process mouse input to get an index of clicked circle.
         index = 0
         for coordinate in self.COORDINATES_CARTESIAN:
             if self.calculate_distance(pos[0], pos[1], coordinate[3], coordinate[4]) < 30:
-                # If there is a piece,
-                if coordinate[2] != 0:
-                    # If this hasn't been selected,
-                    if coordinate[5] == 0:
+
+                # Determine who's turn (Black is 1, white is 2).
+                turn = 0
+                opponent = 0
+                if state == 'started_B_Human':
+                    turn = 1
+                    opponent = 2
+                elif state == 'started_W_Human':
+                    turn = 2
+                    opponent = 1
+
+                # If there is a piece (Selection or Deselection),
+                if coordinate[2] == turn:
+                    # If this hasn't been selected, (You can't select more than 3 pieces)
+                    if coordinate[5] == 0 and len(self.stored_pieces) < 3:
                         # If the user clicked the piece, then highlight it.
                         self.select_position(index)
                         # Memorize the piece.
-                        self.stored_pieces.append([index, coordinate[2]])
+                        self.stored_pieces.append((coordinate[0], coordinate[1], index))
                         # Log messages.
                         messages = []
                         messages.append("Selected at (" + str(coordinate[0]) + "," + str(coordinate[1]) + ")")
@@ -157,71 +176,156 @@ class GUI:
                         # Cancel the selection.
                         self.select_position(index)
                         # Throw away the piece in the list.
-                        self.stored_pieces.remove([index, coordinate[2]])
+                        self.stored_pieces.remove((coordinate[0], coordinate[1], index))
                         # Log messages.
                         messages = []
                         messages.append("Unselected at (" + str(coordinate[0]) + "," + str(coordinate[1]) + ")")
                         messages.append("Stored_pieces: " + str(len(self.stored_pieces)))
                         self.log(messages)
-                # If there is NOT a piece,
+                # If there is NOT a piece (Move a piece or pieces),
                 elif coordinate[2] == 0:
                     # Move the piece according to the number of pieces in the stored_pieces.
                     if len(self.stored_pieces) == 1:
-                        piece = self.stored_pieces.pop()
-                        self.move_one_piece(piece[0], index, piece[1])
+                        stored_piece1 = self.stored_pieces.pop()
+                        self.move_one_piece(stored_piece1, (coordinate[0], coordinate[1], index))
                         self.clear_all_selection()
                     elif len(self.stored_pieces) == 2:
-                        pass
-                        #TODO
+                        stored_piece1 = self.stored_pieces.pop()
+                        stored_piece2 = self.stored_pieces.pop()
+                        self.move_two_pieces(stored_piece1, stored_piece2, (coordinate[0], coordinate[1], index))
                         self.clear_all_selection()
                     elif len(self.stored_pieces) == 3:
-                        pass
-                        #TODO
+                        stored_piece1 = self.stored_pieces.pop()
+                        stored_piece2 = self.stored_pieces.pop()
+                        stored_piece3 = self.stored_pieces.pop()
+                        self.move_three_pieces(stored_piece1, stored_piece2, stored_piece3, (coordinate[0], coordinate[1], index))
                         self.clear_all_selection()
+                # If there is a piece of the opponent (Sumito),
+                elif coordinate[2] == opponent:
+                    if len(self.stored_pieces) == 2:
+                        stored_piece1 = self.stored_pieces.pop()
+                        stored_piece2 = self.stored_pieces.pop()
+                        self.move_2_to_1_sumito(stored_piece1, stored_piece2, (coordinate[0], coordinate[1], index))
+                        self.clear_all_selection()
+                    elif len(self.stored_pieces) == 3:
+                        stored_piece1 = self.stored_pieces.pop()
+                        stored_piece2 = self.stored_pieces.pop()
+                        stored_piece3 = self.stored_pieces.pop()
+                        self.move_3_to_1_or_3_to_2_sumito(stored_piece1, stored_piece2, stored_piece3, (coordinate[0], coordinate[1], index))
+                        self.clear_all_selection()
+
 
             index += 1
 
     # ================ ================ Piece Controls ================ ================
     # Move one piece.
-    def move_one_piece(self, location_from, location_to, piece):
+    def move_one_piece(self, stored_piece1, clicked_info):
 
-        if rules.apply_rules() == True:
+        # Verify the legality of the move.
+        if rules.apply_rules_for_move_one_piece(stored_piece1, clicked_info):
 
-            self.COORDINATES_CARTESIAN[location_from][2] = 0
-            self.COORDINATES_CARTESIAN[location_to][2] = piece
+            # Move the piece.
+            movement.move_one_piece(stored_piece1[0], stored_piece1[1], clicked_info[0], clicked_info[1])
 
+            # Show the move log.
             messages = []
-            messages.append("Moved!")
+            messages.append("move_one_piece!")
             self.log(messages)
+
+            # Prolog.
             self.update_canvas()
             model.update_turn_state(self)
         else:
             pass
 
     # Move two pieces.
-    def move_two_pieces(self):
-        if rules.apply_rules() == True:
-            #TODO
+    def move_two_pieces(self, stored_piece1, stored_piece2, clicked_info):
+
+        # Verify the legality of the move.
+        where_to_move = rules.apply_rules_for_move_two_pieces(stored_piece1, stored_piece2, clicked_info)
+        if where_to_move != (-9, -9, -9, -9):
+
+            # Move the pieces.
+            movement.move_two_pieces(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
+                                     stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3])
+
+            # Show the move log.
             messages = []
-            messages.append("Moved!")
+            messages.append("move_two_pieces!")
             self.log(messages)
+
+            # Prolog.
             self.update_canvas()
             model.update_turn_state(self)
         else:
             pass
 
     # Move three pieces.
-    def move_three_pieces(self):
-        if rules.apply_rules() == True:
-            #TODO
+    def move_three_pieces(self, stored_piece1, stored_piece2, stored_piece3, clicked_info):
+
+        # Verify the legality of the move.
+        where_to_move = rules.apply_rules_for_move_three_pieces(stored_piece1, stored_piece2, stored_piece3, clicked_info)
+        if where_to_move != (-9, -9, -9, -9):
+
+            # Move the pieces.
+            movement.move_three_pieces(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
+                                       stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3],
+                                       stored_piece3[0], stored_piece3[1], where_to_move[4], where_to_move[5])
+
+            # Show the move log.
             messages = []
-            messages.append("Moved!")
+            messages.append("move_three_pieces!")
             self.log(messages)
+
+            # Prolog.
             self.update_canvas()
             model.update_turn_state(self)
         else:
             pass
 
+
+    # Move 2 to 1 sumito.
+    def move_2_to_1_sumito(self, stored_piece1, stored_piece2, clicked_info):
+
+        # Verify the legality of the move.
+        if rules.apply_rules_for_move_2_to_1_sumito():
+
+            # Move the pieces.
+            #TODO
+
+            # Show the move log.
+            messages = []
+            messages.append("move_2_to_1_sumito!")
+            self.log(messages)
+
+            # Prolog.
+            self.update_canvas()
+            model.update_turn_state(self)
+        else:
+            pass
+
+
+    # Move 3 to 1 or 3 to 2 sumito.
+    def move_3_to_1_or_3_to_2_sumito(self, stored_piece1, stored_piece2, stored_piece3, clicked_info):
+
+        # Verify the legality of the move.
+        if rules.apply_rules_for_move_3_to_1_or_3_to_2_sumito():
+
+            # Move the pieces.
+            # TODO
+
+            # Show the move log.
+            messages = []
+            messages.append("move_3_to_1_or_3_to_2_sumito!")
+            self.log(messages)
+
+            # Prolog.
+            self.update_canvas()
+            model.update_turn_state(self)
+        else:
+            pass
+
+    # ================ ================ Movement Visualization ================ ================
     # Select the position to indicate the position is selected.
     def select_position(self, position):
         if self.COORDINATES_CARTESIAN[position][5] == 0:
@@ -279,6 +383,9 @@ class GUI:
     # ================ ================ Canvas Rendering ================ ================
     # Initialize canvas with basic drawings.
     def update_canvas(self):
+
+        # Get the pieces information from the global game state.
+        gui_adapter.update_gui_coordinates_from_global_game_state_representation(self)
 
         # Draw the fundamental game setup.
         x_beginning = self.master_board_start_x
@@ -364,7 +471,8 @@ class GUI:
         log_height = 200
         # Draw console background to erase the previous messages.
         pygame.draw.rect(self.main_display_surface,
-                         colors.BLACK, (0, self.master_window_height - log_height, self.master_window_width, log_height))
+                         colors.BLACK, (0, self.master_window_height - log_height,
+                                        self.master_window_width - 400, log_height))
 
     # ================ ================ Game Board ================ ================
     # Show the game board.
@@ -373,12 +481,12 @@ class GUI:
         self.show_total_time_label()
         self.show_score_label()
         self.show_moves_taken_label()
-        self.update_time('black', 10)
-        self.update_time('white', 10)
-        self.update_total_time('black', 100)
-        self.update_total_time('white', 100)
-        self.update_score('black', 0)
-        self.update_score('white', 0)
+        self.update_time('black', -1)
+        self.update_time('white', -1)
+        self.update_total_time('black', -1)
+        self.update_total_time('white', -1)
+        self.update_score('black', -1)
+        self.update_score('white', -1)
         self.update_moves_taken('black', -1)
         self.update_moves_taken('white', -1)
         self.update_game_state('Stopped')
@@ -610,8 +718,17 @@ class GUI:
         button_next_music = thorpy.make_button("Next Music", func=lambda: controller.button_next_music_callback(self))
         button_next_music.set_size((390, 30))
 
+        button_volume_up = thorpy.make_button("Volume Up", func=lambda: controller.button_volume_up_callback(self))
+        button_volume_up.set_size((390, 30))
+
+        button_volume_down = thorpy.make_button("Volume Down", func=lambda: controller.button_volume_down_callback(self))
+        button_volume_down.set_size((390, 30))
+
         button_get_funk = thorpy.make_button("Get Funk!", func=lambda: controller.button_get_funk_callback(self))
         button_get_funk.set_size((390, 30))
+
+        button_secret = thorpy.make_button("?", func=lambda: controller.button_secret_callback(self))
+        button_secret.set_size((390, 30))
 
         box_bgm = thorpy.Box.make(elements=[
             separation_line_jukebox,
@@ -619,7 +736,10 @@ class GUI:
             button_start_music,
             button_stop_music,
             button_next_music,
-            button_get_funk
+            button_volume_up,
+            button_volume_down,
+            button_get_funk,
+            button_secret
         ])
 
         # ThorPy elements for all.
@@ -669,11 +789,11 @@ class GUI:
         box_white.blit()
         box_white.update()
 
-        box_bgm.set_topleft((self.master_window_width - 400, 407))
+        box_bgm.set_topleft((self.master_window_width - 400, 697))
         box_bgm.blit()
         box_bgm.update()
 
-        box_all.set_topleft((self.master_window_width - 400, 585))
+        box_all.set_topleft((self.master_window_width - 400, 407))
         box_all.blit()
         box_all.update()
 

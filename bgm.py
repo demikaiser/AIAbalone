@@ -12,6 +12,9 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 import pygame, random
 
 class BGM:
+    # Volume amount to increase or decrease.
+    VOLUME_AMOUNT = 0.1
+
     # A list contains all music for the game. (Feel free to add more music, but it has to be funky!)
     music_list = ['music/getDown.ogg', 'music/neverTooMuch.ogg', 'music/rockWithYou.ogg']
 
@@ -44,6 +47,22 @@ class BGM:
         pygame.mixer.music.load(self.music_list[self.current_playing_music])
         pygame.mixer.music.play(-1)
 
+    # Volume up.
+    def volume_up(self):
+        current_volume = pygame.mixer.music.get_volume()
+        current_volume = current_volume + self.VOLUME_AMOUNT
+        pygame.mixer.music.set_volume(current_volume)
+
+    # Volume down.
+    def volume_down(self):
+        current_volume = pygame.mixer.music.get_volume()
+        current_volume = current_volume - self.VOLUME_AMOUNT
+        pygame.mixer.music.set_volume(current_volume)
+
     # Get funk!
     def get_funk(self):
+        pass
+
+    # Secret.
+    def secret(self):
         pass
