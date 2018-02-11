@@ -62,22 +62,37 @@ def move_three_pieces(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, ne
 
 
 
-
-
-
-
-
 # Move 2 to 1 sumito.
-def move_2_to_1_sumito(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, new_y2):
+def move_2_to_1_sumito(old_x1, old_y1, new_x1, new_y1,
+                       old_x2, old_y2, new_x2, new_y2,
+                       clicked_x, clicked_y):
+
+
+#TODO TODO TODO TODO TODO TODO
+    # Memorize the opponent pieces.
+    piece_opponent = model.global_game_board_state[clicked_x][clicked_y]
+
+    # Memorize the old pieces.
+    piece1 = model.global_game_board_state[old_x1][old_y1]
+    piece2 = model.global_game_board_state[old_x2][old_y2]
+
+    # Remove the old pieces.
+    model.global_game_board_state[old_x1][old_y1] = 0
+    model.global_game_board_state[old_x2][old_y2] = 0
+
+    # Place the pieces to new location.
+    model.global_game_board_state[new_x1][new_y1] = piece1
+    model.global_game_board_state[new_x2][new_y2] = piece2
+
+
+
+# Move 3 to 1 or 3 to 2 sumito.
+def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
+                                 old_x2, old_y2, new_x2, new_y2,
+                                 old_x3, old_y3, new_x3, new_y3,
+                                 clicked_x, clicked_y):
     pass
 
-# Move 3 to 1 sumito.
-def move_3_to_1_sumito(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, new_y2, old_x3, old_y3, new_x3, new_y3):
-    pass
-
-# Move 3 to 2 sumito.
-def move_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, new_y2, old_x3, old_y3, new_x3, new_y3):
-    pass
 
 
 

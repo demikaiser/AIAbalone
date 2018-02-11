@@ -118,14 +118,147 @@ def apply_rules_for_move_three_pieces(stored_piece1, stored_piece2, stored_piece
 
 
 # Apply rules for move 2 to 1 sumito.
-def apply_rules_for_move_2_to_1_sumito():
-    #TODO
-    return True
+def apply_rules_for_move_2_to_1_sumito(stored_piece1, stored_piece2, clicked_info):
+    for position in generate_all_2_to_1_legal_sumitos(stored_piece1[0], stored_piece1[1],
+                                                      stored_piece2[0], stored_piece2[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+
+    for position in generate_all_2_to_1_legal_sumitos(stored_piece2[0], stored_piece2[1],
+                                                      stored_piece1[0], stored_piece1[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+
+    return (-9, -9, -9, -9)
 
 # Apply rules for move 3 to 1 or 3 to 2 sumito.
-def apply_rules_for_move_3_to_1_or_3_to_2_sumito():
-    #TODO
-    return True
+def apply_rules_for_move_3_to_1_or_3_to_2_sumito(stored_piece1, stored_piece2, stored_piece3, clicked_info):
+
+    for position in generate_all_3_to_1_legal_sumitos(stored_piece1[0], stored_piece1[1],
+                                                     stored_piece2[0], stored_piece2[1],
+                                                     stored_piece3[0], stored_piece3[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_1_legal_sumitos(stored_piece1[0], stored_piece1[1],
+                                                     stored_piece3[0], stored_piece3[1],
+                                                     stored_piece2[0], stored_piece2[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_1_legal_sumitos(stored_piece2[0], stored_piece2[1],
+                                                     stored_piece1[0], stored_piece1[1],
+                                                     stored_piece3[0], stored_piece3[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_1_legal_sumitos(stored_piece2[0], stored_piece2[1],
+                                                     stored_piece3[0], stored_piece3[1],
+                                                     stored_piece1[0], stored_piece1[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_1_legal_sumitos(stored_piece3[0], stored_piece3[1],
+                                                     stored_piece1[0], stored_piece1[1],
+                                                     stored_piece2[0], stored_piece2[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_1_legal_sumitos(stored_piece3[0], stored_piece3[1],
+                                                     stored_piece2[0], stored_piece2[1],
+                                                     stored_piece1[0], stored_piece1[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_2_legal_sumitos(stored_piece1[0], stored_piece1[1],
+                                                     stored_piece2[0], stored_piece2[1],
+                                                     stored_piece3[0], stored_piece3[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_2_legal_sumitos(stored_piece1[0], stored_piece1[1],
+                                                     stored_piece3[0], stored_piece3[1],
+                                                     stored_piece2[0], stored_piece2[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_2_legal_sumitos(stored_piece2[0], stored_piece2[1],
+                                                     stored_piece1[0], stored_piece1[1],
+                                                     stored_piece3[0], stored_piece3[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_2_legal_sumitos(stored_piece2[0], stored_piece2[1],
+                                                     stored_piece3[0], stored_piece3[1],
+                                                     stored_piece1[0], stored_piece1[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_2_legal_sumitos(stored_piece3[0], stored_piece3[1],
+                                                     stored_piece1[0], stored_piece1[1],
+                                                     stored_piece2[0], stored_piece2[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    for position in generate_all_3_to_2_legal_sumitos(stored_piece3[0], stored_piece3[1],
+                                                     stored_piece2[0], stored_piece2[1],
+                                                     stored_piece1[0], stored_piece1[1]):
+        if position[0] == clicked_info[0] and position[1] == clicked_info[1]:
+            return position
+        if position[2] == clicked_info[0] and position[3] == clicked_info[1]:
+            return position
+        if position[4] == clicked_info[0] and position[5] == clicked_info[1]:
+            return position
+
+    return (-9, -9, -9, -9)
 
 
 # ================ ================ Legal Movement Generation ================ ================
@@ -160,8 +293,6 @@ def generate_all_possible_legal_moves_for_one_piece(x1, y1):
 
     return possible_moves
 
-
-
 def generate_all_possible_legal_moves_for_two_pieces(x1, y1, x2, y2):
     possible_moves = set()
     if is_two_pieces_inline(x1, y1, x2, y2):
@@ -191,7 +322,6 @@ def generate_all_possible_legal_moves_for_two_pieces(x1, y1, x2, y2):
                 possible_moves.add((x1 + 0, y1 - 1, x2 + 0, y2 - 1))
 
     return possible_moves
-
 
 def generate_all_possible_legal_moves_for_three_pieces(x1, y1, x2, y2, x3, y3):
     possible_moves = set()
@@ -223,31 +353,36 @@ def generate_all_possible_legal_moves_for_three_pieces(x1, y1, x2, y2, x3, y3):
 
     return possible_moves
 
-
-
-
 def generate_all_2_to_1_legal_sumitos(x1, y1, x2, y2):
     possible_moves = set()
     if is_two_pieces_inline(x1, y1, x2, y2):
-
-        pass
-        #TODO
+        possible_moves = get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(x1, y1, x2, y2)
+        if possible_moves == set():
+            possible_moves = get_2_to_1_sumito_coordinates_for_two_pieces_on_the_y_axis(x1, y1, x2, y2)
+            if possible_moves == set():
+                possible_moves = get_2_to_1_sumito_coordinates_for_two_pieces_on_the_z_axis(x1, y1, x2, y2)
 
     return possible_moves
 
 def generate_all_3_to_1_legal_sumitos(x1, y1, x2, y2, x3, y3):
     possible_moves = set()
     if is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
-        pass
-        #TODO
+        possible_moves = get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3)
+        if possible_moves == set():
+            possible_moves = get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2, x3, y3)
+            if possible_moves == set():
+                possible_moves = get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2, x3, y3)
 
     return possible_moves
 
 def generate_all_3_to_2_legal_sumitos(x1, y1, x2, y2, x3, y3):
     possible_moves = set()
     if is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
-        pass
-        #TODO
+        possible_moves = get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3)
+        if possible_moves == set():
+            possible_moves = get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2, x3, y3)
+            if possible_moves == set():
+                possible_moves = get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2, x3, y3)
 
     return possible_moves
 
@@ -901,7 +1036,6 @@ def is_the_position_inside_of_the_board(positions):
         if model.global_game_board_state[position[0]][position[1]] == -9:
             return False
     return True
-
 
 
 
