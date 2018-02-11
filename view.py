@@ -51,11 +51,15 @@ class GUI:
     master_window_width = 1200
     master_window_height = 980
 
-    #board start size
+    # Board start size.
     master_board_start_x = 240
 
-    #background x (1920 is the background width)
+    # Background x (1920 is the background width).
     master_background_x = master_window_width - 1920
+
+    # Designate the marble images.
+    black_marble_img = pygame.image.load("images/black_marble_standard.png")
+    white_marble_img = pygame.image.load("images/white_marble_standard.png")
 
     # Constructor.
     def __init__(self):
@@ -64,6 +68,7 @@ class GUI:
 
         self.font_coordinates = pygame.font.SysFont('Consolas', 30)
 
+        # Pygame main display surfaces.
         self.main_display_surface = pygame.display.set_mode(
             (self.master_window_width,
              self.master_window_height)
@@ -419,7 +424,7 @@ class GUI:
                 # Draw background.
                 if self.COORDINATES_CARTESIAN[coordinates_increment][5] == 0:
                     pygame.draw.circle(self.main_display_surface,
-                                       colors.ROW[row],
+                                       colors.COLOR_FOR_PIECE_BACKGROUND_ROW[row],
                                        (row * distance_between_elements + x_beginning,
                                         column_increment * distance_between_elements),
                                        radius, 0)
@@ -432,17 +437,25 @@ class GUI:
 
                 # Draw pieces.
                 if self.COORDINATES_CARTESIAN[coordinates_increment][2] == 1:
-                    pygame.draw.circle(self.main_display_surface,
-                                       colors.BLACK,
-                                       (row * distance_between_elements + x_beginning,
-                                        column_increment * distance_between_elements),
-                                       radius_piece, 0)
+                    self.main_display_surface.blit(self.black_marble_img,
+                                                   (row * distance_between_elements + x_beginning - 30,
+                                                    column_increment * distance_between_elements - 30))
+                    # Raw drawing.
+                    # pygame.draw.circle(self.main_display_surface,
+                    #                    colors.BLACK,
+                    #                    (row * distance_between_elements + x_beginning,
+                    #                     column_increment * distance_between_elements),
+                    #                    radius_piece, 0)
                 elif self.COORDINATES_CARTESIAN[coordinates_increment][2] == 2:
-                    pygame.draw.circle(self.main_display_surface,
-                                       colors.WHITE,
-                                       (row * distance_between_elements + x_beginning,
-                                        column_increment * distance_between_elements),
-                                       radius_piece, 0)
+                    self.main_display_surface.blit(self.white_marble_img,
+                                                   (row * distance_between_elements + x_beginning - 30,
+                                                    column_increment * distance_between_elements - 30))
+                    # Raw drawing.
+                    # pygame.draw.circle(self.main_display_surface,
+                    #                    colors.WHITE,
+                    #                    (row * distance_between_elements + x_beginning,
+                    #                     column_increment * distance_between_elements),
+                    #                    radius_piece, 0)
 
                 # Draw coordinates.
                 self.display_coordinates("(" + str(self.COORDINATES_CARTESIAN[coordinates_increment][0]) +
