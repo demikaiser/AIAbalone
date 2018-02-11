@@ -67,6 +67,9 @@ global_game_board_state = [
     [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
 ]
 
+
+
+# Set global game configuration from gui.
 def set_global_game_configuration_from_gui(context):
     # Get status from black
     if context.radio_human_black.get_value():

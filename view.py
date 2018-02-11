@@ -236,7 +236,10 @@ class GUI:
             self.update_canvas()
             model.update_turn_state(self)
         else:
-            pass
+            # Show the move log.
+            messages = []
+            messages.append("Wrong movement.")
+            self.log(messages)
 
     # Move two pieces.
     def move_two_pieces(self, stored_piece1, stored_piece2, clicked_info):
@@ -258,7 +261,10 @@ class GUI:
             self.update_canvas()
             model.update_turn_state(self)
         else:
-            pass
+            # Show the move log.
+            messages = []
+            messages.append("Wrong movement.")
+            self.log(messages)
 
     # Move three pieces.
     def move_three_pieces(self, stored_piece1, stored_piece2, stored_piece3, clicked_info):
@@ -281,17 +287,22 @@ class GUI:
             self.update_canvas()
             model.update_turn_state(self)
         else:
-            pass
+            # Show the move log.
+            messages = []
+            messages.append("Wrong movement.")
+            self.log(messages)
 
 
     # Move 2 to 1 sumito.
     def move_2_to_1_sumito(self, stored_piece1, stored_piece2, clicked_info):
 
         # Verify the legality of the move.
-        if rules.apply_rules_for_move_2_to_1_sumito():
+        where_to_move = rules.apply_rules_for_move_2_to_1_sumito(stored_piece1, stored_piece2, clicked_info)
+        if where_to_move != (-9, -9, -9, -9):
 
             # Move the pieces.
-            #TODO
+            movement.move_2_to_1_sumito(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
+                                        stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3])
 
             # Show the move log.
             messages = []
@@ -302,17 +313,24 @@ class GUI:
             self.update_canvas()
             model.update_turn_state(self)
         else:
-            pass
+            # Show the move log.
+            messages = []
+            messages.append("Wrong movement.")
+            self.log(messages)
 
 
     # Move 3 to 1 or 3 to 2 sumito.
     def move_3_to_1_or_3_to_2_sumito(self, stored_piece1, stored_piece2, stored_piece3, clicked_info):
 
         # Verify the legality of the move.
-        if rules.apply_rules_for_move_3_to_1_or_3_to_2_sumito():
+        where_to_move = rules.apply_rules_for_move_3_to_1_or_3_to_2_sumito(stored_piece1, stored_piece2, stored_piece3, clicked_info)
+
+        if where_to_move != (-9, -9, -9, -9):
 
             # Move the pieces.
-            # TODO
+            movement.move_3_to_1_or_3_to_2_sumito(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
+                                                  stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3],
+                                                  stored_piece3[0], stored_piece3[1], where_to_move[4], where_to_move[5])
 
             # Show the move log.
             messages = []
@@ -323,7 +341,10 @@ class GUI:
             self.update_canvas()
             model.update_turn_state(self)
         else:
-            pass
+            # Show the move log.
+            messages = []
+            messages.append("Wrong movement.")
+            self.log(messages)
 
     # ================ ================ Movement Visualization ================ ================
     # Select the position to indicate the position is selected.

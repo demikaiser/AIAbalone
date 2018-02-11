@@ -22,7 +22,6 @@ def button_step_back_white_callback(context):
     context.log(["Hello Jake", "Button button_step_back_WHITE is clicked!", "Processing..."])
 
 
-
 # ================ ================ Music Controller ================ ================
 
 # Button callback function for "Start Music".
@@ -51,6 +50,8 @@ def button_get_funk_callback(context):
 
 # Button callback function for "Secret".
 def button_secret_callback(context):
+    # DEBUG
+    print(model.global_game_board_state)
     context.bgm_instance.secret()
 
 # ================ ================ Game Controller ================ ================
