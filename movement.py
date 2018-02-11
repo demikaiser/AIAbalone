@@ -178,9 +178,6 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
     # 1. 3 to 1 sumito.
     if rules.generate_all_3_to_1_legal_sumitos(old_x1, old_y1, old_x2, old_y2, old_x3, old_y3) != set():
 
-        print("3-1")
-        print(rules.generate_all_3_to_1_legal_sumitos(old_x1, old_y1, old_x2, old_y2, old_x3, old_y3))
-
         # Memorize the opponent piece.
         piece_opponent = model.global_game_board_state[clicked_x][clicked_y]
 
@@ -240,7 +237,6 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
             adv_y_2 = advanced_coordinates[1][1]
             model.global_game_board_state[adv_x_2][adv_y_2] = piece_opponent_2
 
-        print("3-2")
 
 # ================ ================ Utility Functions ================ ================
 
