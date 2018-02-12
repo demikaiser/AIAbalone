@@ -68,6 +68,8 @@ class GUI:
         pygame.font.init()
 
         self.font_coordinates = pygame.font.SysFont('Consolas', 30)
+        # add log to the GUI
+        self.logger = logs.FileLogger()
 
         # Pygame main display surfaces.
         self.main_display_surface = pygame.display.set_mode(
@@ -492,14 +494,11 @@ class GUI:
         y_log = self.master_window_height - 195
 
         self.font_text = pygame.font.SysFont('Consolas', 20)
-
         # Display messages in the message list.
         for m in message:
             text = str(m)
-            # print message to console
-            print(text)
             # log same message to log file
-            logs.info_msg(text, level=10)
+            self.logger.info_msg(text, level=20)
             text = self.font_text.render(text, True, colors.GREEN)
             self.main_display_surface.blit(text, (x_log, y_log))
             y_log += 20
