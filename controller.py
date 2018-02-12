@@ -15,11 +15,11 @@ import model, gameboard
 
 # Button callback function for "Black Step Back".
 def button_step_back_black_callback(context):
-    context.log(["Hello Jake", "Button button_step_back_BLACK is clicked!", "Processing..."])
+    context.log(["Not implemented yet."])
 
 # Button callback function for "White Step Back".
 def button_step_back_white_callback(context):
-    context.log(["Hello Jake", "Button button_step_back_WHITE is clicked!", "Processing..."])
+    context.log(["Not implemented yet."])
 
 
 # ================ ================ Music Controller ================ ================
