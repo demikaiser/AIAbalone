@@ -9,10 +9,10 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import model, rules
+import model, rules, gameboard
 
 # Move one piece.
-def move_one_piece(old_x, old_y, new_x, new_y):
+def move_one_piece(old_x, old_y, new_x, new_y, context):
 
     # Memorize the old piece.
     piece = model.global_game_board_state[old_x][old_y]
@@ -23,8 +23,32 @@ def move_one_piece(old_x, old_y, new_x, new_y):
     # Place the piece to new location.
     model.global_game_board_state[new_x][new_y] = piece
 
+    # Increase the score and taken moves for each side.
+    gameboard.update_game_score()
+    if model.global_game_board_state[new_x][new_y] == 1:
+        gameboard.update_moves_taken_for('black')
+    elif model.global_game_board_state[new_x][new_y] == 2:
+        gameboard.update_moves_taken_for('white')
+
+    # Log the movement information.
+    messages = []
+    if model.global_game_board_state[new_x][new_y] == 1:
+        messages.append("Black made movement as the following:")
+    elif model.global_game_board_state[new_x][new_y] == 2:
+        messages.append("White made movement as the following:")
+    messages.append("From : (" + str(old_x) + "," + str(old_y) + ")")
+    messages.append("To   : (" + str(new_x) + "," + str(new_y) + ")")
+    context.log(messages)
+
+    # Reset the current timer.
+    gameboard.reset_current_timer()
+
+    # Perform the goal test.
+    model.goal_test(context)
+
 # Move two pieces.
-def move_two_pieces(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, new_y2):
+def move_two_pieces(old_x1, old_y1, new_x1, new_y1,
+                    old_x2, old_y2, new_x2, new_y2, context):
 
     # Memorize the old pieces.
     piece1 = model.global_game_board_state[old_x1][old_y1]
@@ -38,8 +62,35 @@ def move_two_pieces(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, new_
     model.global_game_board_state[new_x1][new_y1] = piece1
     model.global_game_board_state[new_x2][new_y2] = piece2
 
+    # Increase the score and taken moves for each side.
+    gameboard.update_game_score()
+    if model.global_game_board_state[new_x1][new_y1] == 1:
+        gameboard.update_moves_taken_for('black')
+    elif model.global_game_board_state[new_x1][new_y1] == 2:
+        gameboard.update_moves_taken_for('white')
+
+    # Log the movement information.
+    messages = []
+    if model.global_game_board_state[new_x1][new_y1] == 1:
+        messages.append("Black made movement as the following:")
+    elif model.global_game_board_state[new_x1][new_y1] == 2:
+        messages.append("White made movement as the following:")
+    messages.append("From : (" + str(old_x1) + "," + str(old_y1) + ")"
+                   + " " + "(" + str(old_x2) + "," + str(old_y2) + ")")
+    messages.append("To   : (" + str(new_x1) + "," + str(new_y1) + ")"
+                   + " " + "(" + str(new_x2) + "," + str(new_y2) + ")")
+    context.log(messages)
+
+    # Reset the current timer.
+    gameboard.reset_current_timer()
+
+    # Perform the goal test.
+    model.goal_test(context)
+
 # Move three pieces.
-def move_three_pieces(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, new_y2, old_x3, old_y3, new_x3, new_y3):
+def move_three_pieces(old_x1, old_y1, new_x1, new_y1,
+                      old_x2, old_y2, new_x2, new_y2,
+                      old_x3, old_y3, new_x3, new_y3, context):
 
     # Memorize the old pieces.
     piece1 = model.global_game_board_state[old_x1][old_y1]
@@ -56,9 +107,36 @@ def move_three_pieces(old_x1, old_y1, new_x1, new_y1, old_x2, old_y2, new_x2, ne
     model.global_game_board_state[new_x2][new_y2] = piece2
     model.global_game_board_state[new_x3][new_y3] = piece3
 
+    # Increase the score and taken moves for each side.
+    gameboard.update_game_score()
+    if model.global_game_board_state[new_x1][new_y1] == 1:
+        gameboard.update_moves_taken_for('black')
+    elif model.global_game_board_state[new_x1][new_y1] == 2:
+        gameboard.update_moves_taken_for('white')
+
+    # Log the movement information.
+    messages = []
+    if model.global_game_board_state[new_x1][new_y1] == 1:
+        messages.append("Black made movement as the following:")
+    elif model.global_game_board_state[new_x1][new_y1] == 2:
+        messages.append("White made movement as the following:")
+    messages.append("From : (" + str(old_x1) + "," + str(old_y1) + ")"
+                    + " " + "(" + str(old_x2) + "," + str(old_y2) + ")"
+                    + " " + "(" + str(old_x3) + "," + str(old_y3) + ")")
+    messages.append("To   : (" + str(new_x1) + "," + str(new_y1) + ")"
+                    + " " + "(" + str(new_x2) + "," + str(new_y2) + ")"
+                    + " " + "(" + str(new_x3) + "," + str(new_y3) + ")")
+    context.log(messages)
+
+    # Reset the current timer.
+    gameboard.reset_current_timer()
+
+    # Perform the goal test.
+    model.goal_test(context)
+
 # Move 2 to 1 sumito.
 def move_2_to_1_sumito(old_x1, old_y1, new_x1, new_y1,
-                       old_x2, old_y2, new_x2, new_y2):
+                       old_x2, old_y2, new_x2, new_y2, context):
     # Get the clicked position.
     clicked_position = get_the_differences_from_sets_for_sumitos({(new_x1, new_y1), (new_x2, new_y2)},
                                                                  {(old_x1, old_y1), (old_x2, old_y2)})
@@ -122,10 +200,35 @@ def move_2_to_1_sumito(old_x1, old_y1, new_x1, new_y1,
         adv_y = advanced_coordinates[0][1]
         model.global_game_board_state[adv_x][adv_y] = piece_opponent
 
+    # Increase the score and taken moves for each side.
+    gameboard.update_game_score()
+    if model.global_game_board_state[new_x1][new_y1] == 1:
+        gameboard.update_moves_taken_for('black')
+    elif model.global_game_board_state[new_x1][new_y1] == 2:
+        gameboard.update_moves_taken_for('white')
+
+    # Log the movement information.
+    messages = []
+    if model.global_game_board_state[new_x1][new_y1] == 1:
+        messages.append("Black made movement (SUMITO!) as the following:")
+    elif model.global_game_board_state[new_x1][new_y1] == 2:
+        messages.append("White made movement (SUMITO!) as the following:")
+    messages.append("From : (" + str(old_x1) + "," + str(old_y1) + ")"
+                    + " " + "(" + str(old_x2) + "," + str(old_y2) + ")")
+    messages.append("To   : (" + str(new_x1) + "," + str(new_y1) + ")"
+                    + " " + "(" + str(new_x2) + "," + str(new_y2) + ")")
+    context.log(messages)
+
+    # Reset the current timer.
+    gameboard.reset_current_timer()
+
+    # Perform the goal test.
+    model.goal_test(context)
+
 # Move 3 to 1 or 3 to 2 sumito.
 def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
                                  old_x2, old_y2, new_x2, new_y2,
-                                 old_x3, old_y3, new_x3, new_y3):
+                                 old_x3, old_y3, new_x3, new_y3, context):
     # Get the clicked position.
     clicked_position = get_the_differences_from_sets_for_sumitos({(new_x1, new_y1), (new_x2, new_y2), (new_x3, new_y3)},
                                                                  {(old_x1, old_y1), (old_x2, old_y2), (old_x3, old_y3)})
@@ -237,6 +340,32 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
             adv_y_2 = advanced_coordinates[1][1]
             model.global_game_board_state[adv_x_2][adv_y_2] = piece_opponent_2
 
+    # Increase the score and taken moves for each side.
+    gameboard.update_game_score()
+    if model.global_game_board_state[new_x1][new_y1] == 1:
+        gameboard.update_moves_taken_for('black')
+    elif model.global_game_board_state[new_x1][new_y1] == 2:
+        gameboard.update_moves_taken_for('white')
+
+    # Log the movement information.
+    messages = []
+    if model.global_game_board_state[new_x1][new_y1] == 1:
+        messages.append("Black made movement (SUMITO!) as the following:")
+    elif model.global_game_board_state[new_x1][new_y1] == 2:
+        messages.append("White made movement (SUMITO!) as the following:")
+    messages.append("From : (" + str(old_x1) + "," + str(old_y1) + ")"
+                    + " " + "(" + str(old_x2) + "," + str(old_y2) + ")"
+                    + " " + "(" + str(old_x3) + "," + str(old_y3) + ")")
+    messages.append("To   : (" + str(new_x1) + "," + str(new_y1) + ")"
+                    + " " + "(" + str(new_x2) + "," + str(new_y2) + ")"
+                    + " " + "(" + str(new_x3) + "," + str(new_y3) + ")")
+    context.log(messages)
+
+    # Reset the current timer.
+    gameboard.reset_current_timer()
+
+    # Perform the goal test.
+    model.goal_test(context)
 
 # ================ ================ Utility Functions ================ ================
 
@@ -249,7 +378,8 @@ def get_the_differences_from_sets_for_sumitos(positions_1, positions_2):
 
 
 
-##################################### TEMPORARY TESTS #########################################
+
+
 
 
 

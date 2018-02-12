@@ -9,14 +9,17 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import pygame, random
+import pygame, random, glob
+
 
 class BGM:
     # Volume amount to increase or decrease.
     VOLUME_AMOUNT = 0.1
 
     # A list contains all music for the game. (Feel free to add more music, but it has to be funky!)
-    music_list = ['music/getDown.ogg', 'music/neverTooMuch.ogg', 'music/rockWithYou.ogg']
+    # NOTE: If you want to want to add music, change the file name to camel cases, then
+    # simply add ogg files to the /music folder.
+    music_list = glob.glob("music/*.ogg")
 
     # Global variable indicates the index of current playing music.
     current_playing_music = 0
@@ -66,3 +69,7 @@ class BGM:
     # Secret.
     def secret(self):
         pass
+
+
+
+

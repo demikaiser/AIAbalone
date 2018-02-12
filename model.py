@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import time
+import time, gameboard, aimachine
 
 # Global game configuration object (Map).
 # This is a multi-layered object (like a JSON),
@@ -56,6 +56,19 @@ global_game_play_state = {
 # 1 is black, 2 is white, -9 is the non-use position.
 # WARNING: This convention should be strictly followed.
 global_game_board_state = [
+    [-9, -9, -9, -9,  0,  0,  0,  0,  0],
+    [-9, -9, -9,  0,  0,  0,  0,  0,  0],
+    [-9, -9,  0,  0,  0,  0,  0,  0,  0],
+    [-9,  0,  0,  0,  0,  0,  0,  0,  0],
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0],
+    [ 0,  0,  0,  0,  0,  0,  0,  0, -9],
+    [ 0,  0,  0,  0,  0,  0,  0, -9, -9],
+    [ 0,  0,  0,  0,  0,  0, -9, -9, -9],
+    [ 0,  0,  0,  0,  0, -9, -9, -9, -9]
+]
+
+# Inital game board settings.
+initial_game_board_state_standard = [
     [-9, -9, -9, -9,  0,  0,  0,  1,  1],
     [-9, -9, -9,  0,  0,  0,  0,  1,  1],
     [-9, -9,  0,  0,  0,  0,  1,  1,  1],
@@ -67,6 +80,29 @@ global_game_board_state = [
     [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
 ]
 
+initial_game_board_state_german_daisy = [
+    [-9, -9, -9, -9,  0,  0,  1,  1,  0],
+    [-9, -9, -9,  0,  0,  1,  1,  1,  0],
+    [-9, -9,  2,  2,  0,  1,  1,  0,  0],
+    [-9,  2,  2,  2,  0,  0,  0,  0,  0],
+    [ 0,  2,  2,  0,  0,  0,  2,  2,  0],
+    [ 0,  0,  0,  0,  0,  2,  2,  2, -9],
+    [ 0,  0,  1,  1,  0,  2,  2, -9, -9],
+    [ 0,  1,  1,  1,  0,  0, -9, -9, -9],
+    [ 0,  1,  1,  0,  0, -9, -9, -9, -9]
+]
+
+initial_game_board_state_belgian_daisy = [
+    [-9, -9, -9, -9,  0,  0,  0,  1,  1],
+    [-9, -9, -9,  0,  0,  0,  1,  1,  1],
+    [-9, -9,  0,  0,  0,  0,  1,  1,  0],
+    [-9,  2,  2,  0,  0,  0,  0,  2,  2],
+    [ 2,  2,  2,  0,  0,  0,  2,  2,  2],
+    [ 2,  2,  0,  0,  0,  0,  2,  2, -9],
+    [ 0,  1,  1,  0,  0,  0,  0, -9, -9],
+    [ 1,  1,  1,  0,  0,  0, -9, -9, -9],
+    [ 1,  1,  0,  0,  0, -9, -9, -9, -9]
+]
 
 
 # Set global game configuration from gui.
@@ -103,18 +139,36 @@ def set_global_game_configuration_from_gui(context):
     elif context.radio_belgian_daisy.get_value():
         global_game_configuration['all']['initial_board_layout'] = 'belgian_daisy'
 
+    # Game play configuration setup.
+    global_game_play_state['black']['score'] = 0
+    global_game_play_state['white']['score'] = 0
+
+    global_game_play_state['black']['moves_taken'] = 0
+    global_game_play_state['white']['moves_taken'] = 0
+
+    global_game_play_state['black']['time_taken_for_last_move'] = 0
+    global_game_play_state['white']['time_taken_for_last_move'] = 0
+
+    global_game_play_state['black']['time_taken_total'] = 0
+    global_game_play_state['white']['time_taken_total'] = 0
+
 # Start the game.
 def game_start(context):
     initial_configuration_for_black = global_game_configuration['black']['agent']
     initial_game_start_position = global_game_configuration['all']['initial_board_layout']
 
+    global global_game_board_state
+    global initial_game_board_state_standard
+    global initial_game_board_state_german_daisy
+    global initial_game_board_state_belgian_daisy
+
     #sets starting position
     if initial_game_start_position == "german_daisy":
-        context.create_pieces_german_daisy()
+        global_game_board_state = initial_game_board_state_german_daisy
     elif initial_game_start_position == "belgian_daisy":
-        context.create_pieces_belgian_daisy()
+        global_game_board_state = initial_game_board_state_belgian_daisy
     else:
-        context.create_pieces_standard()
+        global_game_board_state = initial_game_board_state_standard
 
     context.populate_gui_coordinates()
     context.update_canvas()
@@ -125,11 +179,9 @@ def game_start(context):
     elif initial_configuration_for_black == 'computer':
         global_game_play_state['all']['game_state'] = 'started_B_Computer'
         context.update_game_state('started_B_C')
-        # Move by the artificial intelligence machine.
-        messages = []
-        messages.append("Black Computer moved!")
-        context.log(messages)
-        update_turn_state(context)
+
+        # Start moving by the artificial intelligence machine.
+        aimachine.make_movement(context, 'black')
 
 # Pause the game.
 def game_pause(context):
@@ -158,56 +210,89 @@ def update_turn_state(context):
             global_game_play_state['all']['game_state'] = 'started_W_Human'
             context.update_game_state('started_W_H')
 
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
         elif global_game_configuration['white']['agent'] == 'computer':
             global_game_play_state['all']['game_state'] = 'started_W_Computer'
             context.update_game_state('started_W_C')
+
             # Move by the artificial intelligence machine.
-            messages = []
-            messages.append("White Computer moved!")
-            context.log(messages)
-            update_turn_state(context)
+            aimachine.make_movement(context, 'white')
 
     elif global_game_play_state['all']['game_state'] == 'started_B_Computer':
         if global_game_configuration['white']['agent'] == 'human':
             global_game_play_state['all']['game_state'] = 'started_W_Human'
             context.update_game_state('started_W_H')
 
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
         elif global_game_configuration['white']['agent'] == 'computer':
             global_game_play_state['all']['game_state'] = 'started_W_Computer'
             context.update_game_state('started_W_C')
+
             # Move by the artificial intelligence machine.
-            messages = []
-            messages.append("White Computer moved!")
-            context.log(messages)
-            update_turn_state(context)
+            aimachine.make_movement(context, 'white')
 
     elif global_game_play_state['all']['game_state'] == 'started_W_Human':
         if global_game_configuration['black']['agent'] == 'human':
             global_game_play_state['all']['game_state'] = 'started_B_Human'
             context.update_game_state('started_B_H')
 
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
+
         elif global_game_configuration['black']['agent'] == 'computer':
             global_game_play_state['all']['game_state'] = 'started_B_Computer'
             context.update_game_state('started_B_C')
+
             # Move by the artificial intelligence machine.
-            messages = []
-            messages.append("Black Computer moved!")
-            context.log(messages)
-            update_turn_state(context)
+            aimachine.make_movement(context, 'black')
 
     elif global_game_play_state['all']['game_state'] == 'started_W_Computer':
         if global_game_configuration['black']['agent'] == 'human':
             global_game_play_state['all']['game_state'] = 'started_B_Human'
             context.update_game_state('started_B_H')
 
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
         elif global_game_configuration['black']['agent'] == 'computer':
             global_game_play_state['all']['game_state'] = 'started_B_Computer'
             context.update_game_state('started_B_C')
+
             # Move by the artificial intelligence machine.
-            messages = []
-            messages.append("Black Computer moved!")
-            context.log(messages)
-            update_turn_state(context)
+            aimachine.make_movement(context, 'black')
+
+# Goal test
+def goal_test(context):
+    if global_game_play_state['black']['score'] == 6:
+        # Update the global game state.
+        global_game_play_state['all']['game_state'] = 'stopped'
+
+        # Update the gui game state.
+        context.update_game_state('Stopped')
+
+        # Send win log message for white.
+        messages = []
+        messages.append("Black won!")
+        messages.append("Game stopped.")
+        context.log(messages)
+
+    elif global_game_play_state['white']['score'] == 6:
+        # Update the global game state.
+        global_game_play_state['all']['game_state'] = 'stopped'
+
+        # Update the gui game state.
+        context.update_game_state('Stopped')
+
+        # Send win log message for white.
+        messages = []
+        messages.append("White won!")
+        messages.append("Game stopped.")
+        context.log(messages)
 
 
 
