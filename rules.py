@@ -807,7 +807,6 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(x1, y1, x2, y2,
     if get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(x1, y1, x2, y2, x3, y3) == set() and \
             get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(x1, y1, x2, y2, x3, y3) == set():
 
-        print("DEBUG: "+ str(x1) + "," +  str(x2) + ", " +str(x3) )
         x_adv_max_0 = max_from_three_elements(x1, x2, x3) + 0
         x_adv_max_1 = max_from_three_elements(x1, x2, x3) + 1
         x_adv_max_2 = max_from_three_elements(x1, x2, x3) + 2
