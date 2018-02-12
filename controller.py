@@ -57,11 +57,7 @@ def button_secret_callback(context):
 # Button callback function for "Game Start".
 def button_game_start_callback(context):
     context.log(["Game started."])
-
-    # Setup the global game configuration to start the game.
-    model.set_global_game_configuration_from_gui(context)
     model.game_start(context)
-    gameboard.update_gui_game_panel(context)
 
 # Button callback function for "Game Pause".
 def button_game_pause_callback(context):
@@ -70,8 +66,10 @@ def button_game_pause_callback(context):
 
 # Button callback function for "Game Resume".
 def button_game_resume_callback(context):
-    context.log(["Game resumed."])
-    model.game_resume(context)
+    if model.game_resume(context) == -1:
+        context.log(["Game can't be resumed."])
+    else:
+        context.log(["Game resumed."])
 
 # Button callback function for "Game Stop".
 def button_game_stop_callback(context):

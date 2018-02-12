@@ -11,7 +11,7 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 
 import pygame, sys, math
 import controller, colors, thorpy
-import bgm, model, rules, movement, gui_adapter, timer
+import bgm, model, rules, movement, gui_adapter, timer, gamelogger
 from pygame.locals import *
 
 class GUI:
@@ -146,26 +146,27 @@ class GUI:
 
         # Mouse button click works according to the state status.
         # started_B_Human | started_B_Computer | started_W_Human | started_W_Computer | paused | stopped
-        if state == 'started_B_Human':
-            self.process_mouse_input(pos, 'started_B_Human')
-        elif state == 'started_B_Computer':
-            messages = []
-            messages.append("Black Computer is thinking...")
-            self.log(messages)
-        elif state == 'started_W_Human':
-            self.process_mouse_input(pos, 'started_W_Human')
-        elif state == 'started_W_Computer':
-            messages = []
-            messages.append("White Computer is thinking...")
-            self.log(messages)
-        elif state == 'paused':
-            messages = []
-            messages.append("Game is paused.")
-            self.log(messages)
-        elif state == 'stopped':
-            messages = []
-            messages.append("Game is stopped.")
-            self.log(messages)
+        if pos[0] < 800 and pos[1] < 800:    # Only process inside of the borad.
+            if state == 'started_B_Human':
+                self.process_mouse_input(pos, 'started_B_Human')
+            elif state == 'started_B_Computer':
+                messages = []
+                messages.append("Black Computer is thinking...")
+                self.log(messages)
+            elif state == 'started_W_Human':
+                self.process_mouse_input(pos, 'started_W_Human')
+            elif state == 'started_W_Computer':
+                messages = []
+                messages.append("White Computer is thinking...")
+                self.log(messages)
+            elif state == 'paused':
+                messages = []
+                messages.append("Game is paused.")
+                self.log(messages)
+            elif state == 'stopped':
+                messages = []
+                messages.append("Game is stopped.")
+                self.log(messages)
 
     def process_mouse_input(self, pos, state):
         # Process mouse input to get an index of clicked circle.
@@ -487,6 +488,11 @@ class GUI:
 
     # Print text to the log console.
     def log(self, message):
+
+        # TEMPORARY logging demo.
+        #TODO
+        gamelogger.write_to_the_log_file(message)
+
         # Draw console background to erase the previous messages.
         self.log_clear()
         x_log = 20

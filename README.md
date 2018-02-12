@@ -31,3 +31,6 @@ Click the + Sign on the Right -> Search Thorpy -> Install Package
 ```
 In Pycharm IDE, open main.py file -> Click the right button -> Select "Run main.py"
 ```
+```
+In any OSs, open a terminal -> Change to the project directory -> Type "python main.py"
+```

@@ -8,3 +8,24 @@ Copyright (C) BCIT AI/ML Option 2018 Team with Members Following - All Rights Re
 Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
+
+
+
+# TEMPORARY LOGGER
+#TODO
+# Input: A list of strings.
+def write_to_the_log_file(strings):
+    filename = "logs/temp_log.txt"
+    file = open(filename, "a+")
+
+    for string in strings:
+        file.write(string + '\n')
+
+    file.close()
+
+
+
+
+
+
+
