@@ -66,8 +66,10 @@ def button_game_pause_callback(context):
 
 # Button callback function for "Game Resume".
 def button_game_resume_callback(context):
-    context.log(["Game resumed."])
-    model.game_resume(context)
+    if model.game_resume(context) == -1:
+        context.log(["Game can't be resumed."])
+    else:
+        context.log(["Game resumed."])
 
 # Button callback function for "Game Stop".
 def button_game_stop_callback(context):

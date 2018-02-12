@@ -212,6 +212,9 @@ def game_pause(context):
 # Resume the game.
 def game_resume(context):
     global global_temporary_game_state_for_pause_and_resume
+    if global_temporary_game_state_for_pause_and_resume == '':
+        return -1
+
     global_game_play_state['all']['game_state'] = global_temporary_game_state_for_pause_and_resume
 
     if global_game_play_state['all']['game_state'] == 'started_B_Human':
@@ -249,6 +252,11 @@ def game_reset(context):
     global_game_play_state['white']['moves_taken'] = 0
     global_game_play_state['white']['time_taken_for_last_move'] = 0
     global_game_play_state['white']['time_taken_total'] = 0
+
+    # Clear all stored pieces and its selection.
+    context.clear_stored_pieces()
+
+    context.clear_all_selection()
 
     # Update gui.
     context.update_canvas()
