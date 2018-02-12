@@ -79,7 +79,8 @@ class GUI:
 
         # Set up the background.
         self.main_display_surface.fill(colors.BACKGROUND)
-        bg = pygame.image.load("images/background.jpeg")
+
+        bg = pygame.image.load("dark_background.jpg")
 
         # INSIDE OF THE GAME LOOP
         self.main_display_surface.blit(bg, (self.master_background_x, 0))
@@ -400,6 +401,10 @@ class GUI:
     def calculate_distance(self, x1, y1, x2, y2):
         return math.sqrt(((x1 - x2) ** 2) + ((y1 - y2) ** 2))
 
+    def clear_pieces(self):
+        for item in self.COORDINATES_CARTESIAN:
+            item[2] = 0
+
     # ================ ================ Canvas Rendering ================ ================
     # Initialize canvas with basic drawings.
     def update_canvas(self):
@@ -620,6 +625,7 @@ class GUI:
     # ================ ================ Initial Board Setup ================ ================
     # Create the initial pieces arranged (Standard).
     def create_pieces_standard(self):
+        self.clear_pieces()
         for index in [45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]:
             self.COORDINATES_CARTESIAN[index][2] = 1
         for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15]:
@@ -627,16 +633,18 @@ class GUI:
 
     # Create the initial pieces arranged (German Daisy).
     def create_pieces_german_daisy(self):
-        for index in [45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]:
+        self.clear_pieces()
+        for index in [9, 10, 15, 16, 17, 23, 24, 36, 37, 43, 44, 45, 50, 51]:
             self.COORDINATES_CARTESIAN[index][2] = 1
-        for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15]:
+        for index in [5, 6, 11, 12, 13, 19, 20, 40, 41, 47, 48, 49, 54, 55]:
             self.COORDINATES_CARTESIAN[index][2] = 2
 
     # Create the initial pieces arranged (Belgian Daisy).
     def create_pieces_belgian_daisy(self):
-        for index in [45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60]:
+        self.clear_pieces()
+        for index in [3, 4, 8, 9, 10, 15, 16, 44, 45, 50, 51, 52, 56, 57]:
             self.COORDINATES_CARTESIAN[index][2] = 1
-        for index in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 13, 14, 15]:
+        for index in [0, 1, 5, 6, 7, 12, 13, 47, 48, 53, 54, 55, 59, 60]:
             self.COORDINATES_CARTESIAN[index][2] = 2
 
 

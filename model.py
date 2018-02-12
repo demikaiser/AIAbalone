@@ -106,6 +106,18 @@ def set_global_game_configuration_from_gui(context):
 # Start the game.
 def game_start(context):
     initial_configuration_for_black = global_game_configuration['black']['agent']
+    initial_game_start_position = global_game_configuration['all']['initial_board_layout']
+
+    #sets starting position
+    if initial_game_start_position == "german_daisy":
+        context.create_pieces_german_daisy()
+    elif initial_game_start_position == "belgian_daisy":
+        context.create_pieces_belgian_daisy()
+    else:
+        context.create_pieces_standard()
+
+    context.populate_gui_coordinates()
+    context.update_canvas()
 
     if initial_configuration_for_black == 'human':
         global_game_play_state['all']['game_state'] = 'started_B_Human'
