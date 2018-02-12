@@ -11,7 +11,7 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 
 import pygame, sys, math
 import controller, colors, thorpy
-import bgm, model, rules, movement, gui_adapter, timer, gamelogger, logs
+import bgm, model, rules, movement, gui_adapter, timer, logs
 
 from pygame.locals import *
 
@@ -87,7 +87,8 @@ class GUI:
         pygame.font.init()
 
         self.font_coordinates = pygame.font.SysFont('Consolas', 30)
-        # add log to the GUI
+
+        # Make a logger interface to the GUI.
         self.logger = logs.FileLogger()
 
         # Pygame main display surfaces.
@@ -106,7 +107,7 @@ class GUI:
         # Alternative background.
         # bg = pygame.image.load("images/dark_background.jpg")
 
-        # INSIDE OF THE GAME LOOP
+        # INSIDE OF THE GAME LOOP.
         self.main_display_surface.blit(bg, (self.master_background_x, 0))
 
         self.populate_gui_coordinates()
@@ -492,24 +493,22 @@ class GUI:
     # Print text to the log console.
     def log(self, message):
 
-        # TEMPORARY logging demo.
-        #TODO
-        gamelogger.write_to_the_log_file(message)
-
         # Draw console background to erase the previous messages.
         self.log_clear()
         x_log = 20
         y_log = self.master_window_height - 195
 
         self.font_text = pygame.font.SysFont('Consolas', 20)
+
         # Display messages in the message list.
         for m in message:
             text = str(m)
-            # log same message to log file
-            self.logger.info_msg(text, level=20)
-            text = self.font_text.render(text, True, colors.GREEN)
-            self.main_display_surface.blit(text, (x_log, y_log))
+            text_for_renderer = self.font_text.render(text, True, colors.GREEN)
+            self.main_display_surface.blit(text_for_renderer, (x_log, y_log))
             y_log += 20
+
+            # Log same message to log file.
+            self.logger.info_msg(text, level=20)
 
     # Print text to the log console.
     def log_clear(self):
