@@ -7,7 +7,7 @@ venv/
 # IDE Caching Directory
 __pycache__
 
-# Log files
+# Log Directory and Files
 *.log
 logs/
 action_log/
