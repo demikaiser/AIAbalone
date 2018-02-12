@@ -29,6 +29,7 @@ def ai_calculation_thread(context, color):
         opponent = 1
 
     # TEMPORARY FUNCTIONALITY (DELETE THIS LATER).
+    # Currently it moves just one piece randomly.
     ally_pieces_locations = []
 
     for j in range(9):
@@ -67,6 +68,7 @@ def ai_calculation_thread(context, color):
 
 
 
+    # ================ ================ Prolog for GUI ================ ================
     # Update the game graphic
     context.update_canvas()
 

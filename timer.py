@@ -14,25 +14,29 @@ import time
 import model
 
 def time_oscillator(context):
-    while True:
-        time.sleep(1)
-        if model.global_game_play_state['all']['game_state'] == 'started_B_Human':
-            model.global_game_play_state['black']['time_taken_for_last_move'] += 1
-            model.global_game_play_state['black']['time_taken_total'] += 1
-        elif model.global_game_play_state['all']['game_state'] == 'started_B_Computer':
-            model.global_game_play_state['black']['time_taken_for_last_move'] += 1
-            model.global_game_play_state['black']['time_taken_total'] += 1
-        elif model.global_game_play_state['all']['game_state'] == 'started_W_Human':
-            model.global_game_play_state['white']['time_taken_for_last_move'] += 1
-            model.global_game_play_state['white']['time_taken_total'] += 1
-        elif model.global_game_play_state['all']['game_state'] == 'started_W_Computer':
-            model.global_game_play_state['white']['time_taken_for_last_move'] += 1
-            model.global_game_play_state['white']['time_taken_total'] += 1
+    try:
+        while True:
+            time.sleep(1)
+            if model.global_game_play_state['all']['game_state'] == 'started_B_Human':
+                model.global_game_play_state['black']['time_taken_for_last_move'] += 1
+                model.global_game_play_state['black']['time_taken_total'] += 1
+            elif model.global_game_play_state['all']['game_state'] == 'started_B_Computer':
+                model.global_game_play_state['black']['time_taken_for_last_move'] += 1
+                model.global_game_play_state['black']['time_taken_total'] += 1
+            elif model.global_game_play_state['all']['game_state'] == 'started_W_Human':
+                model.global_game_play_state['white']['time_taken_for_last_move'] += 1
+                model.global_game_play_state['white']['time_taken_total'] += 1
+            elif model.global_game_play_state['all']['game_state'] == 'started_W_Computer':
+                model.global_game_play_state['white']['time_taken_for_last_move'] += 1
+                model.global_game_play_state['white']['time_taken_total'] += 1
 
-        context.update_time('black', model.global_game_play_state['black']['time_taken_for_last_move'])
-        context.update_time('white', model.global_game_play_state['white']['time_taken_for_last_move'])
-        context.update_total_time('black', model.global_game_play_state['black']['time_taken_total'] )
-        context.update_total_time('white', model.global_game_play_state['white']['time_taken_total'] )
+            context.update_time('black', model.global_game_play_state['black']['time_taken_for_last_move'])
+            context.update_time('white', model.global_game_play_state['white']['time_taken_for_last_move'])
+            context.update_total_time('black', model.global_game_play_state['black']['time_taken_total'] )
+            context.update_total_time('white', model.global_game_play_state['white']['time_taken_total'] )
+    except RuntimeError:
+        print("RuntimeError from time_oscillator.")
+
 
 def start_time_oscillator(context):
     _thread.start_new_thread(time_oscillator, (context, ))
