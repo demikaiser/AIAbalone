@@ -52,6 +52,8 @@ global_game_play_state = {
     }
 }
 
+global_temporary_game_state_for_pause_and_resume = ''
+
 # Global game state representation (Standard Setup).
 # 1 is black, 2 is white, -9 is the non-use position.
 # WARNING: This convention should be strictly followed.
@@ -104,6 +106,17 @@ initial_game_board_state_belgian_daisy = [
     [ 1,  1,  0,  0,  0, -9, -9, -9, -9]
 ]
 
+initial_game_board_state_empty_for_reset = [
+    [-9, -9, -9, -9,  0,  0,  0,  0,  0],
+    [-9, -9, -9,  0,  0,  0,  0,  0,  0],
+    [-9, -9,  0,  0,  0,  0,  0,  0,  0],
+    [-9,  0,  0,  0,  0,  0,  0,  0,  0],
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0],
+    [ 0,  0,  0,  0,  0,  0,  0,  0, -9],
+    [ 0,  0,  0,  0,  0,  0,  0, -9, -9],
+    [ 0,  0,  0,  0,  0,  0, -9, -9, -9],
+    [ 0,  0,  0,  0,  0, -9, -9, -9, -9]
+]
 
 # Set global game configuration from gui.
 def set_global_game_configuration_from_gui(context):
@@ -154,6 +167,10 @@ def set_global_game_configuration_from_gui(context):
 
 # Start the game.
 def game_start(context):
+
+    # Setup the global game configuration to start the game.
+    set_global_game_configuration_from_gui(context)
+
     initial_configuration_for_black = global_game_configuration['black']['agent']
     initial_game_start_position = global_game_configuration['all']['initial_board_layout']
 
@@ -162,17 +179,19 @@ def game_start(context):
     global initial_game_board_state_german_daisy
     global initial_game_board_state_belgian_daisy
 
-    #sets starting position
+    # Set the starting position.
     if initial_game_start_position == "german_daisy":
-        global_game_board_state = initial_game_board_state_german_daisy
+        copy_all_state_coordinates(global_game_board_state, initial_game_board_state_german_daisy)
     elif initial_game_start_position == "belgian_daisy":
-        global_game_board_state = initial_game_board_state_belgian_daisy
+        copy_all_state_coordinates(global_game_board_state, initial_game_board_state_belgian_daisy)
     else:
-        global_game_board_state = initial_game_board_state_standard
+        copy_all_state_coordinates(global_game_board_state, initial_game_board_state_standard)
 
     context.populate_gui_coordinates()
     context.update_canvas()
+    gameboard.update_gui_game_panel(context)
 
+    # Kick off the first move.
     if initial_configuration_for_black == 'human':
         global_game_play_state['all']['game_state'] = 'started_B_Human'
         context.update_game_state('started_B_H')
@@ -185,12 +204,26 @@ def game_start(context):
 
 # Pause the game.
 def game_pause(context):
+    global global_temporary_game_state_for_pause_and_resume
+    global_temporary_game_state_for_pause_and_resume = global_game_play_state['all']['game_state']
     global_game_play_state['all']['game_state'] = 'paused'
     context.update_game_state('paused')
 
 # Resume the game.
 def game_resume(context):
-    pass
+    global global_temporary_game_state_for_pause_and_resume
+    global_game_play_state['all']['game_state'] = global_temporary_game_state_for_pause_and_resume
+
+    if global_game_play_state['all']['game_state'] == 'started_B_Human':
+        context.update_game_state('started_B_H')
+    if global_game_play_state['all']['game_state'] == 'started_B_Computer':
+        context.update_game_state('started_B_C')
+    if global_game_play_state['all']['game_state'] == 'started_W_Human':
+        context.update_game_state('started_W_H')
+    if global_game_play_state['all']['game_state'] == 'started_W_Computer':
+        context.update_game_state('started_W_C')
+
+    global_temporary_game_state_for_pause_and_resume = ''
 
 # Stop the game.
 def game_stop(context):
@@ -201,6 +234,25 @@ def game_stop(context):
 def game_reset(context):
     global_game_play_state['all']['game_state'] = 'stopped'
     context.update_game_state('stopped')
+
+    # Reset the board.
+    global global_game_board_state
+    global initial_game_board_state_empty_for_reset
+    copy_all_state_coordinates(global_game_board_state, initial_game_board_state_empty_for_reset)
+
+    # Reset the game play state.
+    global_game_play_state['black']['score'] = 0
+    global_game_play_state['black']['moves_taken'] = 0
+    global_game_play_state['black']['time_taken_for_last_move'] = 0
+    global_game_play_state['black']['time_taken_total'] = 0
+    global_game_play_state['white']['score'] = 0
+    global_game_play_state['white']['moves_taken'] = 0
+    global_game_play_state['white']['time_taken_for_last_move'] = 0
+    global_game_play_state['white']['time_taken_total'] = 0
+
+    # Update gui.
+    context.update_canvas()
+    context.show_game_board()
 
 # Update the state.
 # started_B_Human | started_B_Computer | started_W_Human | started_W_Computer | paused | stopped
@@ -293,6 +345,15 @@ def goal_test(context):
         messages.append("White won!")
         messages.append("Game stopped.")
         context.log(messages)
+
+
+# ================ ================ Utility Functions ================ ================
+
+# Copy all state coordinates to state representation A from state representation B.
+def copy_all_state_coordinates(state_representation_a, state_representation_b):
+    for i in range(9):
+        for j in range(9):
+            state_representation_a[i][j] = state_representation_b[i][j]
 
 
 

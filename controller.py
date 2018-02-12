@@ -57,11 +57,7 @@ def button_secret_callback(context):
 # Button callback function for "Game Start".
 def button_game_start_callback(context):
     context.log(["Game started."])
-
-    # Setup the global game configuration to start the game.
-    model.set_global_game_configuration_from_gui(context)
     model.game_start(context)
-    gameboard.update_gui_game_panel(context)
 
 # Button callback function for "Game Pause".
 def button_game_pause_callback(context):
