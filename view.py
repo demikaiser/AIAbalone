@@ -80,11 +80,13 @@ class GUI:
         # Set up the background.
         self.main_display_surface.fill(colors.BACKGROUND)
 
-        bg = pygame.image.load("dark_background.jpg")
+        bg = pygame.image.load("images/background.jpeg")
+        # Alternative background.
+        #bg = pygame.image.load("images/dark_background.jpg")
 
         # INSIDE OF THE GAME LOOP
         self.main_display_surface.blit(bg, (self.master_background_x, 0))
-        self.create_pieces_standard()
+
         self.populate_gui_coordinates()
 
         self.update_canvas()
@@ -651,13 +653,6 @@ class GUI:
     # ================ ================ Widgets (Thorpy) ================ ================
     # Initialize buttons.
     def create_buttons(self):
-        # Draw buttons background.
-        '''
-        pygame.draw.rect(self.main_display_surface,
-                         colors.NO_MARBLE_SPOT, (800, 0, 200, 800))
-        pygame.draw.rect(self.main_display_surface,
-                         colors.BACKGROUND, (1000, 0, 200, 800))
-        '''
         # Draw texts for teams.
         font = pygame.font.SysFont('Consolas', 20)
         text_for_black_team = font.render("Black Player", True, colors.ORANGE)

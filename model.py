@@ -56,6 +56,19 @@ global_game_play_state = {
 # 1 is black, 2 is white, -9 is the non-use position.
 # WARNING: This convention should be strictly followed.
 global_game_board_state = [
+    [-9, -9, -9, -9,  0,  0,  0,  0,  0],
+    [-9, -9, -9,  0,  0,  0,  0,  0,  0],
+    [-9, -9,  0,  0,  0,  0,  0,  0,  0],
+    [-9,  0,  0,  0,  0,  0,  0,  0,  0],
+    [ 0,  0,  0,  0,  0,  0,  0,  0,  0],
+    [ 0,  0,  0,  0,  0,  0,  0,  0, -9],
+    [ 0,  0,  0,  0,  0,  0,  0, -9, -9],
+    [ 0,  0,  0,  0,  0,  0, -9, -9, -9],
+    [ 0,  0,  0,  0,  0, -9, -9, -9, -9]
+]
+
+# Inital game board settings.
+initial_game_board_state_standard = [
     [-9, -9, -9, -9,  0,  0,  0,  1,  1],
     [-9, -9, -9,  0,  0,  0,  0,  1,  1],
     [-9, -9,  0,  0,  0,  0,  1,  1,  1],
@@ -67,6 +80,29 @@ global_game_board_state = [
     [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
 ]
 
+initial_game_board_state_german_daisy = [
+    [-9, -9, -9, -9,  0,  0,  1,  1,  0],
+    [-9, -9, -9,  0,  0,  1,  1,  1,  0],
+    [-9, -9,  2,  2,  0,  1,  1,  0,  0],
+    [-9,  2,  2,  2,  0,  0,  0,  0,  0],
+    [ 0,  2,  2,  0,  0,  0,  2,  2,  0],
+    [ 0,  0,  0,  0,  0,  2,  2,  2, -9],
+    [ 0,  0,  1,  1,  0,  2,  2, -9, -9],
+    [ 0,  1,  1,  1,  0,  0, -9, -9, -9],
+    [ 0,  1,  1,  0,  0, -9, -9, -9, -9]
+]
+
+initial_game_board_state_belgian_daisy = [
+    [-9, -9, -9, -9,  0,  0,  0,  1,  1],
+    [-9, -9, -9,  0,  0,  0,  1,  1,  1],
+    [-9, -9,  0,  0,  0,  0,  1,  1,  0],
+    [-9,  2,  2,  0,  0,  0,  0,  2,  2],
+    [ 2,  2,  2,  0,  0,  0,  2,  2,  2],
+    [ 2,  2,  0,  0,  0,  0,  2,  2, -9],
+    [ 0,  1,  1,  0,  0,  0,  0, -9, -9],
+    [ 1,  1,  1,  0,  0,  0, -9, -9, -9],
+    [ 1,  1,  0,  0,  0, -9, -9, -9, -9]
+]
 
 
 # Set global game configuration from gui.
@@ -108,13 +144,18 @@ def game_start(context):
     initial_configuration_for_black = global_game_configuration['black']['agent']
     initial_game_start_position = global_game_configuration['all']['initial_board_layout']
 
+    global global_game_board_state
+    global initial_game_board_state_standard
+    global initial_game_board_state_german_daisy
+    global initial_game_board_state_belgian_daisy
+
     #sets starting position
     if initial_game_start_position == "german_daisy":
-        context.create_pieces_german_daisy()
+        global_game_board_state = initial_game_board_state_german_daisy
     elif initial_game_start_position == "belgian_daisy":
-        context.create_pieces_belgian_daisy()
+        global_game_board_state = initial_game_board_state_belgian_daisy
     else:
-        context.create_pieces_standard()
+        global_game_board_state = initial_game_board_state_standard
 
     context.populate_gui_coordinates()
     context.update_canvas()
