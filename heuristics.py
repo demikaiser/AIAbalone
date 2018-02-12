@@ -10,7 +10,13 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
 
+# Example heuristic function.
+# Input: State Representation
+# Output: Evaluated Score (0 to 99)
+def evaluate_board_state_by_something(state_representation):
+    score = 0
 
+    return score
 
 
 

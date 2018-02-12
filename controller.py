@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import model
+import model, gameboard
 
 # ================ ================ Piece Controller ================ ================
 
@@ -50,8 +50,6 @@ def button_get_funk_callback(context):
 
 # Button callback function for "Secret".
 def button_secret_callback(context):
-    # DEBUG
-    print(model.global_game_board_state)
     context.bgm_instance.secret()
 
 # ================ ================ Game Controller ================ ================
@@ -63,6 +61,7 @@ def button_game_start_callback(context):
     # Setup the global game configuration to start the game.
     model.set_global_game_configuration_from_gui(context)
     model.game_start(context)
+    gameboard.update_gui_game_panel(context)
 
 # Button callback function for "Game Pause".
 def button_game_pause_callback(context):

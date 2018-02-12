@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import time
+import time, gameboard
 
 # Global game configuration object (Map).
 # This is a multi-layered object (like a JSON),
@@ -139,6 +139,19 @@ def set_global_game_configuration_from_gui(context):
     elif context.radio_belgian_daisy.get_value():
         global_game_configuration['all']['initial_board_layout'] = 'belgian_daisy'
 
+    # Game play configuration setup.
+    global_game_play_state['black']['score'] = 0
+    global_game_play_state['white']['score'] = 0
+
+    global_game_play_state['black']['moves_taken'] = 0
+    global_game_play_state['white']['moves_taken'] = 0
+
+    global_game_play_state['black']['time_taken_for_last_move'] = 0
+    global_game_play_state['white']['time_taken_for_last_move'] = 0
+
+    global_game_play_state['black']['time_taken_total'] = 0
+    global_game_play_state['white']['time_taken_total'] = 0
+
 # Start the game.
 def game_start(context):
     initial_configuration_for_black = global_game_configuration['black']['agent']
@@ -199,41 +212,73 @@ def update_turn_state(context):
             global_game_play_state['all']['game_state'] = 'started_W_Human'
             context.update_game_state('started_W_H')
 
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
         elif global_game_configuration['white']['agent'] == 'computer':
             global_game_play_state['all']['game_state'] = 'started_W_Computer'
             context.update_game_state('started_W_C')
+
             # Move by the artificial intelligence machine.
             messages = []
             messages.append("White Computer moved!")
             context.log(messages)
+
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
+            # AI finishes a turn.
             update_turn_state(context)
+
 
     elif global_game_play_state['all']['game_state'] == 'started_B_Computer':
         if global_game_configuration['white']['agent'] == 'human':
             global_game_play_state['all']['game_state'] = 'started_W_Human'
             context.update_game_state('started_W_H')
 
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
         elif global_game_configuration['white']['agent'] == 'computer':
             global_game_play_state['all']['game_state'] = 'started_W_Computer'
             context.update_game_state('started_W_C')
+
             # Move by the artificial intelligence machine.
             messages = []
             messages.append("White Computer moved!")
             context.log(messages)
+
+
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
+            # AI finishes a turn.
             update_turn_state(context)
+
 
     elif global_game_play_state['all']['game_state'] == 'started_W_Human':
         if global_game_configuration['black']['agent'] == 'human':
             global_game_play_state['all']['game_state'] = 'started_B_Human'
             context.update_game_state('started_B_H')
 
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
+
         elif global_game_configuration['black']['agent'] == 'computer':
             global_game_play_state['all']['game_state'] = 'started_B_Computer'
             context.update_game_state('started_B_C')
+
+
             # Move by the artificial intelligence machine.
             messages = []
             messages.append("Black Computer moved!")
             context.log(messages)
+
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
+            # AI finishes a turn.
             update_turn_state(context)
 
     elif global_game_play_state['all']['game_state'] == 'started_W_Computer':
@@ -241,14 +286,52 @@ def update_turn_state(context):
             global_game_play_state['all']['game_state'] = 'started_B_Human'
             context.update_game_state('started_B_H')
 
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
+
         elif global_game_configuration['black']['agent'] == 'computer':
             global_game_play_state['all']['game_state'] = 'started_B_Computer'
             context.update_game_state('started_B_C')
+
             # Move by the artificial intelligence machine.
             messages = []
             messages.append("Black Computer moved!")
             context.log(messages)
+
+            # Update gameboard after movement.
+            gameboard.update_gui_game_panel(context)
+
+            # AI finishes a turn.
             update_turn_state(context)
+
+# Goal test
+def goal_test(context):
+    if global_game_play_state['black']['score'] == 6:
+        # Update the global game state.
+        global_game_play_state['all']['game_state'] = 'stopped'
+
+        # Update the gui game state.
+        context.update_game_state('Stopped')
+
+        # Send win log message for white.
+        messages = []
+        messages.append("Black won!")
+        messages.append("Game stopped.")
+        context.log(messages)
+
+    elif global_game_play_state['white']['score'] == 6:
+        # Update the global game state.
+        global_game_play_state['all']['game_state'] = 'stopped'
+
+        # Update the gui game state.
+        context.update_game_state('Stopped')
+
+        # Send win log message for white.
+        messages = []
+        messages.append("White won!")
+        messages.append("Game stopped.")
+        context.log(messages)
 
 
 
