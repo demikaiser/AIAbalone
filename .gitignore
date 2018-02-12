@@ -10,3 +10,4 @@ __pycache__
 # Log files
 *.log
 logs/
+action_log/
