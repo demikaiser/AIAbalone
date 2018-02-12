@@ -11,6 +11,7 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 
 import logging
 import datetime
+import os
 
 """
 0. CALLER's responsibility to specify the log message content
@@ -23,7 +24,8 @@ USAGE:
 """
 # LOG_FORMAT = '%(asctime)s %(funcName)s %(levelname)s'
 # the location of logged files
-action_log = "logs/dumped_log_%s.log" % (str(datetime.datetime.now()).split('.')[0].replace(' ', '_').replace(':', '_'))
+log_dir = "action_log"
+action_log = log_dir + "/dumped_log_%s.log" % (str(datetime.datetime.now()).split('.')[0].replace(' ', '_').replace(':', '_'))
 # Logger names
 ERR_LOG = 'ERROR LOG'
 WRN_LOG = 'WARNING LOG'
@@ -31,6 +33,8 @@ INF_LOG = 'INFO LOG'
 
 
 def set_file(log_name, file_name, level=logging.WARNING):
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
     handler = logging.FileHandler(file_name, 'a')
     # handler.setFormatter(LOG_FORMAT)
     logger = logging.getLogger(log_name)

@@ -12,6 +12,7 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 import pygame, sys, math
 import controller
 import colors
+import logs
 import thorpy
 import bgm, model, rules, movement, gui_adapter
 from pygame.locals import *
@@ -495,6 +496,10 @@ class GUI:
         # Display messages in the message list.
         for m in message:
             text = str(m)
+            # print message to console
+            print(text)
+            # log same message to log file
+            logs.info_msg(text, level=10)
             text = self.font_text.render(text, True, colors.GREEN)
             self.main_display_surface.blit(text, (x_log, y_log))
             y_log += 20
@@ -838,7 +843,9 @@ class GUI:
             element.surface = self.main_display_surface
 
 
-
+if __name__ == '__main__':
+    view = GUI()
+    view.start_gui()
 
 
 
