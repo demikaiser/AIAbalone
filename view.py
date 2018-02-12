@@ -10,11 +10,9 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
 import pygame, sys, math
-import controller
-import colors
-import logs
-import thorpy
-import bgm, model, rules, movement, gui_adapter
+import controller, colors, thorpy
+import bgm, model, rules, movement, gui_adapter, timer, gamelogger, logs
+
 from pygame.locals import *
 
 class GUI:
@@ -62,8 +60,29 @@ class GUI:
     black_marble_img = pygame.image.load("images/black_marble_standard.png")
     white_marble_img = pygame.image.load("images/white_marble_standard.png")
 
+    # Singleton instance.
+    instance = None
+
+    # Singleton helper class.
+    class SingletonHelper:
+        def __call__(self, *args, **kw):
+            if GUI.instance is None:
+                object = GUI()
+                GUI.instance = object
+
+            return GUI.instance
+
+    # Instance getter variable.
+    getInstance = SingletonHelper()
+
     # Constructor.
     def __init__(self):
+        if not GUI.instance == None:
+            raise(RuntimeError, 'Only one instance of GUI object is allowed!')
+
+    # Start the GUI main loop.
+    def start_gui(self):
+
         pygame.init()
         pygame.font.init()
 
@@ -83,11 +102,13 @@ class GUI:
         # Set up the background.
         self.main_display_surface.fill(colors.BACKGROUND)
 
-        bg = pygame.image.load("dark_background.jpg")
+        bg = pygame.image.load("images/background.jpeg")
+        # Alternative background.
+        # bg = pygame.image.load("images/dark_background.jpg")
 
         # INSIDE OF THE GAME LOOP
         self.main_display_surface.blit(bg, (self.master_background_x, 0))
-        self.create_pieces_standard()
+
         self.populate_gui_coordinates()
 
         self.update_canvas()
@@ -96,14 +117,14 @@ class GUI:
 
         self.show_game_board()
 
-    # ================ ================ Main GUI Loop for Pygame ================ ================
-    # Start the GUI main loop.
-    def start_gui(self):
+        # Start the time oscillator.
+        timer.start_time_oscillator(self)
 
         # Start initial BGM.
         self.bgm_instance = bgm.BGM()
         #self.bgm_instance.initial_play() # ENABLE THIS FOR THE PRODUCTION.
 
+        # ================ ================ Main GUI Loop for Pygame ================ ================
         # Event loop to be examined for an user action.
         while True:
             for event in pygame.event.get():
@@ -128,26 +149,27 @@ class GUI:
 
         # Mouse button click works according to the state status.
         # started_B_Human | started_B_Computer | started_W_Human | started_W_Computer | paused | stopped
-        if state == 'started_B_Human':
-            self.process_mouse_input(pos, 'started_B_Human')
-        elif state == 'started_B_Computer':
-            messages = []
-            messages.append("Black Computer is thinking...")
-            self.log(messages)
-        elif state == 'started_W_Human':
-            self.process_mouse_input(pos, 'started_W_Human')
-        elif state == 'started_W_Computer':
-            messages = []
-            messages.append("White Computer is thinking...")
-            self.log(messages)
-        elif state == 'paused':
-            messages = []
-            messages.append("Game is paused.")
-            self.log(messages)
-        elif state == 'stopped':
-            messages = []
-            messages.append("Game is stopped.")
-            self.log(messages)
+        if pos[0] < 800 and pos[1] < 800:    # Only process inside of the borad.
+            if state == 'started_B_Human':
+                self.process_mouse_input(pos, 'started_B_Human')
+            elif state == 'started_B_Computer':
+                messages = []
+                messages.append("Black Computer is thinking...")
+                self.log(messages)
+            elif state == 'started_W_Human':
+                self.process_mouse_input(pos, 'started_W_Human')
+            elif state == 'started_W_Computer':
+                messages = []
+                messages.append("White Computer is thinking...")
+                self.log(messages)
+            elif state == 'paused':
+                messages = []
+                messages.append("Game is paused.")
+                self.log(messages)
+            elif state == 'stopped':
+                messages = []
+                messages.append("Game is stopped.")
+                self.log(messages)
 
     def process_mouse_input(self, pos, state):
         # Process mouse input to get an index of clicked circle.
@@ -232,12 +254,8 @@ class GUI:
         if rules.apply_rules_for_move_one_piece(stored_piece1, clicked_info):
 
             # Move the piece.
-            movement.move_one_piece(stored_piece1[0], stored_piece1[1], clicked_info[0], clicked_info[1])
-
-            # Show the move log.
-            messages = []
-            messages.append("move_one_piece!")
-            self.log(messages)
+            movement.move_one_piece(stored_piece1[0], stored_piece1[1], clicked_info[0], clicked_info[1],
+                                    self)
 
             # Prolog.
             self.update_canvas()
@@ -257,12 +275,8 @@ class GUI:
 
             # Move the pieces.
             movement.move_two_pieces(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
-                                     stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3])
-
-            # Show the move log.
-            messages = []
-            messages.append("move_two_pieces!")
-            self.log(messages)
+                                     stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3],
+                                     self)
 
             # Prolog.
             self.update_canvas()
@@ -283,12 +297,8 @@ class GUI:
             # Move the pieces.
             movement.move_three_pieces(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
                                        stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3],
-                                       stored_piece3[0], stored_piece3[1], where_to_move[4], where_to_move[5])
-
-            # Show the move log.
-            messages = []
-            messages.append("move_three_pieces!")
-            self.log(messages)
+                                       stored_piece3[0], stored_piece3[1], where_to_move[4], where_to_move[5],
+                                       self)
 
             # Prolog.
             self.update_canvas()
@@ -309,12 +319,8 @@ class GUI:
 
             # Move the pieces.
             movement.move_2_to_1_sumito(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
-                                        stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3])
-
-            # Show the move log.
-            messages = []
-            messages.append("move_2_to_1_sumito!")
-            self.log(messages)
+                                        stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3],
+                                        self)
 
             # Prolog.
             self.update_canvas()
@@ -337,12 +343,9 @@ class GUI:
             # Move the pieces.
             movement.move_3_to_1_or_3_to_2_sumito(stored_piece1[0], stored_piece1[1], where_to_move[0], where_to_move[1],
                                                   stored_piece2[0], stored_piece2[1], where_to_move[2], where_to_move[3],
-                                                  stored_piece3[0], stored_piece3[1], where_to_move[4], where_to_move[5])
+                                                  stored_piece3[0], stored_piece3[1], where_to_move[4], where_to_move[5],
+                                                  self)
 
-            # Show the move log.
-            messages = []
-            messages.append("move_3_to_1_or_3_to_2_sumito!")
-            self.log(messages)
 
             # Prolog.
             self.update_canvas()
@@ -488,6 +491,11 @@ class GUI:
 
     # Print text to the log console.
     def log(self, message):
+
+        # TEMPORARY logging demo.
+        #TODO
+        gamelogger.write_to_the_log_file(message)
+
         # Draw console background to erase the previous messages.
         self.log_clear()
         x_log = 20
@@ -561,11 +569,11 @@ class GUI:
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 640, 60, 50, 20))
+                             (self.master_board_start_x + 640, 60, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 650, 60))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 840, 60, 50, 20))
+                             (self.master_board_start_x + 840, 60, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 850, 60))
 
     # Update the time.
@@ -577,11 +585,11 @@ class GUI:
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 640, 90, 50, 20))
+                             (self.master_board_start_x + 640, 90, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 650, 90))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 840, 90, 50, 20))
+                             (self.master_board_start_x + 840, 90, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 850, 90))
 
     # Update the score.
@@ -593,11 +601,11 @@ class GUI:
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 640, 120, 50, 20))
+                             (self.master_board_start_x + 640, 120, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 650, 120))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 840, 120, 50, 20))
+                             (self.master_board_start_x + 840, 120, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 850, 120))
 
     # Update the moves taken.
@@ -609,11 +617,11 @@ class GUI:
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 640, 150, 50, 20))
+                             (self.master_board_start_x + 640, 150, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 650, 150))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 840, 150, 50, 20))
+                             (self.master_board_start_x + 840, 150, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 850, 150))
 
     # Update the game state.
@@ -655,13 +663,6 @@ class GUI:
     # ================ ================ Widgets (Thorpy) ================ ================
     # Initialize buttons.
     def create_buttons(self):
-        # Draw buttons background.
-        '''
-        pygame.draw.rect(self.main_display_surface,
-                         colors.NO_MARBLE_SPOT, (800, 0, 200, 800))
-        pygame.draw.rect(self.main_display_surface,
-                         colors.BACKGROUND, (1000, 0, 200, 800))
-        '''
         # Draw texts for teams.
         font = pygame.font.SysFont('Consolas', 20)
         text_for_black_team = font.render("Black Player", True, colors.ORANGE)
