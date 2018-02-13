@@ -1,0 +1,15 @@
+1. Python 3.6
+Go to the Python official homepage (https://www.python.org/downloads),
+and install the Python implementation for your OS.
+You need to add the python path to the environment variable to be able to
+call Python interpreter from anywhere if the system doesn't do it automatically.
+
+2. Pygame 3rd Party Library
+Use pip3 to install Pygame library: Type "pip3 install pygame".
+
+3. Thorpy 3rd Party Library
+Use pip3 to install Thorpy library: Type "pip3 install thorpy".
+
+4. Execute the ProjectAbalone - Sandwitch
+Open a terminal (a command line prompt for Windows) and change to the project folder.
+Type: "python main.py" or "python3 main.py" (For some OSs like Apple OS X)
