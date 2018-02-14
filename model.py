@@ -168,6 +168,15 @@ def set_global_game_configuration_from_gui(context):
 # Start the game.
 def game_start(context):
 
+    # Start button is only enabled when the game status is "stopped".
+    if global_game_play_state['all']['game_state'] != 'stopped':
+        messages = []
+        messages.append("You can only start the game when the game is stopped.")
+        context.log(messages)
+        return
+
+
+
     # Setup the global game configuration to start the game.
     set_global_game_configuration_from_gui(context)
 
