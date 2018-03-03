@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import time, gameboard, aimachine
+import time, gameboard, ai_machine
 
 # Global game configuration object (Map).
 # This is a multi-layered object (like a JSON),
@@ -175,8 +175,6 @@ def game_start(context):
         context.log(messages)
         return
 
-
-
     # Setup the global game configuration to start the game.
     set_global_game_configuration_from_gui(context)
 
@@ -209,7 +207,7 @@ def game_start(context):
         context.update_game_state('started_B_C')
 
         # Start moving by the artificial intelligence machine.
-        aimachine.make_movement(context, 'black')
+        ai_machine.make_movement(context, 'black')
 
 # Pause the game.
 def game_pause(context):
@@ -287,7 +285,7 @@ def update_turn_state(context):
             context.update_game_state('started_W_C')
 
             # Move by the artificial intelligence machine.
-            aimachine.make_movement(context, 'white')
+            ai_machine.make_movement(context, 'white')
 
     elif global_game_play_state['all']['game_state'] == 'started_B_Computer':
         if global_game_configuration['white']['agent'] == 'human':
@@ -302,7 +300,7 @@ def update_turn_state(context):
             context.update_game_state('started_W_C')
 
             # Move by the artificial intelligence machine.
-            aimachine.make_movement(context, 'white')
+            ai_machine.make_movement(context, 'white')
 
     elif global_game_play_state['all']['game_state'] == 'started_W_Human':
         if global_game_configuration['black']['agent'] == 'human':
@@ -318,7 +316,7 @@ def update_turn_state(context):
             context.update_game_state('started_B_C')
 
             # Move by the artificial intelligence machine.
-            aimachine.make_movement(context, 'black')
+            ai_machine.make_movement(context, 'black')
 
     elif global_game_play_state['all']['game_state'] == 'started_W_Computer':
         if global_game_configuration['black']['agent'] == 'human':
@@ -333,7 +331,7 @@ def update_turn_state(context):
             context.update_game_state('started_B_C')
 
             # Move by the artificial intelligence machine.
-            aimachine.make_movement(context, 'black')
+            ai_machine.make_movement(context, 'black')
 
 # Goal test
 def goal_test(context):
