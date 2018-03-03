@@ -291,8 +291,6 @@ def write_a_file_all_possible_board_states(output_list_final, name_for_output_fi
     file = open(complete_path, "w")
     contents_to_write = ""
 
-    print(output_list_final)
-
     # Process the move list and store it to a string.
     for output in output_list_final:
         temp_string = ""
