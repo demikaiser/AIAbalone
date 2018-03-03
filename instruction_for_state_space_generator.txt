@@ -1,0 +1,15 @@
+1. All test input files MUST be in the "ssg_tester_input" folder.
+The program will read all files in the folder and generate output.
+Put all test input files to the "ssg_tester_input" folder.
+
+2. All test input files MUST follow the EXACT format from the instruction,
+which is "Test<#>.input". e.g. Test1.input, Test03.input, Test44.input
+It is CASE-SENSITIVE, so please follow the EXACT format.
+
+3. Execute the "__main__" in the file "state_space_generator.py".
+You can do it fron an IDE, or if you want to use the terminal (CMD in Windows),
+Type: "python state_space_generator.py" or "python3 state_space_generator.py"
+(For some OSs like Apple OS X)
+
+4. All output files will be generated in the "ssg_tester_output" folder.
+
