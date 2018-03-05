@@ -13,7 +13,9 @@ import _thread
 import time
 import model
 
+
 def time_oscillator(context):
+    # beginning = time.time()
     try:
         while True:
             time.sleep(1)
@@ -38,10 +40,11 @@ def time_oscillator(context):
         print("RuntimeError from time_oscillator.")
 
 
-def start_time_oscillator(context):
-    _thread.start_new_thread(time_oscillator, (context, ))
+def start_time_oscillator(context, debug=0):
+    if debug == 0:
+        _thread.start_new_thread(time_oscillator, (context, ))
 
 
-
-
-
+if __name__ == "__main__":
+    # start_time_oscillator(timer, 1)
+    print("testing timer");
