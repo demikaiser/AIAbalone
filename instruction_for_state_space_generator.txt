@@ -1,3 +1,7 @@
+0. See the instruction_for_execution.txt file and satisfy
+all dependencies for Python 3. It needs to execute this
+state_space_generator.py too.
+
 1. All test input files MUST be in the "ssg_tester_input" folder.
 The program will read all files in the folder and generate output.
 Put all test input files to the "ssg_tester_input" folder.

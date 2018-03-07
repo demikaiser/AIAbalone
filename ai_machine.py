@@ -17,13 +17,13 @@ def make_movement(context, color):
 
     # Different AI strategies can be assigned for some experiments.
     if color == 'black':
-        _thread.start_new_thread(ai_calculation_thread_option_1, (context, color, ))
+        _thread.start_new_thread(ai_calculation_thread, (context, color, ))
     elif color == 'white':
-        _thread.start_new_thread(ai_calculation_thread_option_1, (context, color, ))
+        _thread.start_new_thread(ai_calculation_thread, (context, color, ))
 
 
-# Calculation thread for artificial intelligence (option 1).
-def ai_calculation_thread_option_1(context, color):
+# Calculation thread for artificial intelligence.
+def ai_calculation_thread(context, color):
     try:
         # Check the side.
         if color == 'black':
@@ -86,12 +86,3 @@ def ai_calculation_thread_option_1(context, color):
         print("RuntimeError from ai_calculation_thread.")
 
 
-
-# Calculation thread for artificial intelligence (option 2).
-def ai_calculation_thread_option_2(context, color):
-    pass
-
-
-# Calculation thread for artificial intelligence (option 3).
-def ai_calculation_thread_option_3(context, color):
-    pass
