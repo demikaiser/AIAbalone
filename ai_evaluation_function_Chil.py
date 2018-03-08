@@ -30,7 +30,15 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 #
 # Input: State representation (Game board configuration).
 # Output: Total evaluated score (Integer).
-def get_evaluation_score(state):
+def get_evaluation_score(player, state):
+    # Check the side.
+    if player == 'black':
+        ally = 1
+        opponent = 2
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+
     # Initialize the score.
     score = 0
 
