@@ -9,6 +9,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
+import random
+
 # <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
 #
 # The evaluation function MUST have a very strict format, the signature of the pseudocode:
@@ -30,13 +32,20 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 #
 # Input: State representation (Game board configuration).
 # Output: Total evaluated score (Integer).
-def get_evaluation_score(state):
+def get_evaluation_score(player, state):
+    # Check the side.
+    if player == 'black':
+        ally = 1
+        opponent = 2
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+
     # Initialize the score.
     score = 0
 
     #TODO: Write your evaluation function(s) here.
-
-
+    score = random.randint(0, 100)
 
     # Return the score evaluated.
     return score
