@@ -84,8 +84,10 @@ def one_state(one_line):
 """
 
 
-# black_remain indicates how many losable pieces for black side(MAX player) remains, initial state value: 6, losing state value: 0
-# white_remain indicates how many losable pieces for white side(MIN player) remains, initial state value: 6, losing state value: 0
+# black_remain indicates how many losable pieces for black side(MAX player) remains,
+# initial state value: 6, losing state value: 0
+# white_remain indicates how many losable pieces for white side(MIN player) remains,
+# initial state value: 6, losing state value: 0
 def evaluate_pieces(current_state):
     black_remain = count_marbles(current_state, 'b') - 8
     white_remain = count_marbles(current_state, 'w') - 8
@@ -108,15 +110,64 @@ def evaluate_position(current_state, importance_ratio=0.5):
             blacks.append(marble)
         if 'w' in marble:
             whites.append(marble)
-    return determine_cluster_state() * importance_ratio + determine_center_state() * (1 - importance_ratio)
+    return determine_cluster_state(blacks, whites) * importance_ratio \
+        + determine_center_state(blacks, whites, False) * (1 - importance_ratio)
 
 
-def determine_cluster_state():
-    return 0.5
+# finds out how does the state look for each side
+# the more pieces are connected together the better
+# if one side's pieces are split up, this side will have low value
+def determine_cluster_state(blacks, whites):
+    b_value = 1
+    w_value = 1
+    return b_value/(b_value + w_value)
 
 
-def determine_center_state():
-    return 0.5
+# finds out how close the pieces are to the center
+def determine_center_state(blacks, whites, calculating_average_value=False):
+    # calculate black side
+    b_value = 0
+    b_num = 0
+    for p in blacks:
+        b_num += 1
+        b1 = ord(p[0]) - ord('E')
+        b2 = int(p[1]) - 5
+        # if the marbles locate on the outer ring, plus 0
+        if abs(b1) == 4 or abs(b2) == 4 or abs(b1 - b2) == 4:
+            pass
+        # if the marbles locate on 2nd outer ring, plus 1
+        elif abs(b1) == 3 or abs(b2) == 3 or abs(b1 - b2) == 3:
+            b_value += 1
+        elif abs(b1) == 2 or abs(b2) == 2 or abs(b1 - b2) == 2:
+            b_value += 2
+        elif abs(b1) == 1 or abs(b2) == 1 or abs(b1 - b2) == 1:
+            b_value += 3
+        else:  # if no conditions have made, the marble sits on center
+            b_value += 4
+    # calculate white side
+    w_value = 0
+    w_num = 0
+    for p in whites:
+        w_num += 1
+        w1 = abs(ord(p[0]) - ord('E'))
+        w2 = abs(int(p[1]) - 5)
+        if abs(w1) == 4 or abs(w2) == 4 or abs(w1 - w2) == 4:
+            pass
+        elif abs(w1) == 3 or abs(w2) == 3 or abs(w1 - w2) == 3:
+            w_value += 1
+        elif abs(w1) == 2 or abs(w2) == 2 or abs(w1 - w2) == 2:
+            w_value += 2
+        elif abs(w1) == 1 or abs(w2) == 1 or abs(w1 - w2) == 1:
+            w_value += 3
+        else:
+            w_value += 4
+
+    # decide if the final value is calculated based on the average value of each piece? or the total value
+    if calculating_average_value:
+        b_value /= b_num
+        w_value /= w_num
+    print("b values: %s ; w values: %s" % (b_value, w_value))
+    return b_value/(b_value + w_value)
 
 
 # manually debug mode: put the testing board under this directory and test with file name Test.board
