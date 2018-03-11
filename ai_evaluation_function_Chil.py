@@ -46,7 +46,7 @@ def get_evaluation_score(player, state, piece_weight=0.5):
     position_heuristics = evaluate_position(state)
     # if any side has lost 6 pieces
     if (piece_heuristics == 1) or (piece_heuristics == 0):
-        return 1
+        return piece_heuristics
     # if no side has lost 6 pieces yet
     else:
         return piece_heuristics * piece_weight + position_heuristics * (1 - piece_weight)
@@ -166,7 +166,7 @@ def determine_center_state(blacks, whites, calculating_average_value=False):
     if calculating_average_value:
         b_value /= b_num
         w_value /= w_num
-    print("b values: %s ; w values: %s" % (b_value, w_value))
+    # print("b values: %s ; w values: %s" % (b_value, w_value))
     return b_value/(b_value + w_value)
 
 
