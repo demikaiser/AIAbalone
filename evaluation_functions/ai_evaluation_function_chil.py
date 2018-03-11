@@ -14,11 +14,12 @@ import os
 
 # the total evaluation function
 # PARAMS:
-#     current_state: matching Chi-En's *.board file, one line only
+#     player: unused param to match function signature
+#     current_state(board): matching Chi-En's *.board file, one line only (Case-sensitive, lower case for marble color, upper case for position)
 #     piece_weight: how important are the number of piece on board, default 0.5 --> 50% of the decision is based on the piece number
 # RETURN:
-#     the evaluated position value, range [0, 1], 1 means winning state, 0 means losing state
-def ai_evaluate_state(current_state, piece_weight=0.5):
+#     the evaluated position value, range [0, 1], 1 means winning state, 0 means losing state, 0.5 means even situation
+def ai_evaluate_state(player, current_state, piece_weight=0.5):
     piece_heuristics = evaluate_pieces(current_state)
     position_heuristics = evaluate_position(current_state)
     # if any side has lost 6 pieces
@@ -37,10 +38,35 @@ def evaluate_pieces(current_state):
     return black_remain/(black_remain+white_remain)
 
 
-def evaluate_position(current_state):
+# evaluates the position of current state
+# return range (0, 1), 0.5 means symmetrical,
+# closer to one means more centered and grouped, closer to 0 means close to edge and split
+# PARAM:
+#   current_state: the board state
+#   importance_ratio: default 0.5, how important is the cluster state to the center state
+#   (if it is more important for the marbles to gather together, raise the ratio, otherwise lower the ratio)
+def evaluate_position(current_state, importance_ratio=0.5):
+    blacks = []
+    whites = []
+    # split the marbles into each side's list
+    for marble in current_state:
+        if 'b' in marble:
+            blacks.append(marble)
+        if 'w' in marble:
+            whites.append(marble)
+    return determine_cluster_state() * importance_ratio + determine_center_state() * (1 - importance_ratio)
+
+
+def determine_cluster_state():
     return 0.5
 
 
+def determine_center_state():
+    return 0.5
+
+
+# count the marbles of given color
+# PRE: color has to be 'b' for black or 'w' for white
 def count_marbles(state, color):
     num_marble = 0
     for marble in state:
@@ -49,6 +75,9 @@ def count_marbles(state, color):
     return num_marble
 
 
+# separate state of one line into a list of marbles representing the state
+# PARAM: one_line - one line representing current state
+# RETURN: a list of marbles representing current state
 def one_state(one_line):
     state = one_line.split(",")
     return state
@@ -67,7 +96,7 @@ if __name__ == "__main__":
         content = [x.strip() for x in content]
         for line in content:
             print(line)
-            print(ai_evaluate_state(one_state(line)))
+            print(ai_evaluate_state('', one_state(line)))
 
     except FileNotFoundError:
         print("test file not found")
