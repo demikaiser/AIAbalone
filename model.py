@@ -38,13 +38,15 @@ global_game_play_state = {
         'score': 0,
         'moves_taken': 0,
         'time_taken_for_last_move': 0,
-        'time_taken_total': 0
+        'time_taken_total': 0,
+        'best_next_move_and_state': [[0], [1]]
     },
     'white': {
         'score': 0,
         'moves_taken': 0,
         'time_taken_for_last_move': 0,
-        'time_taken_total': 0
+        'time_taken_total': 0,
+        'best_next_move_and_state': [[0], [1]]
     },
     'all': {
         # started_B_Human | started_B_Computer | started_W_Human | started_W_Computer | paused | stopped
@@ -272,6 +274,16 @@ def game_reset(context):
 # Update the state.
 # started_B_Human | started_B_Computer | started_W_Human | started_W_Computer | paused | stopped
 def update_turn_state(context):
+
+    # Reset the time first when the turn finishes.
+    gameboard.reset_current_timer()
+
+    # Perform the goal test.
+    goal_test(context)
+
+    # Update gameboard after movement.
+    gameboard.update_gui_game_panel(context)
+
     if global_game_play_state['all']['game_state'] == 'started_B_Human':
         if global_game_configuration['white']['agent'] == 'human':
             global_game_play_state['all']['game_state'] = 'started_W_Human'

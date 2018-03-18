@@ -9,8 +9,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import time, _thread, random
-import gameboard, model, rules, movement
+import time, _thread, copy
+import gameboard, model, ai_search
 
 # Main function that actually makes movement.
 def make_movement(context, color):
@@ -25,53 +25,39 @@ def make_movement(context, color):
 # Calculation thread for artificial intelligence.
 def ai_calculation_thread(context, color):
     try:
-        # Check the side.
-        if color == 'black':
-            ally = 1
-            opponent = 2
-        elif color == 'white':
-            ally = 2
-            opponent = 1
+        # ================ ================ An Empty State Initialization ================ ================
 
-        # TEMPORARY FUNCTIONALITY (DELETE THIS LATER).
-        # Currently it moves just one piece randomly.
-        ally_pieces_locations = []
+        new_state = [
+            [-9, -9, -9, -9,  0,  0,  0,  0,  0],
+            [-9, -9, -9,  0,  0,  0,  0,  0,  0],
+            [-9, -9,  0,  0,  0,  0,  0,  0,  0],
+            [-9,  0,  0,  0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0,  0,  0, -9],
+            [ 0,  0,  0,  0,  0,  0,  0, -9, -9],
+            [ 0,  0,  0,  0,  0,  0, -9, -9, -9],
+            [ 0,  0,  0,  0,  0, -9, -9, -9, -9]
+        ]
 
-        for j in range(9):
-            for i in range(9):
-                if model.global_game_board_state[i][j] == ally:
-                    ally_pieces_locations.append((i, j))
+        # ================ ================ AI Search to Get Next Move & State ================ ================
+        new_move_and_state = ai_search.get_next_move_and_state_from_ai_search(color,
+                                                                              model.global_game_board_state,
+                                                                              model.global_game_play_state[color]['moves_taken'])
+        new_move = new_move_and_state[0]
+        new_state = new_move_and_state[1]
 
-        move_candidates = []
-        for location in ally_pieces_locations:
-            possible_moves = rules.generate_all_possible_legal_moves_for_one_piece(location[0], location[1])
-            for move in possible_moves:
-                move_candidates.append((location[0], location[1], move[0], move[1]))
+        # ================ ================ Print & Log Movement ================ ================
+        print_and_log_move_tuple(context, color, new_move)
 
-        random_integer = random.randint(-1, len(move_candidates) - 1)
-        movement.move_one_piece(move_candidates[random_integer][0],
-                                move_candidates[random_integer][1],
-                                move_candidates[random_integer][2],
-                                move_candidates[random_integer][3],
-                                context)
+        # ================ ================ Update the Global State ================ ================
+        model.global_game_board_state = copy.deepcopy(new_state)
 
-
-        # Generate all possible moves.
-        #TODO
-
-
-        # Evaluate moves generated.
-        #TODO
-
-
-        # Choose the most strong move for winning (Goal State).
-        #TODO
-
-
-        # Make an actual move for the game.
-        #TODO
-
-
+        # Increase the score and taken moves for each side.
+        gameboard.update_game_score()
+        if 'black' == color:
+            gameboard.update_moves_taken_for('black')
+        elif 'white' == color:
+            gameboard.update_moves_taken_for('white')
 
         # ================ ================ Prolog for GUI ================ ================
         # Update the game graphic
@@ -85,4 +71,42 @@ def ai_calculation_thread(context, color):
     except RuntimeError:
         print("RuntimeError from ai_calculation_thread.")
 
+
+# Print and log the movement of AI.
+def print_and_log_move_tuple(context, color, move_tuple):
+
+    length_of_move_tuple = len(move_tuple)
+    messages = []
+
+    if 4 == length_of_move_tuple:
+        if color == 'black':
+            messages.append("Black AI made movement as the following:")
+        elif color == 'white':
+            messages.append("White AI made movement as the following:")
+        messages.append("From : (" + str(move_tuple[0]) + "," + str(move_tuple[1]) + ")")
+        messages.append("To   : (" + str(move_tuple[2]) + "," + str(move_tuple[3]) + ")")
+
+    elif 8 == length_of_move_tuple:
+        if color == 'black':
+            messages.append("Black AI made movement as the following:")
+        elif color == 'white':
+            messages.append("White AI made movement as the following:")
+        messages.append("From : (" + str(move_tuple[0]) + "," + str(move_tuple[1]) + ")"
+                        + " " + "(" + str(move_tuple[2]) + "," + str(move_tuple[3]) + ")")
+        messages.append("To   : (" + str(move_tuple[4]) + "," + str(move_tuple[5]) + ")"
+                        + " " + "(" + str(move_tuple[6]) + "," + str(move_tuple[7]) + ")")
+
+    elif 12 == length_of_move_tuple:
+        if color == 'black':
+            messages.append("Black AI made movement as the following:")
+        elif color == 'white':
+            messages.append("White AI made movement as the following:")
+        messages.append("From : (" + str(move_tuple[0]) + "," + str(move_tuple[1]) + ")"
+                        + " " + "(" + str(move_tuple[2]) + "," + str(move_tuple[3]) + ")"
+                        + " " + "(" + str(move_tuple[4]) + "," + str(move_tuple[5]) + ")")
+        messages.append("To   : (" + str(move_tuple[6]) + "," + str(move_tuple[7]) + ")"
+                        + " " + "(" + str(move_tuple[8]) + "," + str(move_tuple[9]) + ")"
+                        + " " + "(" + str(move_tuple[10]) + "," + str(move_tuple[11]) + ")")
+
+    context.log(messages)
 
