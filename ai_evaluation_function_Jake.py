@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import random
+import _ai_evaluation_function
 
 # <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
 #
@@ -42,11 +42,15 @@ def get_evaluation_score(player, state):
         opponent = 1
 
     # Initialize the score.
-    score = 0
+
+    #score = 0
+    score = _ai_evaluation_function.get_evaluation_score(player, state)
 
     #TODO: Write your evaluation function(s) here.
-    score = random.randint(0, 100)
+    # BRAHBRAHBRAH
 
     # Return the score evaluated.
     return score
+
+
 

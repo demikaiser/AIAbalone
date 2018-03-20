@@ -118,8 +118,9 @@ class GUI:
 
         self.show_game_board()
 
-        # Start the time oscillator.
+        # Start the time oscillator and gui updater.
         timer.start_time_oscillator(self)
+        timer.start_gui_updater_with_time_start_time_oscillator(self)
 
         # Start initial BGM.
         self.bgm_instance = bgm.BGM()
@@ -563,7 +564,7 @@ class GUI:
     def update_time(self, player, time):
         font_text_time = pygame.font.SysFont('Consolas', 18)
 
-        text = str(time)
+        text = str('{0: >#5.1f}'. format(float(time)))
         text = font_text_time.render(text, True, colors.ORANGE)
 
         if player == 'black':
@@ -575,11 +576,11 @@ class GUI:
                              (self.master_board_start_x + 840, 60, 60, 20))
             self.main_display_surface.blit(text, (self.master_board_start_x + 850, 60))
 
-    # Update the time.
+    # Update the total time.
     def update_total_time(self, player, time):
         font_text_total_time = pygame.font.SysFont('Consolas', 18)
 
-        text = str(time)
+        text = str('{0: >#5.1f}'. format(float(time)))
         text = font_text_total_time.render(text, True, colors.ORANGE)
 
         if player == 'black':
@@ -688,12 +689,11 @@ class GUI:
                                                              first_value=radios_for_agent_selection_black[0],
                                                              always_value=True)
 
-
         label_for_move_limit_black = thorpy.make_text("Move Limitation", 16, colors.BROWN)
-        self.slider_for_move_limit_black = thorpy.SliderX.make(140, (0, 80), "", type_=int, initial_value=0)
+        self.slider_for_move_limit_black = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=100)
 
         label_for_time_limit_black = thorpy.make_text("Time Limitation", 16, colors.BROWN)
-        self.slider_for_time_limit_black = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=0)
+        self.slider_for_time_limit_black = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=5)
 
         box_black = thorpy.Box.make(elements=[
             button_step_back_black,
@@ -725,10 +725,10 @@ class GUI:
                                                              always_value=True)
 
         label_for_move_limit_white = thorpy.make_text("Move Limitation", 16, colors.BROWN)
-        self.slider_for_move_limit_white = thorpy.SliderX.make(140, (0, 80), "", type_=int, initial_value=0)
+        self.slider_for_move_limit_white = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=100)
 
         label_for_time_limit_white = thorpy.make_text("Time Limitation", 16, colors.BROWN)
-        self.slider_for_time_limit_white = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=0)
+        self.slider_for_time_limit_white = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=5)
 
         box_white = thorpy.Box.make(elements=[
             button_step_back_white,
