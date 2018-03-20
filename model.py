@@ -373,8 +373,26 @@ def goal_test(context):
         messages.append("Game stopped.")
         context.log(messages)
 
+    elif global_game_play_state['black']['moves_taken'] - 1 \
+        == global_game_configuration['black']['move_limitation'] \
+        or \
+        global_game_play_state['white']['moves_taken'] \
+        == global_game_configuration['white']['move_limitation']:
 
-# ================ ================ Utility Functions ================ ================
+        # Update the global game state.
+        global_game_play_state['all']['game_state'] = 'stopped'
+
+        # Update the gui game state.
+        context.update_game_state('Stopped')
+
+        # Send win log message for both.
+        messages = []
+        messages.append("Draw! (Move Limits Exceeded)")
+        messages.append("Game stopped.")
+        context.log(messages)
+
+
+            # ================ ================ Utility Functions ================ ================
 
 # Copy all state coordinates to state representation A from state representation B.
 def copy_all_state_coordinates(state_representation_a, state_representation_b):
