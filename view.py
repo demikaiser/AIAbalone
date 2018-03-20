@@ -103,12 +103,12 @@ class GUI:
         # Set up the background.
         self.main_display_surface.fill(colors.BACKGROUND)
 
-        bg = pygame.image.load("images/background.jpeg")
+        # bg = pygame.image.load("images/background.jpeg")
         # Alternative background.
         # bg = pygame.image.load("images/dark_background.jpg")
 
         # INSIDE OF THE GAME LOOP.
-        self.main_display_surface.blit(bg, (self.master_background_x, 0))
+        # self.main_display_surface.blit(bg, (self.master_background_x, 0))
 
         self.populate_gui_coordinates()
 
@@ -436,7 +436,7 @@ class GUI:
                 # Draw background.
                 if self.COORDINATES_CARTESIAN[coordinates_increment][5] == 0:
                     pygame.draw.circle(self.main_display_surface,
-                                       colors.COLOR_FOR_PIECE_BACKGROUND_ROW[row],
+                                       colors.COLOR_FOR_PIECE_BACKGROUND, # use this for rainbox colors COLOR_FOR_PIECE_BACKGROUND_ROW[row],
                                        (row * distance_between_elements + x_beginning,
                                         column_increment * distance_between_elements),
                                        radius, 0)
