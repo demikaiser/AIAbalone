@@ -515,7 +515,7 @@ class GUI:
         log_height = 200
         # Draw console background to erase the previous messages.
         pygame.draw.rect(self.main_display_surface,
-                         colors.BLACK, (0, self.master_window_height - log_height,
+                         colors.LOG_BACKGROUND, (0, self.master_window_height - log_height,
                                         self.master_window_width - 400, log_height))
 
     # ================ ================ Game Board ================ ================
