@@ -30,7 +30,15 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 #
 # Input: State representation (Game board configuration).
 # Output: Total evaluated score (Integer).
+
+
 def get_evaluation_score(player, state):
+    row_count = len(current_state)
+    col_count = len(current_state)
+
+    rows = range(row_count)
+    cols = range(col_count)
+
     # Check the side.
     if player == 'black':
         ally = 1
@@ -42,10 +50,39 @@ def get_evaluation_score(player, state):
     # Initialize the score.
     score = 0
 
-    #TODO: Write your evaluation function(s) here.
+    # player counts
+    black_player_count = 0
+    white_player_count = 0
 
+    # count pieces
+    for i in rows:
+        for j in cols:
+
+            if current_state[i][j] == 1:
+                black_player_count += 1
+
+            elif current_state[i][j] == 2:
+                white_player_count += 1
+
+    print(str(black_player_count) + ", " + str(white_player_count))
 
 
     # Return the score evaluated.
     return score
 
+
+print('started')
+
+current_state = [
+            [-9, -9, -9, -9,  0,  0,  0,  1,  1],
+            [-9, -9, -9,  0,  0,  0,  1,  1,  1],
+            [-9, -9,  0,  0,  0,  0,  0,  0,  0],
+            [-9,  0,  0,  0,  0,  0,  0,  0,  0],
+            [ 0,  0,  0,  0,  0,  0,  0,  0,  0],
+            [ 2,  0,  0,  0,  0,  0,  0,  0, -9],
+            [ 2,  0,  0,  0,  0,  0,  0, -9, -9],
+            [ 2,  0,  0,  0,  0,  0, -9, -9, -9],
+            [ 2,  0,  0,  0,  0, -9, -9, -9, -9]
+        ]
+
+get_evaluation_score('black', current_state)
