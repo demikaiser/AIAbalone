@@ -39,6 +39,9 @@ def get_evaluation_score(player, state):
     rows = range(row_count)
     cols = range(col_count)
 
+    # will store pieces on board, for easy lookups
+    pieces = set()
+
     # Check the side.
     if player == 'black':
         ally = 1
@@ -60,12 +63,13 @@ def get_evaluation_score(player, state):
 
             if current_state[i][j] == 1:
                 black_player_count += 1
+                pieces.add((i, j, 'B'))
 
             elif current_state[i][j] == 2:
                 white_player_count += 1
+                pieces.add((i, j, 'W'))
 
     print(str(black_player_count) + ", " + str(white_player_count))
-
 
     # Return the score evaluated.
     return score
