@@ -202,7 +202,7 @@ def determine_center_state(blacks, whites, calculating_average_value=False):
     if calculating_average_value:
         b_value /= b_num
         w_value /= w_num
-    print("b values: %s ; w values: %s" % (b_value, w_value))
+    # print("b values: %s ; w values: %s" % (b_value, w_value))
     return b_value/(b_value + w_value)
 
 
