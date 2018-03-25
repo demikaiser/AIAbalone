@@ -176,45 +176,33 @@ def determine_center_state(blacks, whites, calculating_average_value=False):
     # calculate black side
     b_value = 0
     b_num = 0
+    value_matrix = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 1, 1, 1, 1, 0],
+        [0, 0, 0, 1, 2, 2, 2, 1, 0],
+        [0, 0, 1, 2, 3, 3, 2, 1, 0],
+        [0, 1, 2, 3, 4, 3, 2, 1, 0],
+        [0, 1, 2, 3, 3, 2, 1, 0, 0],
+        [0, 1, 2, 2, 2, 1, 0, 0, 0],
+        [0, 1, 1, 1, 1, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    ]
     for p in blacks:
         b_num += 1
-        b1 = abs(p[0] - 4)
-        b2 = abs(p[1] - 4)
-        # if the marbles locate on the outer ring, plus 0
-        if b1 == 4 or b2 == 4 or abs(b1 - b2) == 4:
-            pass
-        # if the marbles locate on 2nd outer ring, plus 1
-        elif b1 == 3 or b2 == 3 or abs(b1 - b2) == 3:
-            b_value += 1
-        elif b1 == 2 or b2 == 2 or abs(b1 - b2) == 2:
-            b_value += 2
-        elif b1 == 1 or b2 == 1 or abs(b1 - b2) == 1:
-            b_value += 3
-        else:  # if no conditions have made, the marble sits on center
-            b_value += 4
+        b_value += value_matrix[p[0]][p[1]]
+
     # calculate white side
     w_value = 0
     w_num = 0
     for p in whites:
         w_num += 1
-        w1 = abs(p[0] - 4)
-        w2 = abs(p[1] - 4)
-        if w1 == 4 or w2 == 4 or abs(w1 - w2) == 4:
-            pass
-        elif w1 == 3 or w2 == 3 or abs(w1 - w2) == 3:
-            w_value += 1
-        elif w1 == 2 or w2 == 2 or abs(w1 - w2) == 2:
-            w_value += 2
-        elif w1 == 1 or w2 == 1 or abs(w1 - w2) == 1:
-            w_value += 3
-        else:
-            w_value += 4
+        w_value += value_matrix[p[0]][p[1]]
 
     # decide if the final value is calculated based on the average value of each piece? or the total value
     if calculating_average_value:
         b_value /= b_num
         w_value /= w_num
-    # print("b values: %s ; w values: %s" % (b_value, w_value))
+    print("b values: %s ; w values: %s" % (b_value, w_value))
     return b_value/(b_value + w_value)
 
 
