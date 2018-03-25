@@ -11,27 +11,6 @@ Written by Chil Yuqing Qiu <yuqingqiu93@gmail.com>
 
 import os, state_space_generator
 
-"""
-transfer into our state represents from ChiEn's
-
-black ==> 1 on board
-white ==> 2 on board
-empty ==> 0 on board
-
-initial_game_board_state_standard = [
-    [-9, -9, -9, -9,  0,  0,  0,  1,  1],
-    [-9, -9, -9,  0,  0,  0,  0,  1,  1],
-    [-9, -9,  0,  0,  0,  0,  1,  1,  1],
-    [-9,  2,  0,  0,  0,  0,  1,  1,  1],
-    [ 2,  2,  2,  0,  0,  0,  1,  1,  1],
-    [ 2,  2,  2,  0,  0,  0,  0,  1, -9],
-    [ 2,  2,  2,  0,  0,  0,  0, -9, -9],
-    [ 2,  2,  0,  0,  0,  0, -9, -9, -9],
-    [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
-]
-
-"""
-
 
 # <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
 #
@@ -115,13 +94,11 @@ def one_state(one_line):
 # initial state value: 6, losing state value: 0
 # white_remain indicates how many losable pieces for white side(MIN player) remains,
 # initial state value: 6, losing state value: 0
-def evaluate_pieces(current_state):
-    # black_remain = count_marbles(current_state, 'b') - 8
-    # white_remain = count_marbles(current_state, 'w') - 8
-    # return black_remain/(black_remain+white_remain)
-
-    black_remain = count_marbles(current_state, 1) - 8
-    white_remain = count_marbles(current_state, 2) - 8
+def evaluate_pieces(current_state, chien=False):
+    b = 'b' if chien else 1
+    w = 'w' if chien else 2
+    black_remain = count_marbles(current_state, b) - 8
+    white_remain = count_marbles(current_state, w) - 8
     return black_remain/(black_remain+white_remain)
 
 
@@ -132,37 +109,32 @@ def evaluate_pieces(current_state):
 #   current_state: the board state
 #   importance_ratio: default 0.5, how important is the cluster state to the center state
 #   (if it is more important for the marbles to gather together, raise the ratio, otherwise lower the ratio)
-def evaluate_position(current_state, importance_ratio=0.5):
-    # blacks = []
-    # whites = []
-    # # split the marbles into each side's list
-    # for marble in current_state:
-    #     if 'b' in marble:
-    #         blacks.append(marble)
-    #     if 'w' in marble:
-    #         whites.append(marble)
-    # return determine_cluster_state(blacks, whites) * importance_ratio \
-    #     + determine_center_state(blacks, whites, False) * (1 - importance_ratio)
-
+def evaluate_position(current_state, importance_ratio=0.5, chien=False):
     blacks = []
     whites = []
     # split the marbles into each side's list
-    for i in range(0, 9):
-        for j in range(0, 9):
-            if current_state[i][j] == 1:
-                blacks.append([i, j])
-            if current_state[i][j] == 2:
-                whites.append([i, j])
+    if chien:  # if running chien's state
+        for marble in current_state:
+            if 'b' in marble:
+                blacks.append(marble)
+            if 'w' in marble:
+                whites.append(marble)
+    else:  # if running our state
+        for i in range(0, 9):
+            for j in range(0, 9):
+                if current_state[i][j] == 1:
+                    blacks.append([i, j])
+                if current_state[i][j] == 2:
+                    whites.append([i, j])
+
     return determine_cluster_state(blacks, whites) * importance_ratio \
         + determine_center_state(blacks, whites, False) * (1 - importance_ratio)
-
-
 
 
 # finds out how does the state look for each side
 # the more pieces are connected together the better
 # if one side's pieces are split up, this side will have low value
-def determine_cluster_state(blacks, whites):
+def determine_cluster_state(blacks, whites, chien=False):
     # num = select_two_pieces_combination_from_ally_locations(blacks)
     b_value = 1
     w_value = 1
@@ -172,7 +144,7 @@ def determine_cluster_state(blacks, whites):
 
 
 # finds out how close the pieces are to the center
-def determine_center_state(blacks, whites, calculating_average_value=False):
+def determine_center_state(blacks, whites, calculating_average_value=False, chien=False):
     # calculate black side
     b_value = 0
     b_num = 0
