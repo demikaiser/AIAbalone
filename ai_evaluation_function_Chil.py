@@ -9,8 +9,28 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Chil Yuqing Qiu <yuqingqiu93@gmail.com>
 """
 
+import os, state_space_generator
 
-import os
+"""
+transfer into our state represents from ChiEn's
+
+black ==> 1 on board
+white ==> 2 on board
+empty ==> 0 on board
+
+initial_game_board_state_standard = [
+    [-9, -9, -9, -9,  0,  0,  0,  1,  1],
+    [-9, -9, -9,  0,  0,  0,  0,  1,  1],
+    [-9, -9,  0,  0,  0,  0,  1,  1,  1],
+    [-9,  2,  0,  0,  0,  0,  1,  1,  1],
+    [ 2,  2,  2,  0,  0,  0,  1,  1,  1],
+    [ 2,  2,  2,  0,  0,  0,  0,  1, -9],
+    [ 2,  2,  2,  0,  0,  0,  0, -9, -9],
+    [ 2,  2,  0,  0,  0,  0, -9, -9, -9],
+    [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
+]
+
+"""
 
 
 # <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
@@ -33,7 +53,7 @@ import os
 # this get_evaluation_score function to evaluate the state, so do NOT change it.
 #
 # Input: State representation (Game board configuration).
-# Output: Total evaluated score (Integer).
+# Output: Total evaluated score (Double).
 def get_evaluation_score(player, state, piece_weight=0.5):
     # Check the side.
     # if player == 'black':
@@ -62,10 +82,17 @@ def get_evaluation_score(player, state, piece_weight=0.5):
 # count the marbles of given color
 # PRE: color has to be 'b' for black or 'w' for white
 def count_marbles(state, color):
+    # num_marble = 0
+    # for marble in state:
+    #     if color in marble:
+    #         num_marble += 1
+    # return num_marble
+
     num_marble = 0
-    for marble in state:
-        if color in marble:
-            num_marble += 1
+    for i in range(0, 9):
+        for j in range(0, 9):
+            if state[i][j] == color:
+                num_marble += 1
     return num_marble
 
 
@@ -89,8 +116,12 @@ def one_state(one_line):
 # white_remain indicates how many losable pieces for white side(MIN player) remains,
 # initial state value: 6, losing state value: 0
 def evaluate_pieces(current_state):
-    black_remain = count_marbles(current_state, 'b') - 8
-    white_remain = count_marbles(current_state, 'w') - 8
+    # black_remain = count_marbles(current_state, 'b') - 8
+    # white_remain = count_marbles(current_state, 'w') - 8
+    # return black_remain/(black_remain+white_remain)
+
+    black_remain = count_marbles(current_state, 1) - 8
+    white_remain = count_marbles(current_state, 2) - 8
     return black_remain/(black_remain+white_remain)
 
 
@@ -102,24 +133,41 @@ def evaluate_pieces(current_state):
 #   importance_ratio: default 0.5, how important is the cluster state to the center state
 #   (if it is more important for the marbles to gather together, raise the ratio, otherwise lower the ratio)
 def evaluate_position(current_state, importance_ratio=0.5):
+    # blacks = []
+    # whites = []
+    # # split the marbles into each side's list
+    # for marble in current_state:
+    #     if 'b' in marble:
+    #         blacks.append(marble)
+    #     if 'w' in marble:
+    #         whites.append(marble)
+    # return determine_cluster_state(blacks, whites) * importance_ratio \
+    #     + determine_center_state(blacks, whites, False) * (1 - importance_ratio)
+
     blacks = []
     whites = []
     # split the marbles into each side's list
-    for marble in current_state:
-        if 'b' in marble:
-            blacks.append(marble)
-        if 'w' in marble:
-            whites.append(marble)
+    for i in range(0, 9):
+        for j in range(0, 9):
+            if current_state[i][j] == 1:
+                blacks.append([i, j])
+            if current_state[i][j] == 2:
+                whites.append([i, j])
     return determine_cluster_state(blacks, whites) * importance_ratio \
         + determine_center_state(blacks, whites, False) * (1 - importance_ratio)
+
+
 
 
 # finds out how does the state look for each side
 # the more pieces are connected together the better
 # if one side's pieces are split up, this side will have low value
 def determine_cluster_state(blacks, whites):
+    # num = select_two_pieces_combination_from_ally_locations(blacks)
     b_value = 1
     w_value = 1
+    # TODO: find out how close the marbles are for each side
+    # count the numbers of 2 and 3 combinations
     return b_value/(b_value + w_value)
 
 
@@ -130,17 +178,17 @@ def determine_center_state(blacks, whites, calculating_average_value=False):
     b_num = 0
     for p in blacks:
         b_num += 1
-        b1 = ord(p[0]) - ord('E')
-        b2 = int(p[1]) - 5
+        b1 = abs(p[0] - 4)
+        b2 = abs(p[1] - 4)
         # if the marbles locate on the outer ring, plus 0
-        if abs(b1) == 4 or abs(b2) == 4 or abs(b1 - b2) == 4:
+        if b1 == 4 or b2 == 4 or abs(b1 - b2) == 4:
             pass
         # if the marbles locate on 2nd outer ring, plus 1
-        elif abs(b1) == 3 or abs(b2) == 3 or abs(b1 - b2) == 3:
+        elif b1 == 3 or b2 == 3 or abs(b1 - b2) == 3:
             b_value += 1
-        elif abs(b1) == 2 or abs(b2) == 2 or abs(b1 - b2) == 2:
+        elif b1 == 2 or b2 == 2 or abs(b1 - b2) == 2:
             b_value += 2
-        elif abs(b1) == 1 or abs(b2) == 1 or abs(b1 - b2) == 1:
+        elif b1 == 1 or b2 == 1 or abs(b1 - b2) == 1:
             b_value += 3
         else:  # if no conditions have made, the marble sits on center
             b_value += 4
@@ -149,15 +197,15 @@ def determine_center_state(blacks, whites, calculating_average_value=False):
     w_num = 0
     for p in whites:
         w_num += 1
-        w1 = abs(ord(p[0]) - ord('E'))
-        w2 = abs(int(p[1]) - 5)
-        if abs(w1) == 4 or abs(w2) == 4 or abs(w1 - w2) == 4:
+        w1 = abs(p[0] - 4)
+        w2 = abs(p[1] - 4)
+        if w1 == 4 or w2 == 4 or abs(w1 - w2) == 4:
             pass
-        elif abs(w1) == 3 or abs(w2) == 3 or abs(w1 - w2) == 3:
+        elif w1 == 3 or w2 == 3 or abs(w1 - w2) == 3:
             w_value += 1
-        elif abs(w1) == 2 or abs(w2) == 2 or abs(w1 - w2) == 2:
+        elif w1 == 2 or w2 == 2 or abs(w1 - w2) == 2:
             w_value += 2
-        elif abs(w1) == 1 or abs(w2) == 1 or abs(w1 - w2) == 1:
+        elif w1 == 1 or w2 == 1 or abs(w1 - w2) == 1:
             w_value += 3
         else:
             w_value += 4
@@ -172,6 +220,7 @@ def determine_center_state(blacks, whites, calculating_average_value=False):
 
 # manually debug mode: put the testing board under this directory and test with file name Test.board
 if __name__ == "__main__":
+    '''chien's state resolver
     # for redirect file location
     this_dir = os.path.dirname(os.path.realpath('__file__'))
     # for change test files
@@ -188,3 +237,29 @@ if __name__ == "__main__":
     except FileNotFoundError:
         print("test file not found:")
         print(test_file)
+    '''
+    state1 = [
+        [-9, -9, -9, -9,  0,  0,  0,  1,  1],
+        [-9, -9, -9,  0,  0,  0,  0,  1,  1],
+        [-9, -9,  0,  0,  0,  0,  1,  1,  1],
+        [-9,  2,  0,  0,  0,  0,  1,  1,  1],
+        [ 2,  2,  2,  0,  0,  0,  1,  1,  1],
+        [ 2,  2,  2,  0,  0,  0,  0,  1, -9],
+        [ 2,  2,  2,  0,  0,  0,  0, -9, -9],
+        [ 2,  2,  0,  0,  0,  0, -9, -9, -9],
+        [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
+    ]
+
+    state2 = [
+    [-9, -9, -9, -9,  0,  0,  1,  1,  0],
+    [-9, -9, -9,  0,  0,  1,  1,  1,  0],
+    [-9, -9,  2,  2,  0,  1,  1,  0,  0],
+    [-9,  2,  2,  2,  0,  0,  0,  0,  0],
+    [ 0,  2,  2,  0,  0,  0,  2,  2,  0],
+    [ 0,  0,  0,  0,  0,  2,  2,  2, -9],
+    [ 0,  0,  1,  1,  0,  2,  2, -9, -9],
+    [ 0,  1,  1,  1,  0,  0, -9, -9, -9],
+    [ 0,  1,  1,  0,  0, -9, -9, -9, -9]
+]
+    print(get_evaluation_score('', state1))
+    print(get_evaluation_score('', state2))
