@@ -140,7 +140,8 @@ def generate_move_candidates_for_3_to_2_sumito(state, ally_pieces_locations_for_
     return move_candidates_for_3_to_2_sumito
 
 # Generate all states from a state for AI search.
-def generate_all_next_states(player, state_to_expand):
+# Returns a list: [total_movement_collection, total_state_space_collection]
+def generate_all_next_moves_and_states(player, state_to_expand):
 
     # ================ ================ Generate All Possible Piece Selections ================ ================
 
@@ -180,12 +181,14 @@ def generate_all_next_states(player, state_to_expand):
 
     # ================ ================ Generate All Possible State Space ================ ================
 
+    total_movement_collection = []
     total_state_space_collection = []
 
     # Generate all states for one piece movement.
     for move in move_candidates_for_one_piece:
         new_state = copy.deepcopy(state_to_expand)
         ai_movement.move_one_piece(new_state, move[0], move[1], move[2], move[3])
+        total_movement_collection.append(move)
         total_state_space_collection.append(new_state)
 
     # Generate all states for two pieces movement.
@@ -193,6 +196,7 @@ def generate_all_next_states(player, state_to_expand):
         new_state = copy.deepcopy(state_to_expand)
         ai_movement.move_two_pieces(new_state, move[0], move[1], move[4], move[5],
                                     move[2], move[3], move[6], move[7])
+        total_movement_collection.append(move)
         total_state_space_collection.append(new_state)
 
     # Generate all states for three pieces movement.
@@ -201,6 +205,7 @@ def generate_all_next_states(player, state_to_expand):
         ai_movement.move_three_pieces(new_state, move[0], move[1], move[6], move[7],
                                       move[2], move[3], move[8], move[9],
                                       move[4], move[5], move[10], move[11])
+        total_movement_collection.append(move)
         total_state_space_collection.append(new_state)
 
     # Generate all states for 2 to 1 sumitos.
@@ -208,6 +213,7 @@ def generate_all_next_states(player, state_to_expand):
         new_state = copy.deepcopy(state_to_expand)
         ai_movement.move_2_to_1_sumito(new_state, move[0], move[1], move[4], move[5],
                                        move[2], move[3], move[6], move[7])
+        total_movement_collection.append(move)
         total_state_space_collection.append(new_state)
 
     # Generate all states for 3 to 1 sumitos.
@@ -216,6 +222,7 @@ def generate_all_next_states(player, state_to_expand):
         ai_movement.move_3_to_1_or_3_to_2_sumito(new_state, move[0], move[1], move[6], move[7],
                                                  move[2], move[3], move[8], move[9],
                                                  move[4], move[5], move[10], move[11])
+        total_movement_collection.append(move)
         total_state_space_collection.append(new_state)
 
     # Generate all states for 3 to 2 sumitos.
@@ -224,9 +231,10 @@ def generate_all_next_states(player, state_to_expand):
         ai_movement.move_3_to_1_or_3_to_2_sumito(new_state, move[0], move[1], move[6], move[7],
                                                  move[2], move[3], move[8], move[9],
                                                  move[4], move[5], move[10], move[11])
+        total_movement_collection.append(move)
         total_state_space_collection.append(new_state)
 
     # ================ ================ Return the Result ================ ================
 
-    return total_state_space_collection
+    return [total_movement_collection, total_state_space_collection]
 

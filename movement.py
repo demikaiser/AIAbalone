@@ -24,11 +24,11 @@ def move_one_piece(old_x, old_y, new_x, new_y, context):
     model.global_game_board_state[new_x][new_y] = piece
 
     # Increase the score and taken moves for each side.
-    gameboard.update_game_score()
     if model.global_game_board_state[new_x][new_y] == 1:
         gameboard.update_moves_taken_for('black')
     elif model.global_game_board_state[new_x][new_y] == 2:
         gameboard.update_moves_taken_for('white')
+    gameboard.update_game_score()
 
     # Log the movement information.
     messages = []
@@ -39,12 +39,6 @@ def move_one_piece(old_x, old_y, new_x, new_y, context):
     messages.append("From : (" + str(old_x) + "," + str(old_y) + ")")
     messages.append("To   : (" + str(new_x) + "," + str(new_y) + ")")
     context.log(messages)
-
-    # Reset the current timer.
-    gameboard.reset_current_timer()
-
-    # Perform the goal test.
-    model.goal_test(context)
 
 # Move two pieces.
 def move_two_pieces(old_x1, old_y1, new_x1, new_y1,
@@ -63,11 +57,11 @@ def move_two_pieces(old_x1, old_y1, new_x1, new_y1,
     model.global_game_board_state[new_x2][new_y2] = piece2
 
     # Increase the score and taken moves for each side.
-    gameboard.update_game_score()
     if model.global_game_board_state[new_x1][new_y1] == 1:
         gameboard.update_moves_taken_for('black')
     elif model.global_game_board_state[new_x1][new_y1] == 2:
         gameboard.update_moves_taken_for('white')
+    gameboard.update_game_score()
 
     # Log the movement information.
     messages = []
@@ -80,12 +74,6 @@ def move_two_pieces(old_x1, old_y1, new_x1, new_y1,
     messages.append("To   : (" + str(new_x1) + "," + str(new_y1) + ")"
                    + " " + "(" + str(new_x2) + "," + str(new_y2) + ")")
     context.log(messages)
-
-    # Reset the current timer.
-    gameboard.reset_current_timer()
-
-    # Perform the goal test.
-    model.goal_test(context)
 
 # Move three pieces.
 def move_three_pieces(old_x1, old_y1, new_x1, new_y1,
@@ -108,11 +96,11 @@ def move_three_pieces(old_x1, old_y1, new_x1, new_y1,
     model.global_game_board_state[new_x3][new_y3] = piece3
 
     # Increase the score and taken moves for each side.
-    gameboard.update_game_score()
     if model.global_game_board_state[new_x1][new_y1] == 1:
         gameboard.update_moves_taken_for('black')
     elif model.global_game_board_state[new_x1][new_y1] == 2:
         gameboard.update_moves_taken_for('white')
+    gameboard.update_game_score()
 
     # Log the movement information.
     messages = []
@@ -127,12 +115,6 @@ def move_three_pieces(old_x1, old_y1, new_x1, new_y1,
                     + " " + "(" + str(new_x2) + "," + str(new_y2) + ")"
                     + " " + "(" + str(new_x3) + "," + str(new_y3) + ")")
     context.log(messages)
-
-    # Reset the current timer.
-    gameboard.reset_current_timer()
-
-    # Perform the goal test.
-    model.goal_test(context)
 
 # Move 2 to 1 sumito.
 def move_2_to_1_sumito(old_x1, old_y1, new_x1, new_y1,
@@ -201,11 +183,11 @@ def move_2_to_1_sumito(old_x1, old_y1, new_x1, new_y1,
         model.global_game_board_state[adv_x][adv_y] = piece_opponent
 
     # Increase the score and taken moves for each side.
-    gameboard.update_game_score()
     if model.global_game_board_state[new_x1][new_y1] == 1:
         gameboard.update_moves_taken_for('black')
     elif model.global_game_board_state[new_x1][new_y1] == 2:
         gameboard.update_moves_taken_for('white')
+    gameboard.update_game_score()
 
     # Log the movement information.
     messages = []
@@ -218,12 +200,6 @@ def move_2_to_1_sumito(old_x1, old_y1, new_x1, new_y1,
     messages.append("To   : (" + str(new_x1) + "," + str(new_y1) + ")"
                     + " " + "(" + str(new_x2) + "," + str(new_y2) + ")")
     context.log(messages)
-
-    # Reset the current timer.
-    gameboard.reset_current_timer()
-
-    # Perform the goal test.
-    model.goal_test(context)
 
 # Move 3 to 1 or 3 to 2 sumito.
 def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
@@ -341,11 +317,11 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
             model.global_game_board_state[adv_x_2][adv_y_2] = piece_opponent_2
 
     # Increase the score and taken moves for each side.
-    gameboard.update_game_score()
     if model.global_game_board_state[new_x1][new_y1] == 1:
         gameboard.update_moves_taken_for('black')
     elif model.global_game_board_state[new_x1][new_y1] == 2:
         gameboard.update_moves_taken_for('white')
+    gameboard.update_game_score()
 
     # Log the movement information.
     messages = []
@@ -360,12 +336,6 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
                     + " " + "(" + str(new_x2) + "," + str(new_y2) + ")"
                     + " " + "(" + str(new_x3) + "," + str(new_y3) + ")")
     context.log(messages)
-
-    # Reset the current timer.
-    gameboard.reset_current_timer()
-
-    # Perform the goal test.
-    model.goal_test(context)
 
 # ================ ================ Utility Functions ================ ================
 
