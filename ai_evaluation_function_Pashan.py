@@ -32,13 +32,16 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 # Output: Total evaluated score (Integer).
 
 
+
 def get_evaluation_score(player, state):
-    row_count = len(current_state)
-    col_count = len(current_state)
+
+    # inits
+    row_count = len(state)
+    col_count = len(state)
     ally = 0
     opponent = 0
-    ally_color = 'B'
-    opponent_color = 'W'
+    ally_color = 'B'  # color set according to player being 'black;
+    opponent_color = 'W' # color set according to player being 'black;
     rows = range(row_count)
     cols = range(col_count)
 
@@ -53,6 +56,8 @@ def get_evaluation_score(player, state):
     elif player == 'white':
         ally = 2
         opponent = 1
+
+        # change colors to be based on the player being 'white'
         ally_color = 'W'
         opponent_color = 'B'
 
@@ -63,36 +68,47 @@ def get_evaluation_score(player, state):
     ally_player_count = 0
     opponent_player_count = 0
 
-
-
-    # count pieces and construct set
+    # count pieces and construct sets
     for i in rows:
         for j in cols:
 
             if state[i][j] == ally:
                 ally_player_count += 1
-                ally_pieces.add((j, i, ally_color))
+                ally_pieces.add((j, i, ally_color))  # switching coordinates to match the human's eye of a 2d array
 
             elif state[i][j] == opponent:
                 opponent_player_count += 1
-                opponent_pieces.add((j, i, opponent_color))
+                opponent_pieces.add((j, i, opponent_color))  # switching coordinates to match the human's eye of a 2d array
 
-    if ally_player_count >= opponent_player_count:
-        score += 50
+    # give score based on the number of players
+    if ally_player_count == opponent_player_count:
+        score += 10
+    elif ally_player_count > opponent_player_count:
+        score += 10
+        score += ally_player_count - opponent_player_count
+    elif ally_player_count < opponent_player_count:
+        score += 10
+        score -= opponent_player_count - ally_player_count
 
-    print("ally_player_count: " + str(ally_player_count))
-    print("opponent_player_count: " + str(opponent_player_count))
+    # print("ally_player_count: " + str(ally_player_count))
+    # print("opponent_player_count: " + str(opponent_player_count))
 
+    # look at the board and get battles
     battles = read_battles(ally_pieces, opponent_pieces, ally_color)
 
+    # get allies on edge
     allies_on_edge = on_edge(ally_pieces)
-    enemeny_on_edge = on_edge(opponent_pieces)
-    analyis_result = analyis(allies_on_edge, enemeny_on_edge, battles, ally_color)
 
-    groups_in_danger = analyis_result[0]
-    enemy_groups_in_danger = analyis_result[1]
-    losing_sumitos = analyis_result[2]
-    wining_sumitos = analyis_result[3]
+    # enemies on edge
+    enemy_on_edge = on_edge(opponent_pieces)
+
+    # use the info gather and analyze
+    analyze_result = analyis(allies_on_edge, enemy_on_edge, battles, ally_color)
+
+    groups_in_danger = analyze_result[0]
+    enemy_groups_in_danger = analyze_result[1]
+    losing_sumitos = analyze_result[2]
+    wining_sumitos = analyze_result[3]
 
     # print("groups_in_danger: " + str(groups_in_danger))
     # print("enemy_groups_in_danger: " + str(enemy_groups_in_danger))
@@ -107,17 +123,25 @@ def get_evaluation_score(player, state):
     # Return the score evaluated.
     return score
 
-# will return an int array of length 3, (groups in danger of being booted, enemy groups to be booted, number of ally wining groups, number of ally losing groups)
+
+# will return an int array of length 3:
+# (groups in danger of being booted,
+# enemy groups to be booted,
+# number of ally wining groups,
+# number of ally losing groups)
 def analyis(allies_on_edge, enemeny_on_edge, battles, ally_color):
     count = 0
     losing_sumitos = 0
     enemy_groups_in_danger = 0
     wining_sumitos = 0
 
+    # look at each battle and get stats
     for battle in battles:
         if not battle[1]:
             if battle[2] == ally_color:
                 losing_sumitos += 1
+            else:
+                wining_sumitos += 1
             for i in range(3, len(battle)):
                 for ally in allies_on_edge:
                     if ally == battle[i]:
@@ -125,10 +149,11 @@ def analyis(allies_on_edge, enemeny_on_edge, battles, ally_color):
                 for enemey in enemeny_on_edge:
                     if enemey == battle[i]:
                         enemy_groups_in_danger += 1
-        else:
-            wining_sumitos += 1
+
 
     return [count, enemy_groups_in_danger,losing_sumitos, wining_sumitos]
+
+
 
 def read_battles(ally_pieces, opponent_pieces, ally_color):
     touching_pieces = touching(ally_pieces, opponent_pieces)
@@ -141,6 +166,8 @@ def read_battles(ally_pieces, opponent_pieces, ally_color):
 
     return result
 
+
+# returns the pieces on the edge of the board
 def on_edge(pieces):
     result = set()
     for p in pieces:
@@ -158,7 +185,7 @@ def on_edge(pieces):
 
     return result
 
-
+# look at the battles and make groups of who's fighting who
 def generate_groups_based_on_battle(combo, ally_color, ally_pieces, opponent_pieces):
     ally = combo[0] if combo[0][2] == ally_color else combo[1]
     opponent = combo[1] if combo[1][2] != ally_color else combo[0]
@@ -222,3 +249,17 @@ def touching(ally_pieces, opponent_pieces):
     return result
 
 
+
+initial_game_board_state_german_daisy = [
+    [-9, -9, -9, -9,  0,  0,  0,  1,  0],
+    [-9, -9, -9,  0,  0,  1,  1,  1,  0],
+    [-9, -9,  2,  2,  0,  1,  1,  0,  0],
+    [-9,  2,  2,  2,  0,  0,  1,  0,  0],
+    [ 0,  2,  2,  0,  0,  0,  2,  2,  0],
+    [ 0,  0,  0,  0,  0,  2,  2,  2, -9],
+    [ 0,  0,  1,  1,  0,  2,  2, -9, -9],
+    [ 0,  1,  1,  1,  0,  0, -9, -9, -9],
+    [ 0,  1,  1,  0,  0, -9, -9, -9, -9]
+]
+
+print(get_evaluation_score('black', initial_game_board_state_german_daisy))
