@@ -249,17 +249,3 @@ def touching(ally_pieces, opponent_pieces):
     return result
 
 
-
-initial_game_board_state_german_daisy = [
-    [-9, -9, -9, -9,  0,  0,  0,  1,  0],
-    [-9, -9, -9,  0,  0,  1,  1,  1,  0],
-    [-9, -9,  2,  2,  0,  1,  1,  0,  0],
-    [-9,  2,  2,  2,  0,  0,  1,  0,  0],
-    [ 0,  2,  2,  0,  0,  0,  2,  2,  0],
-    [ 0,  0,  0,  0,  0,  2,  2,  2, -9],
-    [ 0,  0,  1,  1,  0,  2,  2, -9, -9],
-    [ 0,  1,  1,  1,  0,  0, -9, -9, -9],
-    [ 0,  1,  1,  0,  0, -9, -9, -9, -9]
-]
-
-print(get_evaluation_score('black', initial_game_board_state_german_daisy))
