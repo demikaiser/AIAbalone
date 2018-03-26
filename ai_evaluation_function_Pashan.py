@@ -6,7 +6,7 @@ Copyright (C) BCIT AI/ML Option 2018 Team with Members Following - All Rights Re
 - Tony Huang	        tonyhuang1996@hotmail.ca
 - Chil Yuqing Qiu       yuqingqiu93@gmail.com
 Unauthorized copying of this file, via any medium is strictly prohibited.
-Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
+Written by Pashan Irani   <pashanirani@gmail.com>
 '''
 
 # <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
@@ -115,6 +115,7 @@ def get_evaluation_score(player, state):
     # print("losing_sumitos: " + str(losing_sumitos))
     # print("wining_sumitos: " + str(wining_sumitos))
 
+    # weights
     score += groups_in_danger * -20
     score += enemy_groups_in_danger * 10
     score += losing_sumitos * -10
@@ -247,5 +248,4 @@ def touching(ally_pieces, opponent_pieces):
         if (x - 1, y, color) in opponent_pieces: result.add((p, (x - 1, y, color)))
 
     return result
-
 
