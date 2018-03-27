@@ -47,8 +47,8 @@ class GUI:
     stored_pieces = []
 
     # Windows size setup.
-    master_window_width = 1200
-    master_window_height = 980
+    master_window_width = 1300
+    master_window_height = 780
 
     # Board start size.
     master_board_start_x = 240
@@ -496,8 +496,8 @@ class GUI:
 
         # Draw console background to erase the previous messages.
         self.log_clear()
-        x_log = 20
-        y_log = self.master_window_height - 195
+        x_log = 820
+        y_log = 400
 
         self.font_text = pygame.font.SysFont('Consolas', 20)
 
@@ -513,11 +513,9 @@ class GUI:
 
     # Print text to the log console.
     def log_clear(self):
-        log_height = 200
         # Draw console background to erase the previous messages.
         pygame.draw.rect(self.main_display_surface,
-                         colors.LOG_BACKGROUND, (0, self.master_window_height - log_height,
-                                        self.master_window_width - 400, log_height))
+                         colors.LOG_BACKGROUND, (800, 380, 500, 400))
 
     # ================ ================ Game Board ================ ================
     # Show the game board.
@@ -539,25 +537,25 @@ class GUI:
     # Show the time label.
     def show_time_label(self):
         font_text_time_label = pygame.font.SysFont('Consolas', 18)
-        time_label = font_text_time_label.render("Time", True, colors.ORANGE)
+        time_label = font_text_time_label.render("", True, colors.ORANGE)
         self.main_display_surface.blit(time_label, (self.master_board_start_x + 740, 60))
 
     # Show the total time label.
     def show_total_time_label(self):
         font_text_total_time_label = pygame.font.SysFont('Consolas', 18)
-        total_total_time_label = font_text_total_time_label.render("Total Time", True, colors.ORANGE)
+        total_total_time_label = font_text_total_time_label.render("", True, colors.ORANGE)
         self.main_display_surface.blit(total_total_time_label, (self.master_board_start_x + 710, 90))
 
     # Show the score label.
     def show_score_label(self):
         font_text_score_label = pygame.font.SysFont('Consolas', 18)
-        total_score_label = font_text_score_label.render("Score", True, colors.ORANGE)
+        total_score_label = font_text_score_label.render("", True, colors.ORANGE)
         self.main_display_surface.blit(total_score_label, (self.master_board_start_x + 735, 120))
 
     # Show the moves taken label.
     def show_moves_taken_label(self):
         font_text_moves_taken_label = pygame.font.SysFont('Consolas', 18)
-        total_moves_taken_label = font_text_moves_taken_label.render("Moves", True, colors.ORANGE)
+        total_moves_taken_label = font_text_moves_taken_label.render("", True, colors.ORANGE)
         self.main_display_surface.blit(total_moves_taken_label, (self.master_board_start_x + 735, 150))
 
     # Update the time.
@@ -569,12 +567,12 @@ class GUI:
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 640, 60, 60, 20))
-            self.main_display_surface.blit(text, (self.master_board_start_x + 650, 60))
+                             (10, 60, 60, 20))
+            self.main_display_surface.blit(text, (20, 60))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 840, 60, 60, 20))
-            self.main_display_surface.blit(text, (self.master_board_start_x + 850, 60))
+                             (650, 60, 60, 20))
+            self.main_display_surface.blit(text, (660, 60))
 
     # Update the total time.
     def update_total_time(self, player, time):
@@ -585,12 +583,12 @@ class GUI:
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 640, 90, 60, 20))
-            self.main_display_surface.blit(text, (self.master_board_start_x + 650, 90))
+                             (10, 90, 60, 20))
+            self.main_display_surface.blit(text, (20, 90))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 840, 90, 60, 20))
-            self.main_display_surface.blit(text, (self.master_board_start_x + 850, 90))
+                             (650, 90, 60, 20))
+            self.main_display_surface.blit(text, (660, 90))
 
     # Update the score.
     def update_score(self, player, score):
@@ -601,12 +599,12 @@ class GUI:
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 640, 120, 60, 20))
-            self.main_display_surface.blit(text, (self.master_board_start_x + 650, 120))
+                             (10, 120, 60, 20))
+            self.main_display_surface.blit(text, (20, 120))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 840, 120, 60, 20))
-            self.main_display_surface.blit(text, (self.master_board_start_x + 850, 120))
+                             (650, 120, 60, 20))
+            self.main_display_surface.blit(text, (660, 120))
 
     # Update the moves taken.
     def update_moves_taken(self, player, moves):
@@ -617,12 +615,12 @@ class GUI:
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 640, 150, 60, 20))
-            self.main_display_surface.blit(text, (self.master_board_start_x + 650, 150))
+                             (10, 150, 60, 20))
+            self.main_display_surface.blit(text, (20, 150))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (self.master_board_start_x + 840, 150, 60, 20))
-            self.main_display_surface.blit(text, (self.master_board_start_x + 850, 150))
+                             (650, 150, 60, 20))
+            self.main_display_surface.blit(text, (660, 150))
 
     # Update the game state.
     def update_game_state(self, state):
@@ -631,8 +629,8 @@ class GUI:
         text = str(state)
         text = font_text_state.render(text, True, colors.GREEN)
 
-        pygame.draw.ellipse(self.main_display_surface, colors.ORANGE, (25, 20, 140, 50))
-        self.main_display_surface.blit(text, (40, 35))
+        pygame.draw.rect(self.main_display_surface, colors.ORANGE, (self.master_board_start_x + 100, 10, 120, 30))
+        self.main_display_surface.blit(text, (self.master_board_start_x + 105, 15))
 
     # ================ ================ Initial Board Setup ================ ================
     # Create the initial pieces arranged (Standard).
@@ -666,9 +664,9 @@ class GUI:
         # Draw texts for teams.
         font = pygame.font.SysFont('Consolas', 20)
         text_for_black_team = font.render("Black Player", True, colors.ORANGE)
-        self.main_display_surface.blit(text_for_black_team, (830, 20))
+        self.main_display_surface.blit(text_for_black_team, (10, 20))
         text_for_white_team = font.render("White Player", True, colors.ORANGE)
-        self.main_display_surface.blit(text_for_white_team, (1040, 20))
+        self.main_display_surface.blit(text_for_white_team, (620, 20))
 
         # ================ ================ Thorpy Section ================ ================
 
@@ -695,6 +693,8 @@ class GUI:
         label_for_time_limit_black = thorpy.make_text("Time Limitation", 16, colors.BROWN)
         self.slider_for_time_limit_black = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=5)
 
+        separation_line_black_2 = thorpy.Line.make(size=190, type_="horizontal")
+
         box_black = thorpy.Box.make(elements=[
             button_step_back_black,
             separation_line_black,
@@ -705,6 +705,7 @@ class GUI:
             self.slider_for_move_limit_black,
             label_for_time_limit_black,
             self.slider_for_time_limit_black,
+            separation_line_black_2
         ])
 
         # ThorPy elements for white.
@@ -730,6 +731,8 @@ class GUI:
         label_for_time_limit_white = thorpy.make_text("Time Limitation", 16, colors.BROWN)
         self.slider_for_time_limit_white = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=5)
 
+        separation_line_white_2 = thorpy.Line.make(size=190, type_="horizontal")
+
         box_white = thorpy.Box.make(elements=[
             button_step_back_white,
             separation_line_white,
@@ -740,32 +743,41 @@ class GUI:
             self.slider_for_move_limit_white,
             label_for_time_limit_white,
             self.slider_for_time_limit_white,
+            separation_line_white_2
         ])
 
         # ThorPy elements for bgm.
-        separation_line_jukebox = thorpy.Line.make(size=390, type_="horizontal")
+        separation_line_jukebox = thorpy.Line.make(size=90, type_="horizontal")
         label_for_jukebox = thorpy.make_text("Jukebox", 16, colors.BROWN)
 
         button_start_music = thorpy.make_button("Start Music", func=lambda: controller.button_start_music_callback(self))
-        button_start_music.set_size((390, 30))
+        button_start_music.set_size((90, 32))
 
         button_stop_music = thorpy.make_button("Stop Music", func=lambda: controller.button_stop_music_callback(self))
-        button_stop_music.set_size((390, 30))
+        button_stop_music.set_size((90, 32))
 
         button_next_music = thorpy.make_button("Next Music", func=lambda: controller.button_next_music_callback(self))
-        button_next_music.set_size((390, 30))
+        button_next_music.set_size((90, 32))
 
         button_volume_up = thorpy.make_button("Volume Up", func=lambda: controller.button_volume_up_callback(self))
-        button_volume_up.set_size((390, 30))
+        button_volume_up.set_size((90, 32))
 
         button_volume_down = thorpy.make_button("Volume Down", func=lambda: controller.button_volume_down_callback(self))
-        button_volume_down.set_size((390, 30))
+        button_volume_down.set_size((90, 32))
 
         button_get_funk = thorpy.make_button("Get Funk!", func=lambda: controller.button_get_funk_callback(self))
-        button_get_funk.set_size((390, 30))
+        button_get_funk.set_size((90, 32))
 
-        button_secret = thorpy.make_button("?", func=lambda: controller.button_secret_callback(self))
-        button_secret.set_size((390, 30))
+        button_secret1 = thorpy.make_button("?", func=lambda: controller.button_secret1_callback(self))
+        button_secret1.set_size((90, 32))
+
+        button_secret2 = thorpy.make_button("?", func=lambda: controller.button_secret2_callback(self))
+        button_secret2.set_size((90, 32))
+
+        button_secret3 = thorpy.make_button("?", func=lambda: controller.button_secret3_callback(self))
+        button_secret3.set_size((90, 32))
+
+        separation_line_bgm = thorpy.Line.make(size=90, type_="horizontal")
 
         box_bgm = thorpy.Box.make(elements=[
             separation_line_jukebox,
@@ -776,11 +788,14 @@ class GUI:
             button_volume_up,
             button_volume_down,
             button_get_funk,
-            button_secret
+            button_secret1,
+            button_secret2,
+            button_secret3,
+            separation_line_bgm
         ])
 
-        # ThorPy elements for all.
-        separation_line_all_board_selection = thorpy.Line.make(size=390, type_="horizontal")
+        # ThorPy elements for all Part 1.
+        separation_line_all_board_selection = thorpy.Line.make(size=190, type_="horizontal")
 
         label_for_board_selection = thorpy.make_text("Board Selection", 16, colors.BROWN)
         self.radio_standard = thorpy.Checker.make("Standard", type_="radio")
@@ -789,53 +804,63 @@ class GUI:
         radios = [self.radio_standard, self.radio_german_daisy, self.radio_belgian_daisy]
         radio_group_board_selection = thorpy.RadioPool(radios, first_value=radios[0], always_value=True)
 
-        separation_line_all_main = thorpy.Line.make(size=390, type_="horizontal")
+        separation_line_all_main = thorpy.Line.make(size=190, type_="horizontal")
 
         button_start = thorpy.make_button("Start", func=lambda: controller.button_game_start_callback(self))
-        button_start.set_size((390, 30))
+        button_start.set_size((190, 32))
 
-        button_pause = thorpy.make_button("Pause", func=lambda: controller.button_game_pause_callback(self))
-        button_pause.set_size((390, 30))
-
-        button_resume = thorpy.make_button("Resume", func=lambda: controller.button_game_resume_callback(self))
-        button_resume.set_size((390, 30))
-
-        button_stop = thorpy.make_button("Stop", func=lambda: controller.button_game_stop_callback(self))
-        button_stop.set_size((390, 30))
-
-        button_reset = thorpy.make_button("Reset", func=lambda: controller.button_game_reset_callback(self))
-        button_reset.set_size((390, 30))
-
-        separation_line_all_end = thorpy.Line.make(size=390, type_="horizontal")
-
-        box_all = thorpy.Box.make(elements=[
+        box_all_1 = thorpy.Box.make(elements=[
             separation_line_all_board_selection,
             label_for_board_selection,
             self.radio_standard, self.radio_german_daisy, self.radio_belgian_daisy,
             separation_line_all_main,
-            button_start, button_pause, button_resume, button_stop, button_reset,
-            separation_line_all_end
+            button_start,
+        ])
+
+        # ThorPy elements for all Part 2.
+
+        button_pause = thorpy.make_button("Pause", func=lambda: controller.button_game_pause_callback(self))
+        button_pause.set_size((190, 30))
+
+        button_resume = thorpy.make_button("Resume", func=lambda: controller.button_game_resume_callback(self))
+        button_resume.set_size((190, 30))
+
+        button_stop = thorpy.make_button("Stop", func=lambda: controller.button_game_stop_callback(self))
+        button_stop.set_size((190, 30))
+
+        button_reset = thorpy.make_button("Reset", func=lambda: controller.button_game_reset_callback(self))
+        button_reset.set_size((190, 30))
+
+        box_all_2 = thorpy.Box.make(elements=[
+            button_pause,
+            button_resume,
+            button_stop,
+            button_reset
         ])
 
         # Place the elements.
-        box_black.set_topleft((self.master_window_width - 400, 180))
+        box_all_1.set_topleft((self.master_window_width - 500, 0))
+        box_all_1.blit()
+        box_all_1.update()
+
+        box_all_2.set_topleft((self.master_window_width - 300, 0))
+        box_all_2.blit()
+        box_all_2.update()
+
+        box_black.set_topleft((self.master_window_width - 500, 145))
         box_black.blit()
         box_black.update()
 
-        box_white.set_topleft((self.master_window_width - 200, 180))
+        box_white.set_topleft((self.master_window_width - 300, 145))
         box_white.blit()
         box_white.update()
 
-        box_bgm.set_topleft((self.master_window_width - 400, 697))
+        box_bgm.set_topleft((self.master_window_width - 100, 0))
         box_bgm.blit()
         box_bgm.update()
 
-        box_all.set_topleft((self.master_window_width - 400, 407))
-        box_all.blit()
-        box_all.update()
-
         # Regroup all elements on a menu, even if the program does NOT launch the menu.
-        self.thorpy_menu = thorpy.Menu([box_black, box_white, box_bgm, box_all])
+        self.thorpy_menu = thorpy.Menu([box_black, box_white, box_bgm, box_all_1, box_all_2])
 
         # IMPORTANT: Set the screen as surface for all elements.
         for element in self.thorpy_menu.get_population():

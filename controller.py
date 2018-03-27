@@ -49,8 +49,17 @@ def button_get_funk_callback(context):
     context.bgm_instance.get_funk()
 
 # Button callback function for "Secret".
-def button_secret_callback(context):
+def button_secret1_callback(context):
     context.bgm_instance.secret()
+
+# Button callback function for "Secret".
+def button_secret2_callback(context):
+    context.bgm_instance.secret()
+
+# Button callback function for "Secret".
+def button_secret3_callback(context):
+    context.bgm_instance.secret()
+
 
 # ================ ================ Game Controller ================ ================
 
