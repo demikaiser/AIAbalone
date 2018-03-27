@@ -219,7 +219,7 @@ def generate_all_next_moves_and_states(player, state_to_expand):
     # Generate all states for 3 to 1 sumitos.
     for move in move_candidates_for_3_to_1_sumito:
         new_state = copy.deepcopy(state_to_expand)
-        ai_movement.move_3_to_1_or_3_to_2_sumito(new_state, move[0], move[1], move[6], move[7],
+        ai_movement.move_3_to_1_sumito(new_state, move[0], move[1], move[6], move[7],
                                                  move[2], move[3], move[8], move[9],
                                                  move[4], move[5], move[10], move[11])
         total_movement_collection.append(move)
@@ -228,7 +228,7 @@ def generate_all_next_moves_and_states(player, state_to_expand):
     # Generate all states for 3 to 2 sumitos.
     for move in move_candidates_for_3_to_2_sumito:
         new_state = copy.deepcopy(state_to_expand)
-        ai_movement.move_3_to_1_or_3_to_2_sumito(new_state, move[0], move[1], move[6], move[7],
+        ai_movement.move_3_to_2_sumito(new_state, move[0], move[1], move[6], move[7],
                                                  move[2], move[3], move[8], move[9],
                                                  move[4], move[5], move[10], move[11])
         total_movement_collection.append(move)
@@ -237,4 +237,34 @@ def generate_all_next_moves_and_states(player, state_to_expand):
     # ================ ================ Return the Result ================ ================
 
     return [total_movement_collection, total_state_space_collection]
+
+
+
+
+# The entry point of this file.
+if __name__ == '__main__':
+
+    test_state = [
+        [-9, -9, -9, -9,  0,  0,  0,  0,  0],
+        [-9, -9, -9,  0,  0,  0,  0,  0,  0],
+        [-9, -9,  0,  0,  0,  0,  0,  0,  0],
+        [-9,  0,  2,  0,  0,  0,  0,  0,  0],
+        [ 0,  0,  2,  0,  0,  0,  0,  0,  0],
+        [ 0,  0,  1,  0,  0,  0,  0,  0, -9],
+        [ 0,  0,  1,  0,  0,  0,  0, -9, -9],
+        [ 0,  0,  1,  0,  0,  0, -9, -9, -9],
+        [ 0,  0,  0,  0,  0, -9, -9, -9, -9]
+    ]
+
+
+    test = generate_all_next_moves_and_states('black', test_state)
+
+    print(test[1][27])
+
+
+
+
+
+
+
 

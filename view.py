@@ -759,22 +759,22 @@ class GUI:
         button_next_music = thorpy.make_button("Next Music", func=lambda: controller.button_next_music_callback(self))
         button_next_music.set_size((90, 32))
 
-        button_volume_up = thorpy.make_button("Volume Up", func=lambda: controller.button_volume_up_callback(self))
+        button_volume_up = thorpy.make_button("Vol. Up", func=lambda: controller.button_volume_up_callback(self))
         button_volume_up.set_size((90, 32))
 
-        button_volume_down = thorpy.make_button("Volume Down", func=lambda: controller.button_volume_down_callback(self))
+        button_volume_down = thorpy.make_button("Vol. Down", func=lambda: controller.button_volume_down_callback(self))
         button_volume_down.set_size((90, 32))
 
         button_get_funk = thorpy.make_button("Get Funk!", func=lambda: controller.button_get_funk_callback(self))
         button_get_funk.set_size((90, 32))
 
-        button_secret1 = thorpy.make_button("?", func=lambda: controller.button_secret1_callback(self))
+        button_secret1 = thorpy.make_button("Func1", func=lambda: controller.button_secret1_callback(self))
         button_secret1.set_size((90, 32))
 
-        button_secret2 = thorpy.make_button("?", func=lambda: controller.button_secret2_callback(self))
+        button_secret2 = thorpy.make_button("Func2", func=lambda: controller.button_secret2_callback(self))
         button_secret2.set_size((90, 32))
 
-        button_secret3 = thorpy.make_button("?", func=lambda: controller.button_secret3_callback(self))
+        button_secret3 = thorpy.make_button("Func3", func=lambda: controller.button_secret3_callback(self))
         button_secret3.set_size((90, 32))
 
         separation_line_bgm = thorpy.Line.make(size=90, type_="horizontal")
