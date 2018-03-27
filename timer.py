@@ -15,7 +15,9 @@ import model
 import pygame
 
 
+
 def time_oscillator(context):
+    # beginning = time.time()
     try:
         while True:
             pygame.time.delay(100)
@@ -36,6 +38,7 @@ def time_oscillator(context):
     except RuntimeError:
         print("RuntimeError from time_oscillator.")
 
+
 def start_time_oscillator(context):
     _thread.start_new_thread(time_oscillator, (context, ))
 
@@ -55,3 +58,6 @@ def start_gui_updater_with_time_start_time_oscillator(context):
     _thread.start_new_thread(gui_updater_with_time_start_time_oscillator, (context, ))
 
 
+if __name__ == "__main__":
+    # start_time_oscillator(timer, 1)
+    print("testing timer");
