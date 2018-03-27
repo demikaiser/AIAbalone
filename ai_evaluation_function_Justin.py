@@ -44,8 +44,6 @@ def get_evaluation_score(player, state):
 
     #TODO: Write your evaluation function(s) here.
 
-
-
     # Return the score evaluated.
     return score
 

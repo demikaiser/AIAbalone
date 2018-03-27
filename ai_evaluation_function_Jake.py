@@ -9,48 +9,56 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import _ai_evaluation_function
+import math
 
-# <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
-#
-# The evaluation function MUST have a very strict format, the signature of the pseudocode:
-# int EvaluationFunction(BoardConfiguration board)
-#
-# It has to take a board configuration as input, and return the evaluated integer value.
-# Only integer values are allowed to return because of the efficiency of the sorting later.
-# Technically there is no range limit, but too big number slows the system down.
-# The realistic range would be 0 to 10000, and you can't use any deduction or negative values.
-#
-# If you want to make some multiple evaluation functions, you have to add all scores up at the end.
-# There are ways to do it, but one example should be:
-#
-# TotalEvaluationFunction = EvaluationFunction1 + EvaluationFunction2 + EvaluationFunction3
-#
-# So the final score would be evaluated from the individual functions.
-# You can do whatever you want to do ONLY in this file, but the AI framework will call
-# this get_evaluation_score function to evaluate the state, so do NOT change it.
-#
-# Input: State representation (Game board configuration).
-# Output: Total evaluated score (Integer).
 def get_evaluation_score(player, state):
-    # Check the side.
-    if player == 'black':
-        ally = 1
-        opponent = 2
-    elif player == 'white':
-        ally = 2
-        opponent = 1
 
     # Initialize the score.
+    score = 0
 
-    #score = 0
-    score = _ai_evaluation_function.get_evaluation_score(player, state)
+    # Count ally's marbles.
+    score += count_ally_marbles(state)
 
-    #TODO: Write your evaluation function(s) here.
-    # BRAHBRAHBRAH
+    # Count opponent's marbles.
+    score += count_opponent_marbles(state)
+
+    # Evaluate the position.
+    score += evaluate_positions(state)
 
     # Return the score evaluated.
     return score
 
+def count_ally_marbles(state):
 
+    score_for_count_ally_marbles = 0
+
+    for i in range(0, 9):
+        for j in range (0, 9):
+            if state[i][j] == 1:
+                score_for_count_ally_marbles += 1
+
+    return score_for_count_ally_marbles
+
+
+def count_opponent_marbles(state):
+    score_for_count_opponent_marbles = 0
+
+    for i in range(0, 9):
+        for j in range(0, 9):
+            if state[i][j] == 2:
+                score_for_count_opponent_marbles -= 1
+
+    return score_for_count_opponent_marbles
+
+
+def evaluate_positions(state):
+    score_for_evaluate_positions = 0
+
+    for i in range(0, 9):
+        for j in range(0, 9):
+            if state[i][j] == 1:
+
+                score_for_evaluate_positions -= math.sqrt((i - 4)**2 + (j - 4)**2)
+
+    return score_for_evaluate_positions
 
