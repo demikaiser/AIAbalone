@@ -108,5 +108,18 @@ def print_and_log_move_tuple(context, color, move_tuple):
                         + " " + "(" + str(move_tuple[8]) + "," + str(move_tuple[9]) + ")"
                         + " " + "(" + str(move_tuple[10]) + "," + str(move_tuple[11]) + ")")
 
+    # Add the game information.
+    messages.append("Score: <Black> " + str(model.global_game_play_state['black']['score'])
+                    + " : " + str(model.global_game_play_state['white']['score']) + " <White>")
+    messages.append("Moved: <Black> " + str(model.global_game_play_state['black']['moves_taken'])
+                    + " : " + str(model.global_game_play_state['white']['moves_taken']) + " <White>")
+    messages.append("Time: <Black> " + str('{0: >#7.1f}'.format(float(model.global_game_play_state['black']['time_taken_for_last_move'])))
+                    + " : " + str('{0: >#7.1f}'.format(float(model.global_game_play_state['white']['time_taken_for_last_move']))) + " <White>")
+    messages.append("T-Time: <Black> " + str('{0: >#7.1f}'.format(float(model.global_game_play_state['black']['time_taken_total'])))
+                    + " : " + str('{0: >#7.1f}'.format(float(model.global_game_play_state['white']['time_taken_total']))) + " <White>")
+
+    # Log all messages.
     context.log(messages)
+
+
 

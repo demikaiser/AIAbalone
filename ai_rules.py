@@ -9,6 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
+# NO IMPORT STATEMENTS: TOTALLY INDEPENDENT, WILL BE TRANSPILED TO C CODE.
 
 # Global game boundary object (Set).
 global_game_board_boundary_for_all = {

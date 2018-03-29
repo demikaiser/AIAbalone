@@ -17,7 +17,7 @@ import pygame
 
 
 def time_oscillator(context):
-    # beginning = time.time()
+
     try:
         while True:
             pygame.time.delay(100)
