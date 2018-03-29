@@ -562,32 +562,32 @@ class GUI:
     def update_time(self, player, time):
         font_text_time = pygame.font.SysFont('Consolas', 18)
 
-        text = str('{0: >#5.1f}'. format(float(time)))
+        text = str('{0: >#7.1f}'. format(float(time)))
         text = font_text_time.render(text, True, colors.ORANGE)
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (10, 60, 60, 20))
+                             (10, 60, 80, 20))
             self.main_display_surface.blit(text, (20, 60))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (650, 60, 60, 20))
+                             (650, 60, 80, 20))
             self.main_display_surface.blit(text, (660, 60))
 
     # Update the total time.
     def update_total_time(self, player, time):
         font_text_total_time = pygame.font.SysFont('Consolas', 18)
 
-        text = str('{0: >#5.1f}'. format(float(time)))
+        text = str('{0: >#7.1f}'. format(float(time)))
         text = font_text_total_time.render(text, True, colors.ORANGE)
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (10, 90, 60, 20))
+                             (10, 90, 80, 20))
             self.main_display_surface.blit(text, (20, 90))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (650, 90, 60, 20))
+                             (650, 90, 80, 20))
             self.main_display_surface.blit(text, (660, 90))
 
     # Update the score.
@@ -684,14 +684,14 @@ class GUI:
 
         radios_for_agent_selection_black = [self.radio_human_black, self.radio_computer_black]
         radio_group_agent_selection_black = thorpy.RadioPool(radios_for_agent_selection_black,
-                                                             first_value=radios_for_agent_selection_black[0],
+                                                             first_value=radios_for_agent_selection_black[1],
                                                              always_value=True)
 
         label_for_move_limit_black = thorpy.make_text("Move Limitation", 16, colors.BROWN)
-        self.slider_for_move_limit_black = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=100)
+        self.slider_for_move_limit_black = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=50)
 
         label_for_time_limit_black = thorpy.make_text("Time Limitation", 16, colors.BROWN)
-        self.slider_for_time_limit_black = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=5)
+        self.slider_for_time_limit_black = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=20)
 
         separation_line_black_2 = thorpy.Line.make(size=190, type_="horizontal")
 
@@ -722,14 +722,14 @@ class GUI:
 
         radios_for_agent_selection_white = [self.radio_human_white, self.radio_computer_white]
         radio_group_agent_selection_white = thorpy.RadioPool(radios_for_agent_selection_white,
-                                                             first_value=radios_for_agent_selection_white[0],
+                                                             first_value=radios_for_agent_selection_white[1],
                                                              always_value=True)
 
         label_for_move_limit_white = thorpy.make_text("Move Limitation", 16, colors.BROWN)
-        self.slider_for_move_limit_white = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=100)
+        self.slider_for_move_limit_white = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=50)
 
         label_for_time_limit_white = thorpy.make_text("Time Limitation", 16, colors.BROWN)
-        self.slider_for_time_limit_white = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=5)
+        self.slider_for_time_limit_white = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=20)
 
         separation_line_white_2 = thorpy.Line.make(size=190, type_="horizontal")
 

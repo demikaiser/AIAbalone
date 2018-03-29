@@ -65,8 +65,15 @@ def button_secret3_callback(context):
 
 # Button callback function for "Game Start".
 def button_game_start_callback(context):
-    context.log(["Game started."])
     model.game_start(context)
+
+    # Log the game information.
+    messages = []
+    messages.append("Game Started.")
+    messages.append("Initial Board Layout: " + model.global_game_configuration['all']['initial_board_layout'])
+    messages.append("Black Player: " + model.global_game_configuration['black']['agent'])
+    messages.append("White Player: " + model.global_game_configuration['white']['agent'])
+    context.log(messages)
 
 # Button callback function for "Game Pause".
 def button_game_pause_callback(context):

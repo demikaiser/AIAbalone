@@ -170,6 +170,11 @@ def set_global_game_configuration_from_gui(context):
 # Start the game.
 def game_start(context):
 
+    global global_game_board_state
+    global initial_game_board_state_standard
+    global initial_game_board_state_german_daisy
+    global initial_game_board_state_belgian_daisy
+
     # Start button is only enabled when the game status is "stopped".
     if global_game_play_state['all']['game_state'] != 'stopped':
         messages = []
@@ -182,11 +187,6 @@ def game_start(context):
 
     initial_configuration_for_black = global_game_configuration['black']['agent']
     initial_game_start_position = global_game_configuration['all']['initial_board_layout']
-
-    global global_game_board_state
-    global initial_game_board_state_standard
-    global initial_game_board_state_german_daisy
-    global initial_game_board_state_belgian_daisy
 
     # Set the starting position.
     if initial_game_start_position == "german_daisy":
@@ -360,6 +360,7 @@ def goal_test(context):
         messages.append("Game stopped.")
         context.log(messages)
 
+
     elif global_game_play_state['white']['score'] == 6:
         # Update the global game state.
         global_game_play_state['all']['game_state'] = 'stopped'
@@ -372,6 +373,7 @@ def goal_test(context):
         messages.append("White won!")
         messages.append("Game stopped.")
         context.log(messages)
+
 
     elif global_game_play_state['black']['moves_taken'] - 1 \
         == global_game_configuration['black']['move_limitation'] \

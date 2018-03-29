@@ -9,8 +9,8 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import ai_rules, itertools, ai_movement
-import copy    # For copy.deepcopy() function as Python is "pass-by-ref" by default.
+import itertools, copy # For copy.deepcopy() function as Python is "pass-by-ref" by default.
+import ai_rules,  ai_movement
 
 # A game board state used by AI to evaluate utilities
 # of the board configuration.
@@ -239,27 +239,6 @@ def generate_all_next_moves_and_states(player, state_to_expand):
     return [total_movement_collection, total_state_space_collection]
 
 
-
-
-# The entry point of this file.
-if __name__ == '__main__':
-
-    test_state = [
-        [-9, -9, -9, -9,  0,  0,  0,  0,  0],
-        [-9, -9, -9,  0,  0,  0,  0,  0,  0],
-        [-9, -9,  0,  0,  0,  0,  0,  0,  0],
-        [-9,  0,  2,  0,  0,  0,  0,  0,  0],
-        [ 0,  0,  2,  0,  0,  0,  0,  0,  0],
-        [ 0,  0,  1,  0,  0,  0,  0,  0, -9],
-        [ 0,  0,  1,  0,  0,  0,  0, -9, -9],
-        [ 0,  0,  1,  0,  0,  0, -9, -9, -9],
-        [ 0,  0,  0,  0,  0, -9, -9, -9, -9]
-    ]
-
-
-    test = generate_all_next_moves_and_states('black', test_state)
-
-    print(test[1][27])
 
 
 
