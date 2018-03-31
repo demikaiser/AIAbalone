@@ -38,7 +38,7 @@ global_game_board_boundary_for_z = {
 
 # ================ ================ Legal Movement Generation ================ ================
 
-def generate_all_possible_legal_moves_for_one_piece(state, x1, y1):
+cpdef inline generate_all_possible_legal_moves_for_one_piece(state, int x1, int y1):
     possible_moves = set()
 
     # Upper-Right.
@@ -68,7 +68,7 @@ def generate_all_possible_legal_moves_for_one_piece(state, x1, y1):
 
     return possible_moves
 
-def generate_all_possible_legal_moves_for_two_pieces(state, x1, y1, x2, y2):
+cpdef inline generate_all_possible_legal_moves_for_two_pieces(state, int x1, int y1, int x2, int y2):
     possible_moves = set()
     if is_two_pieces_inline(x1, y1, x2, y2):
         # Upper-Right.
@@ -98,7 +98,7 @@ def generate_all_possible_legal_moves_for_two_pieces(state, x1, y1, x2, y2):
 
     return possible_moves
 
-def generate_all_possible_legal_moves_for_three_pieces(state, x1, y1, x2, y2, x3, y3):
+cpdef inline generate_all_possible_legal_moves_for_three_pieces(state, int x1, int y1, int x2, int y2, int x3, int y3):
     possible_moves = set()
     if is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
         # Upper-Right.
@@ -128,7 +128,7 @@ def generate_all_possible_legal_moves_for_three_pieces(state, x1, y1, x2, y2, x3
 
     return possible_moves
 
-def generate_all_2_to_1_legal_sumitos(state, x1, y1, x2, y2):
+cpdef inline generate_all_2_to_1_legal_sumitos(state, int x1, int y1, int x2, int y2):
     possible_moves = set()
     if is_two_pieces_inline(x1, y1, x2, y2):
         possible_moves = get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(state, x1, y1, x2, y2)
@@ -139,7 +139,7 @@ def generate_all_2_to_1_legal_sumitos(state, x1, y1, x2, y2):
 
     return possible_moves
 
-def generate_all_3_to_1_legal_sumitos(state, x1, y1, x2, y2, x3, y3):
+cpdef inline generate_all_3_to_1_legal_sumitos(state, int x1, int y1, int x2, int y2, int x3, int y3):
     possible_moves = set()
     if is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
         possible_moves = get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, x2, y2, x3, y3)
@@ -150,7 +150,7 @@ def generate_all_3_to_1_legal_sumitos(state, x1, y1, x2, y2, x3, y3):
 
     return possible_moves
 
-def generate_all_3_to_2_legal_sumitos(state, x1, y1, x2, y2, x3, y3):
+cpdef inline generate_all_3_to_2_legal_sumitos(state, int x1, int y1, int x2, int y2, int x3, int y3):
     possible_moves = set()
     if is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
         possible_moves = get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, x2, y2, x3, y3)
@@ -163,8 +163,14 @@ def generate_all_3_to_2_legal_sumitos(state, x1, y1, x2, y2, x3, y3):
 
 # ================ ================ Sumito Coordinates Calculation ================ ================
 
+
 # Calculate 2 to 1 sumito coordinates on the direction x (y coordinates are same).
-def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(state, x1, y1, x2, y2):
+cpdef inline get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(state, int x1, int y1, int x2, int y2):
+
+    cdef ally, opponent
+    cdef y_common
+    cdef x_adv_max_0, x_adv_max_1, x_adv_max_2
+    cdef x_adv_min_0, x_adv_min_1, x_adv_min_2
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -217,7 +223,13 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(state, x1, y1, x2
 
 
 # Calculate 3 to 1 sumito coordinates on the direction x (y coordinates are same).
-def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, x2, y2, x3, y3):
+cpdef inline get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(state, int x1, int y1, int x2, int y2, int x3, int y3):
+
+    cdef ally, opponent
+    cdef y_common
+    cdef x_adv_max_0, x_adv_max_1, x_adv_max_2
+    cdef x_adv_mid_0
+    cdef x_adv_min_0, x_adv_min_1, x_adv_min_2
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -273,7 +285,13 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, 
     return sumito_coordinates
 
 # Calculate 3 to 2 sumito coordinates on the direction x (y coordinates are same).
-def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, x2, y2, x3, y3):
+cpdef inline get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(state, int x1, int y1, int x2, int y2, int x3, int y3):
+
+    cdef ally, opponent
+    cdef y_common
+    cdef x_adv_max_0, x_adv_max_1, x_adv_max_2, x_adv_max_3
+    cdef x_adv_mid_0
+    cdef x_adv_min_0, x_adv_min_1, x_adv_min_2, x_adv_min_3
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -335,7 +353,12 @@ def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, 
     return sumito_coordinates
 
 # Calculate 2 to 1 sumito coordinates on the direction y (x coordinates are same).
-def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_y_axis(state, x1, y1, x2, y2):
+cpdef inline get_2_to_1_sumito_coordinates_for_two_pieces_on_the_y_axis(state, int x1, int y1, int x2, int y2):
+
+    cdef ally, opponent
+    cdef x_common
+    cdef y_adv_max_0, y_adv_max_1, y_adv_max_2
+    cdef y_adv_min_0, y_adv_min_1, y_adv_min_2
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -387,7 +410,13 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_y_axis(state, x1, y1, x2
     return sumito_coordinates
 
 # Calculate 3 to 1 sumito coordinates on the direction y (x coordinates are same).
-def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(state, x1, y1, x2, y2, x3, y3):
+cpdef inline get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(state, int x1, int y1, int x2, int y2, int x3, int y3):
+
+    cdef ally, opponent
+    cdef x_common
+    cdef y_adv_max_0, y_adv_max_1, y_adv_max_2
+    cdef y_adv_mid_0
+    cdef y_adv_min_0, y_adv_min_1, y_adv_min_2
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -443,7 +472,13 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(state, x1, y1, 
     return sumito_coordinates
 
 # Calculate 3 to 2 sumito coordinates on the direction y (x coordinates are same).
-def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(state, x1, y1, x2, y2, x3, y3):
+cpdef inline get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(state, int x1, int y1, int x2, int y2, int x3, int y3):
+
+    cdef ally, opponent
+    cdef x_common
+    cdef y_adv_max_0, y_adv_max_1, y_adv_max_2, y_adv_max_3
+    cdef y_adv_mid_0
+    cdef y_adv_min_0, y_adv_min_1, y_adv_min_2, y_adv_min_3
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -505,7 +540,13 @@ def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(state, x1, y1, 
     return sumito_coordinates
 
 # Calculate 2 to 1 sumito coordinates on the direction z (multi-factored with x and y).
-def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_z_axis(state, x1, y1, x2, y2):
+cpdef inline get_2_to_1_sumito_coordinates_for_two_pieces_on_the_z_axis(state, int x1, int y1, int x2, int y2):
+
+    cdef ally, opponent
+    cdef x_adv_max_0, x_adv_max_1, x_adv_max_2
+    cdef x_adv_min_0, x_adv_min_1, x_adv_min_2
+    cdef y_adv_max_0, y_adv_max_1, y_adv_max_2
+    cdef y_adv_min_0, y_adv_min_1, y_adv_min_2
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -564,7 +605,15 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_z_axis(state, x1, y1, x2
     return sumito_coordinates
 
 # Calculate 3 to 1 sumito coordinates on the direction z (multi-factored with x and y).
-def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, x2, y2, x3, y3):
+cpdef inline get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(state, int x1, int y1, int x2, int y2, int x3, int y3):
+
+    cdef ally, opponent
+    cdef x_adv_max_0, x_adv_max_1, x_adv_max_2
+    cdef x_adv_mid_0
+    cdef x_adv_min_0, x_adv_min_1, x_adv_min_2
+    cdef y_adv_max_0, y_adv_max_1, y_adv_max_2
+    cdef y_adv_mid_0
+    cdef y_adv_min_0, y_adv_min_1, y_adv_min_2
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -635,7 +684,15 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, 
 
 
 # Calculate 3 to 2 sumito coordinates on the direction z (multi-factored with x and y).
-def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, x2, y2, x3, y3):
+cpdef inline get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(state, int x1, int y1, int x2, int y2, int x3, int y3):
+
+    cdef ally, opponent
+    cdef x_adv_max_0, x_adv_max_1, x_adv_max_2, x_adv_max_3
+    cdef x_adv_mid_0
+    cdef x_adv_min_0, x_adv_min_1, x_adv_min_2, x_adv_min_3
+    cdef y_adv_max_0, y_adv_max_1, y_adv_max_2, y_adv_max_3
+    cdef y_adv_mid_0
+    cdef y_adv_min_0, y_adv_min_1, y_adv_min_2, y_adv_min_3
 
     # Get the color of the player.
     if state[x1][y1] == 1:
@@ -713,18 +770,16 @@ def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, 
     return sumito_coordinates
 
 
-
 # ================ ================ Utility Functions ================ ================
 
-
 # Determine whether the location is currently empty.
-def is_the_location_empty(state, x, y):
+cpdef inline is_the_location_empty(state, int x, int y):
     if state[x][y] == 0:
         return True
     return False
 
 # Determine whether the location is on the boundary.
-def is_the_location_boundary(x, y, direction):
+cpdef inline is_the_location_boundary(int x, int y, direction):
 
     global global_game_board_boundary_for_all
     global global_game_board_boundary_for_x
@@ -747,7 +802,7 @@ def is_the_location_boundary(x, y, direction):
     return False
 
 # Find the maximum value from two elements.
-def max_from_two_elements(a, b):
+cpdef inline max_from_two_elements(int a, int b):
     if a > b:
         return a
     elif b > a:
@@ -756,7 +811,7 @@ def max_from_two_elements(a, b):
         return a
 
 # Find the maximum value from three elements.
-def max_from_three_elements(a, b, c):
+cpdef inline max_from_three_elements(int a, int b, int c):
     if a > b and a > c:
         return a
     elif b > a and b > c:
@@ -767,7 +822,7 @@ def max_from_three_elements(a, b, c):
         return a
 
 # Find the minimum value from two elements.
-def min_from_two_elements(a, b):
+cpdef inline min_from_two_elements(int a, int b):
     if a < b:
         return a
     elif b < a:
@@ -776,7 +831,7 @@ def min_from_two_elements(a, b):
         return a
 
 # Find the minimum value from three elements.
-def min_from_three_elements(a, b, c):
+cpdef inline min_from_three_elements(int a, int b, int c):
     if a < b and a < c:
         return a
     elif b < a and b < c:
@@ -787,7 +842,7 @@ def min_from_three_elements(a, b, c):
         return a
 
 # Find the middle value from three elements.
-def mid_from_three_elements(a, b, c):
+cpdef inline mid_from_three_elements(int a, int b, int c):
     if (a < b and a > c) or (a > b and a < c):
         return a
     elif (b < a and b > c) or (b > a and b < c):
@@ -797,7 +852,7 @@ def mid_from_three_elements(a, b, c):
 
 
 # Determine whether two pieces inline.
-def is_two_pieces_inline(x1, y1, x2, y2):
+cpdef inline is_two_pieces_inline(int x1, int y1, int x2, int y2):
 
     # Find out if it's inline.
     if x1 + 1 == x2 and y1 - 1 == y2:
@@ -816,7 +871,7 @@ def is_two_pieces_inline(x1, y1, x2, y2):
     return False
 
 # Determine whether three pieces inline.
-def is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
+cpdef inline is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
 
     # If all the pieces are not all inlines, then return false.
     how_many_are_inline = 0
@@ -847,7 +902,7 @@ def is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
 # Determine whether the position is currently empty or going to be empty in move.
 # positions is a list of tuples: [(x1, y1), (x2, y2), (x3, y3),...]
 # exceptions is a list of tuples: [(x1, y1), (x2, y2), (x3, y3),...]
-def is_the_position_empty_or_going_to_be_empty(state, positions, exceptions):
+cpdef inline is_the_position_empty_or_going_to_be_empty(state, positions, exceptions):
     for position in positions:
         if search_in_coordinates_tuples_list((position[0], position[1]), exceptions) == False:
             if state[position[0]][position[1]] != 0:
@@ -855,7 +910,7 @@ def is_the_position_empty_or_going_to_be_empty(state, positions, exceptions):
     return True
 
 # Search if the coordinates is in the list.
-def search_in_coordinates_tuples_list(key, list):
+cpdef inline search_in_coordinates_tuples_list(key, list):
     for item in list:
         if key == item:
             return True
@@ -863,14 +918,12 @@ def search_in_coordinates_tuples_list(key, list):
 
 # Determine whether the position is out of board.
 # positions is a list of tuples: [(x1, y1), (x2, y2), (x3, y3),...]
-def is_the_position_inside_of_the_board(state, positions):
+cpdef inline is_the_position_inside_of_the_board(state, positions):
     for position in positions:
         if position[0] < 0 or position[0] > 8 or position[1] < 0 or position[1] > 8:
             return False
         if state[position[0]][position[1]] == -9:
             return False
     return True
-
-
 
 

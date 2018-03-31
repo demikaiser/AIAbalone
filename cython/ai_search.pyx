@@ -26,6 +26,9 @@ global_transposition_table = dict()
 POSITIVE_INFINITY = math.inf
 NEGATIVE_INFINITY = -math.inf
 
+# Number of initial moves that should be played by the hard-coded playbook.
+NUMBER_OF_INITIAL_MOVES_BY_PLAYBOOK = 5
+
 # Minimum and maximum depth for iterative deepening search.
 MINIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH = 0
 MAXIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH = 100
@@ -40,7 +43,11 @@ MAXIMUM_STATES_FOR_FORWARD_PRUNING = 3
 # 1. Hard-coded Playbook of 5 Inital Movement for 3 Board Configuration
 # 2. For More Moves, Iterative Deepening Search with Time Constraint
 # 3. Main Search Strategy: Minimax Tree Search with Alpha-Beta Pruning
-def get_next_move_and_state_from_ai_search(player, state_from, context):
+cpdef inline get_next_move_and_state_from_ai_search(player, state_from, move_number, context):
+    # Follow the hard-coded playbook if the move_number is less than 4 (first five moves).
+    if NUMBER_OF_INITIAL_MOVES_BY_PLAYBOOK > move_number:
+        #TODO UPDATE THE GLOBAL MOVE
+        pass
 
     # Perform Iterative Deepening Search with time constraint to update the best move.
     # This function updates the global_best_next_move_and_state directly, and terminates
@@ -52,8 +59,14 @@ def get_next_move_and_state_from_ai_search(player, state_from, context):
 
     return best_next_move_and_state
 
+
+#TODO: Task to be assigned.
+# Return the predefined playbook move for the first certain number of moves.
+cpdef inline get_predefined_playbook_move(player):
+    pass
+
 # Iterative deepening tree search with a given time constraint.
-def iterative_deepening_search_with_time_constraint(player, state_from, context):
+cpdef inline iterative_deepening_search_with_time_constraint(player, state_from, context):
 
     # Clear the candidate moves before start searching.
     model.global_game_play_state[player]['best_next_move_and_state'][0] = []
@@ -113,13 +126,13 @@ def iterative_deepening_search_with_time_constraint(player, state_from, context)
             context.select_candidate_positions_for_ai(temp_best_next_move_and_state[0])
 
 # Minimax tree search with alpha-beta pruning with a depth limitation.
-def minimax_tree_search_with_alpha_beta_pruning(player, state_from, alpha, beta, depth):
+cpdef inline minimax_tree_search_with_alpha_beta_pruning(player, state_from, alpha, beta, depth):
 
     return max_value(player, state_from, alpha, beta, depth)
 
 
 # The max value function for Minimax search.
-def max_value(player, state_from, alpha, beta, depth):
+cpdef inline max_value(player, state_from, alpha, beta, depth):
 
     # Recursion termination conditions.
     if depth <= 0 \
@@ -138,7 +151,7 @@ def max_value(player, state_from, alpha, beta, depth):
     return value
 
 # The min value function for Minimax search.
-def min_value(player, state_from, alpha, beta, depth):
+cpdef inline min_value(player, state_from, alpha, beta, depth):
 
     # Recursion termination conditions.
     if depth <= 0 \
@@ -168,7 +181,7 @@ def min_value(player, state_from, alpha, beta, depth):
 # 1. Forward Pruning with Evaluation Functions
 # 2. Move Re-Ordering for ABP Efficiency (Best-Move First Policy)
 # 3. Repeated States Removal by Using Transposition Table
-def generate_pruned_and_ordered_next_moves_and_states(minimax, player, state_from):
+cpdef inline generate_pruned_and_ordered_next_moves_and_states(minimax, player, state_from):
 
     # Use the global transposition table.
     global global_transposition_table
@@ -227,7 +240,10 @@ def generate_pruned_and_ordered_next_moves_and_states(minimax, player, state_fro
     return pruned_and_ordered_next_moves_and_states
 
 # Return true if the state is the terminal state.
-def is_terminal_state_to_finish_up(player, state):
+cpdef inline is_terminal_state_to_finish_up(player, state):
+
+    cpdef int i, j, ally, opponent, opponent_pieces_count
+
     if player == 'black':
         ally = 1
         opponent = 2
@@ -237,8 +253,8 @@ def is_terminal_state_to_finish_up(player, state):
 
     opponent_pieces_count = 0
 
-    for j in range(9):
-        for i in range(9):
+    for i in range(9):
+        for j in range(9):
             if state[i][j] == opponent:
                 opponent_pieces_count += 1
 
@@ -258,7 +274,7 @@ def is_terminal_state_to_finish_up(player, state):
 # 5. Finally, if it does, promote the Challenger to the Champion,
 #    by putting the contents of the Challenger to the Champion.
 # 6. Start experimenting with a new Challenger, repeat the process.
-def evaluation_function_interface(player, state_from):
+cpdef inline evaluation_function_interface(player, state_from):
 
     if '_B_' in model.global_game_play_state['all']['game_state']:
         return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)

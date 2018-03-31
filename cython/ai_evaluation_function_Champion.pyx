@@ -13,7 +13,10 @@ import ai_state_space_generator, model
 import copy
 
 
-def get_evaluation_score(player, state):
+cpdef get_evaluation_score(player, state):
+
+    cdef ally, opponent, score
+
     # Check the side.
     if player == 'black':
         ally = 1
@@ -117,8 +120,10 @@ DANGER_ZONE_INDICATOR = [
     [ FDZ,  FDZ,  FDZ, FDZ, FDZ,  -9,  -9,  -9,  -9]
 ]
 
-def in_danger_zone(player, state, ally, opponent):
+cpdef inline in_danger_zone(player, state, int ally, int opponent):
     global DANGER_ZONE_INDICATOR
+
+    cdef int i, j, score
 
     score = 0
 
@@ -132,7 +137,10 @@ def in_danger_zone(player, state, ally, opponent):
     return score
 
 
-def terminal_state(player, state):
+cpdef inline terminal_state(player, state):
+
+    cdef int ally, opponent, i, j, ally_pieces_count, opponent_pieces_count
+
     # Check the side.
     if player == 'black':
         ally = 1
@@ -172,7 +180,10 @@ MANHATTAN_WEIGHT = [
 ]
 
 
-def manhattan_distance(player, state, ally, opponent):
+cpdef inline manhattan_distance(player, state, int ally, int opponent):
+
+    cdef int score, i, j
+
     score = 0
 
     for i in range(9):
@@ -185,7 +196,10 @@ def manhattan_distance(player, state, ally, opponent):
     return score
 
 
-def clumping(player, opponent_color, ally_pieces_locations, opp_pieces_locations, state):
+cpdef inline clumping(player, opponent_color, ally_pieces_locations, opp_pieces_locations, state):
+
+    cdef int ally_robustness, opp_robustness, x, y
+
     ally_robustness = 0
     opp_robustness = 0
 
@@ -238,7 +252,9 @@ def clumping(player, opponent_color, ally_pieces_locations, opp_pieces_locations
     return ally_robustness - opp_robustness
 
 
-def piece_count(player, state):
+cpdef inline piece_count(player, state):
+
+    cpdef int pieces_score, ally, opponent, i, j
 
     pieces_score = 0
 
@@ -260,7 +276,9 @@ def piece_count(player, state):
     return pieces_score
 
 
-def sumito_num(player, ally_pieces_locations, opp_pieces_locations, state):
+cpdef inline sumito_num(player, ally_pieces_locations, opp_pieces_locations, state):
+
+    cpdef int sumito_power
 
     sumito_power = 0
 
@@ -302,7 +320,10 @@ def sumito_num(player, ally_pieces_locations, opp_pieces_locations, state):
     return sumito_power
 
 
-def pairs(player, ally_pieces_locations, opp_pieces_locations, state):
+cpdef inline pairs(player, ally_pieces_locations, opp_pieces_locations, state):
+
+    cpdef int pair_score
+
     pair_score = 0
 
     locations = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(ally_pieces_locations)
@@ -318,7 +339,10 @@ def pairs(player, ally_pieces_locations, opp_pieces_locations, state):
     return pair_score
 
 
-def triplets(player, ally_pieces_locations, opp_pieces_locations, state):
+cpdef inline triplets(player, ally_pieces_locations, opp_pieces_locations, state):
+
+    cpdef int triplet_score
+
     triplet_score = 0
 
     locations = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(ally_pieces_locations)
@@ -334,7 +358,7 @@ def triplets(player, ally_pieces_locations, opp_pieces_locations, state):
     return triplet_score
 
 
-def split(player, ally_pieces_locations, opp_pieces_locations, state):
+cpdef inline split(player, ally_pieces_locations, opp_pieces_locations, state):
     # Check the side.
     if player == 'black':
         ally = 1
@@ -379,7 +403,7 @@ def split(player, ally_pieces_locations, opp_pieces_locations, state):
     return ally_split_score - opp_split_score
 
 
-def strengthen_group(player, ally_pieces_locations, state):
+cpdef inline strengthen_group(player, ally_pieces_locations, state):
     # Check the side.
     if player == 'black':
         ally = 1
@@ -413,7 +437,7 @@ def strengthen_group(player, ally_pieces_locations, state):
     return strength_score
 
 
-def single_marble_edge(player, ally_pieces_locations, state):
+cpdef inline single_marble_edge(player, ally_pieces_locations, state):
     # Check the side.
     if player == 'black':
         ally = 1
@@ -450,7 +474,7 @@ def single_marble_edge(player, ally_pieces_locations, state):
     return edge_score
 
 # Determine whether two pieces inline.
-def is_two_pieces_inline(x1, y1, x2, y2):
+cpdef inline is_two_pieces_inline(int x1, int y1, int x2, int y2):
 
     # Find out if it's inline.
     if x1 + 1 == x2 and y1 - 1 == y2:
@@ -469,7 +493,7 @@ def is_two_pieces_inline(x1, y1, x2, y2):
     return False
 
 # Determine whether three pieces inline.
-def is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
+cpdef inline is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
 
     # If all the pieces are not all inlines, then return false.
     how_many_are_inline = 0
