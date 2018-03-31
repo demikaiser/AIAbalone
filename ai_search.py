@@ -40,7 +40,7 @@ MAXIMUM_STATES_FOR_FORWARD_PRUNING = 3
 # 1. Hard-coded Playbook of 5 Inital Movement for 3 Board Configuration
 # 2. For More Moves, Iterative Deepening Search with Time Constraint
 # 3. Main Search Strategy: Minimax Tree Search with Alpha-Beta Pruning
-def get_next_move_and_state_from_ai_search(player, state_from, context):
+def get_next_move_and_state_from_ai_search(player, state_from, moves_taken, context):
 
     # Perform Iterative Deepening Search with time constraint to update the best move.
     # This function updates the global_best_next_move_and_state directly, and terminates
