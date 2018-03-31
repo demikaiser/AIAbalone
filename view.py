@@ -22,15 +22,15 @@ class GUI:
     # represents whether there is a piece or not (1 for the PLAYER BLACK and 2 for the PLAYER WHITE).
     # [x_coordinate, y_coordinate, piece, x_screen, y_screen, selected (0 or 1)]
     COORDINATES_CARTESIAN = [
-        [0, -4, 0, 0, 0, 0], [1, -4, 0, 0, 0, 0], [2, -4, 0, 0, 0, 0], [3, -4, 0, 0, 0, 0], [4, -4, 0, 0, 0, 0],
-        [-1, -3, 0, 0, 0, 0], [0, -3, 0, 0, 0, 0], [1, -3, 0, 0, 0, 0], [2, -3, 0, 0, 0, 0], [3, -3, 0, 0, 0, 0], [4, -3, 0, 0, 0, 0],
-        [-2, -2, 0, 0, 0, 0], [-1, -2, 0, 0, 0, 0], [0, -2, 0, 0, 0, 0], [1, -2, 0, 0, 0, 0], [2, -2, 0, 0, 0, 0], [3, -2, 0, 0, 0, 0], [4, -2, 0, 0, 0, 0],
-        [-3, -1, 0, 0, 0, 0], [-2, -1, 0, 0, 0, 0], [-1, -1, 0, 0, 0, 0], [0, -1, 0, 0, 0, 0], [1, -1, 0, 0, 0, 0], [2, -1, 0, 0, 0, 0], [3, -1, 0, 0, 0, 0], [4, -1, 0, 0, 0, 0],
-        [-4, 0, 0, 0, 0, 0], [-3, 0, 0, 0, 0, 0], [-2, 0, 0, 0, 0, 0], [-1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0], [2, 0, 0, 0, 0, 0], [3, 0, 0, 0, 0, 0], [4, 0, 0, 0, 0, 0],
-        [-4, 1, 0, 0, 0, 0], [-3, 1, 0, 0, 0, 0], [-2, 1, 0, 0, 0, 0], [-1, 1, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0], [2, 1, 0, 0, 0, 0], [3, 1, 0, 0, 0, 0],
-        [-4, 2, 0, 0, 0, 0], [-3, 2, 0, 0, 0, 0], [-2, 2, 0, 0, 0, 0], [-1, 2, 0, 0, 0, 0], [0, 2, 0, 0, 0, 0], [1, 2, 0, 0, 0, 0], [2, 2, 0, 0, 0, 0],
-        [-4, 3, 0, 0, 0, 0], [-3, 3, 0, 0, 0, 0], [-2, 3, 0, 0, 0, 0], [-1, 3, 0, 0, 0, 0], [0, 3, 0, 0, 0, 0], [1, 3, 0, 0, 0, 0],
-        [-4, 4, 0, 0, 0, 0], [-3, 4, 0, 0, 0, 0], [-2, 4, 0, 0, 0, 0], [-1, 4, 0, 0, 0, 0], [0, 4, 0, 0, 0, 0]
+        [0, -4, 0, 0, 0, 0, "I5"], [1, -4, 0, 0, 0, 0, "I6"], [2, -4, 0, 0, 0, 0, "I7"], [3, -4, 0, 0, 0, 0, "I8"], [4, -4, 0, 0, 0, 0, "I9"],
+        [-1, -3, 0, 0, 0, 0, "H4"], [0, -3, 0, 0, 0, 0, "H5"], [1, -3, 0, 0, 0, 0, "H6"], [2, -3, 0, 0, 0, 0, "H7"], [3, -3, 0, 0, 0, 0, "H8"], [4, -3, 0, 0, 0, 0, "H9"],
+        [-2, -2, 0, 0, 0, 0, "G3"], [-1, -2, 0, 0, 0, 0, "G4"], [0, -2, 0, 0, 0, 0, "G5"], [1, -2, 0, 0, 0, 0, "G6"], [2, -2, 0, 0, 0, 0, "G7"], [3, -2, 0, 0, 0, 0, "G8"], [4, -2, 0, 0, 0, 0, "G9"],
+        [-3, -1, 0, 0, 0, 0, "F2"], [-2, -1, 0, 0, 0, 0, "F3"], [-1, -1, 0, 0, 0, 0, "F4"], [0, -1, 0, 0, 0, 0, "F5"], [1, -1, 0, 0, 0, 0, "F6"], [2, -1, 0, 0, 0, 0, "F7"], [3, -1, 0, 0, 0, 0, "F8"], [4, -1, 0, 0, 0, 0, "F9"],
+        [-4, 0, 0, 0, 0, 0, "E1"], [-3, 0, 0, 0, 0, 0, "E2"], [-2, 0, 0, 0, 0, 0, "E3"], [-1, 0, 0, 0, 0, 0, "E4"], [0, 0, 0, 0, 0, 0, "E5"], [1, 0, 0, 0, 0, 0, "E6"], [2, 0, 0, 0, 0, 0, "E7"], [3, 0, 0, 0, 0, 0, "E8"], [4, 0, 0, 0, 0, 0, "E9"],
+        [-4, 1, 0, 0, 0, 0, "D1"], [-3, 1, 0, 0, 0, 0, "D2"], [-2, 1, 0, 0, 0, 0, "D3"], [-1, 1, 0, 0, 0, 0, "D4"], [0, 1, 0, 0, 0, 0, "D5"], [1, 1, 0, 0, 0, 0, "D6"], [2, 1, 0, 0, 0, 0, "D7"], [3, 1, 0, 0, 0, 0, "D8"],
+        [-4, 2, 0, 0, 0, 0, "C1"], [-3, 2, 0, 0, 0, 0, "C2"], [-2, 2, 0, 0, 0, 0, "C3"], [-1, 2, 0, 0, 0, 0, "C4"], [0, 2, 0, 0, 0, 0, "C5"], [1, 2, 0, 0, 0, 0, "C6"], [2, 2, 0, 0, 0, 0, "C7"],
+        [-4, 3, 0, 0, 0, 0, "B1"], [-3, 3, 0, 0, 0, 0, "B2"], [-2, 3, 0, 0, 0, 0, "B3"], [-1, 3, 0, 0, 0, 0, "B4"], [0, 3, 0, 0, 0, 0, "B5"], [1, 3, 0, 0, 0, 0, "B6"],
+        [-4, 4, 0, 0, 0, 0, "A1"], [-3, 4, 0, 0, 0, 0, "A2"], [-2, 4, 0, 0, 0, 0, "A3"], [-1, 4, 0, 0, 0, 0, "A4"], [0, 4, 0, 0, 0, 0, "A5"]
     ]
 
     # Negative adjustment for coordinates constants.
@@ -112,6 +112,7 @@ class GUI:
 
         self.populate_gui_coordinates()
 
+        self.draw_coordinates()
         self.update_canvas()
         self.create_log_console()
         self.create_buttons()
@@ -367,6 +368,34 @@ class GUI:
             self.COORDINATES_CARTESIAN[position][5] = 0
         self.update_canvas()
 
+    # Select possible move position for AI.
+    def select_candidate_positions_for_ai(self, possible_move_tuple):
+        length_of_move_tuple = len(possible_move_tuple)
+
+        if length_of_move_tuple == 4:
+            for coordinate in self.COORDINATES_CARTESIAN:
+                if (coordinate[0] == possible_move_tuple[0] and coordinate[1] == possible_move_tuple[1])\
+                        or (coordinate[0] == possible_move_tuple[2] and coordinate[1] == possible_move_tuple[3]):
+                    coordinate[5] = 1
+        elif length_of_move_tuple == 8:
+            for coordinate in self.COORDINATES_CARTESIAN:
+                if (coordinate[0] == possible_move_tuple[0] and coordinate[1] == possible_move_tuple[1]) \
+                        or (coordinate[0] == possible_move_tuple[2] and coordinate[1] == possible_move_tuple[3]) \
+                        or (coordinate[0] == possible_move_tuple[4] and coordinate[1] == possible_move_tuple[5]) \
+                        or (coordinate[0] == possible_move_tuple[6] and coordinate[1] == possible_move_tuple[7]):
+                    coordinate[5] = 1
+        elif length_of_move_tuple == 12:
+            for coordinate in self.COORDINATES_CARTESIAN:
+                if (coordinate[0] == possible_move_tuple[0] and coordinate[1] == possible_move_tuple[1]) \
+                        or (coordinate[0] == possible_move_tuple[2] and coordinate[1] == possible_move_tuple[3]) \
+                        or (coordinate[0] == possible_move_tuple[4] and coordinate[1] == possible_move_tuple[5]) \
+                        or (coordinate[0] == possible_move_tuple[6] and coordinate[1] == possible_move_tuple[7]) \
+                        or (coordinate[0] == possible_move_tuple[8] and coordinate[1] == possible_move_tuple[9]) \
+                        or (coordinate[0] == possible_move_tuple[10] and coordinate[1] == possible_move_tuple[11]):
+                    coordinate[5] = 1
+
+        self.update_canvas()
+
     # Clear all coordinates' selection.
     def clear_all_selection(self):
         for coordinate in self.COORDINATES_CARTESIAN:
@@ -401,7 +430,7 @@ class GUI:
     # Display coordinates for the locations of Abalone.
     def display_coordinates(self, text, x, y, size = 20, color = colors.ORANGE):
         text = str(text)
-        font = pygame.font.SysFont('Consolas', 20)
+        font = pygame.font.SysFont('Consolas', 18)
         text = font.render(text, True, color)
         self.main_display_surface.blit(text, (x, y))
 
@@ -422,7 +451,7 @@ class GUI:
 
         # Draw the fundamental game setup.
         x_beginning = self.master_board_start_x
-        radius = 30
+        radius = 31
         radius_piece = 25
         x_decrement_increment = 40
         distance_between_elements = 80
@@ -453,30 +482,11 @@ class GUI:
                     self.main_display_surface.blit(self.black_marble_img,
                                                    (row * distance_between_elements + x_beginning - 30,
                                                     column_increment * distance_between_elements - 30))
-                    # Raw drawing.
-                    # pygame.draw.circle(self.main_display_surface,
-                    #                    colors.BLACK,
-                    #                    (row * distance_between_elements + x_beginning,
-                    #                     column_increment * distance_between_elements),
-                    #                    radius_piece, 0)
+
                 elif self.COORDINATES_CARTESIAN[coordinates_increment][2] == 2:
                     self.main_display_surface.blit(self.white_marble_img,
                                                    (row * distance_between_elements + x_beginning - 30,
                                                     column_increment * distance_between_elements - 30))
-                    # Raw drawing.
-                    # pygame.draw.circle(self.main_display_surface,
-                    #                    colors.WHITE,
-                    #                    (row * distance_between_elements + x_beginning,
-                    #                     column_increment * distance_between_elements),
-                    #                    radius_piece, 0)
-
-                # Draw coordinates.
-                self.display_coordinates("(" + str(self.COORDINATES_CARTESIAN[coordinates_increment][0]) +
-                                            "," + str(self.COORDINATES_CARTESIAN[coordinates_increment][1])+ ")",
-                                        row * distance_between_elements
-                                            + x_beginning + x_decrement_for_font,
-                                        column_increment * distance_between_elements
-                                            + y_decrement_for_font)
                 coordinates_increment += 1
 
             column_increment += 1
@@ -484,6 +494,40 @@ class GUI:
                 x_beginning -= x_decrement_increment
             else:
                 x_beginning += x_decrement_increment
+
+    def draw_coordinates(self):
+
+        # Draw the fundamental game setup.
+        x_beginning = self.master_board_start_x
+        radius = 30
+        radius_piece = 25
+        x_decrement_increment = 40
+        distance_between_elements = 80
+
+        x_decrement_for_font = -30
+        y_decrement_for_font = 30
+
+        column_increment = 1
+        coordinates_increment = 0
+        for column in [5, 6, 7, 8, 9, 8, 7, 6, 5]:
+            for row in range(0, column):
+                # Draw coordinates.
+                self.display_coordinates(str(self.COORDINATES_CARTESIAN[coordinates_increment][6]) +
+                                         "(" + str(self.COORDINATES_CARTESIAN[coordinates_increment][0]) +
+                                         "," + str(self.COORDINATES_CARTESIAN[coordinates_increment][1]) + ")",
+                                         row * distance_between_elements
+                                         + x_beginning + x_decrement_for_font,
+                                         column_increment * distance_between_elements
+                                         + y_decrement_for_font)
+                coordinates_increment += 1
+            column_increment += 1
+            if column_increment <= 5:
+                x_beginning -= x_decrement_increment
+            else:
+                x_beginning += x_decrement_increment
+
+
+
 
     # ================ ================ Logging System ================ ================
     # Initialize a log console.
@@ -537,90 +581,102 @@ class GUI:
     # Show the time label.
     def show_time_label(self):
         font_text_time_label = pygame.font.SysFont('Consolas', 18)
-        time_label = font_text_time_label.render("", True, colors.ORANGE)
-        self.main_display_surface.blit(time_label, (self.master_board_start_x + 740, 60))
+        time_label_1 = font_text_time_label.render("Time", True, colors.ORANGE)
+        self.main_display_surface.blit(time_label_1, (65, 60))
+
+        time_label_2 = font_text_time_label.render("Time", True, colors.ORANGE)
+        self.main_display_surface.blit(time_label_2, (690, 60))
 
     # Show the total time label.
     def show_total_time_label(self):
         font_text_total_time_label = pygame.font.SysFont('Consolas', 18)
-        total_total_time_label = font_text_total_time_label.render("", True, colors.ORANGE)
-        self.main_display_surface.blit(total_total_time_label, (self.master_board_start_x + 710, 90))
+        total_total_time_label_1 = font_text_total_time_label.render("Total Time", True, colors.ORANGE)
+        self.main_display_surface.blit(total_total_time_label_1, (40, 120))
+
+        total_total_time_label_2 = font_text_total_time_label.render("Total Time", True, colors.ORANGE)
+        self.main_display_surface.blit(total_total_time_label_2, (670, 120))
 
     # Show the score label.
     def show_score_label(self):
         font_text_score_label = pygame.font.SysFont('Consolas', 18)
-        total_score_label = font_text_score_label.render("", True, colors.ORANGE)
-        self.main_display_surface.blit(total_score_label, (self.master_board_start_x + 735, 120))
+        total_score_label_1 = font_text_score_label.render("Score", True, colors.ORANGE)
+        self.main_display_surface.blit(total_score_label_1, (30, 610))
+
+        total_score_label_2 = font_text_score_label.render("Score", True, colors.ORANGE)
+        self.main_display_surface.blit(total_score_label_2, (730, 610))
 
     # Show the moves taken label.
     def show_moves_taken_label(self):
         font_text_moves_taken_label = pygame.font.SysFont('Consolas', 18)
-        total_moves_taken_label = font_text_moves_taken_label.render("", True, colors.ORANGE)
-        self.main_display_surface.blit(total_moves_taken_label, (self.master_board_start_x + 735, 150))
+        total_moves_taken_label_1 = font_text_moves_taken_label.render("Moves", True, colors.ORANGE)
+        self.main_display_surface.blit(total_moves_taken_label_1, (30, 710))
+
+        total_moves_taken_label_2 = font_text_moves_taken_label.render("Moves", True, colors.ORANGE)
+        self.main_display_surface.blit(total_moves_taken_label_2, (720, 710))
 
     # Update the time.
     def update_time(self, player, time):
-        font_text_time = pygame.font.SysFont('Consolas', 18)
+        font_text_time = pygame.font.SysFont('Consolas', 24)
 
         text = str('{0: >#7.1f}'. format(float(time)))
         text = font_text_time.render(text, True, colors.ORANGE)
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (10, 60, 80, 20))
-            self.main_display_surface.blit(text, (20, 60))
+                             (10, 80, 120, 30))
+            self.main_display_surface.blit(text, (20, 80))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (650, 60, 80, 20))
-            self.main_display_surface.blit(text, (660, 60))
+                             (640, 80, 120, 30))
+            self.main_display_surface.blit(text, (650, 80))
 
     # Update the total time.
     def update_total_time(self, player, time):
-        font_text_total_time = pygame.font.SysFont('Consolas', 18)
+        font_text_total_time = pygame.font.SysFont('Consolas', 24)
 
         text = str('{0: >#7.1f}'. format(float(time)))
         text = font_text_total_time.render(text, True, colors.ORANGE)
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (10, 90, 80, 20))
-            self.main_display_surface.blit(text, (20, 90))
+                             (10, 140, 120, 30))
+            self.main_display_surface.blit(text, (20, 140))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (650, 90, 80, 20))
-            self.main_display_surface.blit(text, (660, 90))
+                             (640, 140, 120, 30))
+            self.main_display_surface.blit(text, (650, 140))
 
     # Update the score.
     def update_score(self, player, score):
-        font_text_score = pygame.font.SysFont('Consolas', 18)
+        font_text_score = pygame.font.SysFont('Consolas', 72)
 
         text = str(score)
         text = font_text_score.render(text, True, colors.ORANGE)
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (10, 120, 60, 20))
-            self.main_display_surface.blit(text, (20, 120))
+                             (30, 630, 45, 60))
+            self.main_display_surface.blit(text, (30, 630))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (650, 120, 60, 20))
-            self.main_display_surface.blit(text, (660, 120))
+                             (730, 630, 45, 60))
+            self.main_display_surface.blit(text, (730, 630))
 
     # Update the moves taken.
     def update_moves_taken(self, player, moves):
-        font_text_score = pygame.font.SysFont('Consolas', 18)
+        font_text_score = pygame.font.SysFont('Consolas', 36)
 
         text = str(moves)
         text = font_text_score.render(text, True, colors.ORANGE)
 
         if player == 'black':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (10, 150, 60, 20))
-            self.main_display_surface.blit(text, (20, 150))
+                             (40, 730, 60, 40))
+            self.main_display_surface.blit(text, (40, 730))
         elif player == 'white':
             pygame.draw.rect(self.main_display_surface, colors.BLACK,
-                             (650, 150, 60, 20))
-            self.main_display_surface.blit(text, (660, 150))
+                             (730, 730, 60, 40))
+            self.main_display_surface.blit(text, (730, 730))
 
     # Update the game state.
     def update_game_state(self, state):
@@ -664,15 +720,15 @@ class GUI:
         # Draw texts for teams.
         font = pygame.font.SysFont('Consolas', 20)
         text_for_black_team = font.render("Black Player", True, colors.ORANGE)
-        self.main_display_surface.blit(text_for_black_team, (10, 20))
+        self.main_display_surface.blit(text_for_black_team, (20, 20))
         text_for_white_team = font.render("White Player", True, colors.ORANGE)
-        self.main_display_surface.blit(text_for_white_team, (620, 20))
+        self.main_display_surface.blit(text_for_white_team, (650, 20))
 
         # ================ ================ Thorpy Section ================ ================
 
         # ThorPy elements for black.
-        button_step_back_black = thorpy.make_button("Black Step Back",
-                                                    func=lambda: controller.button_step_back_black_callback(self))
+        button_step_back_black = thorpy.make_button("Step Back",
+                                                    func=lambda: controller.button_step_back_callback(self))
         button_step_back_black.set_size((190, 40))
 
         separation_line_black = thorpy.Line.make(size=190, type_="horizontal")
@@ -691,7 +747,7 @@ class GUI:
         self.slider_for_move_limit_black = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=50)
 
         label_for_time_limit_black = thorpy.make_text("Time Limitation", 16, colors.BROWN)
-        self.slider_for_time_limit_black = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=20)
+        self.slider_for_time_limit_black = thorpy.SliderX.make(140, (5, 120), "", type_=int, initial_value=5)
 
         separation_line_black_2 = thorpy.Line.make(size=190, type_="horizontal")
 
@@ -709,8 +765,8 @@ class GUI:
         ])
 
         # ThorPy elements for white.
-        button_step_back_white = thorpy.make_button("White Step Back",
-                                                    func=lambda: controller.button_step_back_white_callback(self))
+        button_step_back_white = thorpy.make_button("Step Forward",
+                                                    func=lambda: controller.button_step_forward_callback(self))
         button_step_back_white.set_size((190, 40))
 
         separation_line_white = thorpy.Line.make(size=190, type_="horizontal")
@@ -729,7 +785,7 @@ class GUI:
         self.slider_for_move_limit_white = thorpy.SliderX.make(140, (0, 100), "", type_=int, initial_value=50)
 
         label_for_time_limit_white = thorpy.make_text("Time Limitation", 16, colors.BROWN)
-        self.slider_for_time_limit_white = thorpy.SliderX.make(140, (0, 120), "", type_=int, initial_value=20)
+        self.slider_for_time_limit_white = thorpy.SliderX.make(140, (5, 120), "", type_=int, initial_value=5)
 
         separation_line_white_2 = thorpy.Line.make(size=190, type_="horizontal")
 

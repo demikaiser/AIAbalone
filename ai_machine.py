@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
-import time, _thread, copy
+import _thread, copy
 import gameboard, model, ai_search
 
 # Main function that actually makes movement.
@@ -20,7 +20,6 @@ def make_movement(context, color):
         _thread.start_new_thread(ai_calculation_thread, (context, color, ))
     elif color == 'white':
         _thread.start_new_thread(ai_calculation_thread, (context, color, ))
-
 
 # Calculation thread for artificial intelligence.
 def ai_calculation_thread(context, color):
@@ -42,7 +41,8 @@ def ai_calculation_thread(context, color):
         # ================ ================ AI Search to Get Next Move & State ================ ================
         new_move_and_state = ai_search.get_next_move_and_state_from_ai_search(color,
                                                                               model.global_game_board_state,
-                                                                              model.global_game_play_state[color]['moves_taken'])
+                                                                              model.global_game_play_state[color]['moves_taken'],
+                                                                              context)
         new_move = new_move_and_state[0]
         new_state = new_move_and_state[1]
 
