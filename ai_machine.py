@@ -71,6 +71,19 @@ def ai_calculation_thread(context, color):
     except RuntimeError:
         print("RuntimeError from ai_calculation_thread.")
 
+# Representation converter from this project's
+# to chiens board representation (Output Processing Data Structure - 2D Lists).
+chiens_board_representation_output = [
+    [-9, -9, -9, -9,  "E1",  "D1",  "C1",  "B1",  "A1"],
+    [-9, -9, -9,  "F2",  "E2",  "D2",  "C2",  "B2",  "A2"],
+    [-9, -9,  "G3",  "F3",  "E3",  "D3",  "C3",  "B3",  "A3"],
+    [-9,  "H4",  "G4",  "F4",  "E4",  "D4",  "C4",  "B4",  "A4"],
+    [ "I5",  "H5",  "G5",  "F5",  "E5",  "D5",  "C5",  "B5",  "A5"],
+    [ "I6",  "H6",  "G6",  "F6",  "E6",  "D6",  "C6",  "B6", -9],
+    [ "I7",  "H7",  "G7",  "F7",  "E7",  "D7",  "C7", -9, -9],
+    [ "I8",  "H8",  "G8",  "F8",  "E8",  "D8", -9, -9, -9],
+    [ "I9",  "H9",  "G9",  "F9",  "E9", -9, -9, -9, -9]
+]
 
 # Print and log the movement of AI.
 def print_and_log_move_tuple(context, color, move_tuple):
@@ -83,6 +96,10 @@ def print_and_log_move_tuple(context, color, move_tuple):
             messages.append("Black AI made movement as the following:")
         elif color == 'white':
             messages.append("White AI made movement as the following:")
+
+        messages.append("STD From : " + str(chiens_board_representation_output[move_tuple[0]][move_tuple[1]]))
+        messages.append("STD To   : " + str(chiens_board_representation_output[move_tuple[2]][move_tuple[3]]))
+
         messages.append("From : (" + str(move_tuple[0]) + "," + str(move_tuple[1]) + ")")
         messages.append("To   : (" + str(move_tuple[2]) + "," + str(move_tuple[3]) + ")")
 
@@ -91,6 +108,14 @@ def print_and_log_move_tuple(context, color, move_tuple):
             messages.append("Black AI made movement as the following:")
         elif color == 'white':
             messages.append("White AI made movement as the following:")
+
+        messages.append("STD From : "
+                        + str(chiens_board_representation_output[move_tuple[0]][move_tuple[1]]) + ', '
+                        + str(chiens_board_representation_output[move_tuple[2]][move_tuple[3]]))
+        messages.append("STD To   : "
+                        + str(chiens_board_representation_output[move_tuple[4]][move_tuple[5]]) + ', '
+                        + str(chiens_board_representation_output[move_tuple[6]][move_tuple[7]]))
+
         messages.append("From : (" + str(move_tuple[0]) + "," + str(move_tuple[1]) + ")"
                         + " " + "(" + str(move_tuple[2]) + "," + str(move_tuple[3]) + ")")
         messages.append("To   : (" + str(move_tuple[4]) + "," + str(move_tuple[5]) + ")"
@@ -101,6 +126,16 @@ def print_and_log_move_tuple(context, color, move_tuple):
             messages.append("Black AI made movement as the following:")
         elif color == 'white':
             messages.append("White AI made movement as the following:")
+
+        messages.append("STD From : "
+                        + str(chiens_board_representation_output[move_tuple[0]][move_tuple[1]]) + ', '
+                        + str(chiens_board_representation_output[move_tuple[2]][move_tuple[3]]) + ', '
+                        + str(chiens_board_representation_output[move_tuple[4]][move_tuple[5]]))
+        messages.append("STD To   : "
+                        + str(chiens_board_representation_output[move_tuple[6]][move_tuple[7]]) + ', '
+                        + str(chiens_board_representation_output[move_tuple[8]][move_tuple[9]]) + ', '
+                        + str(chiens_board_representation_output[move_tuple[10]][move_tuple[11]]))
+
         messages.append("From : (" + str(move_tuple[0]) + "," + str(move_tuple[1]) + ")"
                         + " " + "(" + str(move_tuple[2]) + "," + str(move_tuple[3]) + ")"
                         + " " + "(" + str(move_tuple[4]) + "," + str(move_tuple[5]) + ")")
@@ -120,6 +155,7 @@ def print_and_log_move_tuple(context, color, move_tuple):
 
     # Log all messages.
     context.log(messages)
+
 
 
 
