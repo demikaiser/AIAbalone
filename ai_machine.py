@@ -68,7 +68,7 @@ def ai_calculation_thread(context, color):
 
         # AI finishes a turn.
         model.update_turn_state(context)
-    except RuntimeError:
+    except Exception:
         print("RuntimeError from ai_calculation_thread.")
 
 # Representation converter from this project's
