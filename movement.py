@@ -437,18 +437,3 @@ def get_the_differences_from_sets_for_sumitos(positions_1, positions_2):
     new_set = positions_1.difference(positions_2)
     return new_set.pop()
 
-
-
-if __name__ == '__main__':
-
-    s = set()
-    s.add((1, 2, 3, 4, 5, 6))
-    s.add((7, 8, 9, 10, 11, 12))
-
-    t = set()
-    t.add((1, 2, 3, 4, 5, 6))
-    print(s.issuperset(t))
-
-
-
-
