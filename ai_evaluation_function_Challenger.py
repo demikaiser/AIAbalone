@@ -34,15 +34,17 @@ import os, state_space_generator
 # Input: State representation (Game board configuration).
 # Output: Total evaluated score (Double).
 def get_evaluation_score(player, state, piece_weight=0.5):
+
     # Check the side.
-    # if player == 'black':
-    #     ally = 1
-    #     opponent = 2
-    # elif player == 'white':
-    #     ally = 2
-    #     opponent = 1
-    piece_heuristics = evaluate_pieces(state)
-    position_heuristics = evaluate_position(state)
+    if player == 'black':
+        ally = 1
+        opponent = 2
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+
+    piece_heuristics = evaluate_pieces(state, ally, opponent)
+    position_heuristics = evaluate_position(state, ally, opponent)
     # if any side has lost 6 pieces
     if (piece_heuristics == 1) or (piece_heuristics == 0):
         return piece_heuristics
@@ -94,12 +96,20 @@ def one_state(one_line):
 # initial state value: 6, losing state value: 0
 # white_remain indicates how many losable pieces for white side(MIN player) remains,
 # initial state value: 6, losing state value: 0
-def evaluate_pieces(current_state, chien=False):
-    b = 'b' if chien else 1
-    w = 'w' if chien else 2
-    black_remain = count_marbles(current_state, b) - 8
-    white_remain = count_marbles(current_state, w) - 8
-    return black_remain/(black_remain+white_remain)
+def evaluate_pieces(current_state, ally, opponent):
+    ally_remain = 0
+    opponent_remain = 0
+
+    for i in range(0, 9):
+        for j in range(0, 9):
+            if current_state[i][j] == ally:
+                ally_remain += 1
+            elif current_state[i][j] == opponent:
+                opponent_remain += 1
+
+    ally_remain = ally_remain - 8
+    opponent_remain = opponent_remain - 8
+    return ally_remain/(ally_remain + opponent_remain)
 
 
 # evaluates the position of current state
@@ -109,32 +119,25 @@ def evaluate_pieces(current_state, chien=False):
 #   current_state: the board state
 #   importance_ratio: default 0.5, how important is the cluster state to the center state
 #   (if it is more important for the marbles to gather together, raise the ratio, otherwise lower the ratio)
-def evaluate_position(current_state, importance_ratio=0.5, chien=False):
-    blacks = []
-    whites = []
-    # split the marbles into each side's list
-    if chien:  # if running chien's state
-        for marble in current_state:
-            if 'b' in marble:
-                blacks.append(marble)
-            if 'w' in marble:
-                whites.append(marble)
-    else:  # if running our state
-        for i in range(0, 9):
-            for j in range(0, 9):
-                if current_state[i][j] == 1:
-                    blacks.append([i, j])
-                if current_state[i][j] == 2:
-                    whites.append([i, j])
+def evaluate_position(current_state, ally, opponent, importance_ratio=0.5):
+    allys = []
+    opponents = []
 
-    return determine_cluster_state(blacks, whites) * importance_ratio \
-        + determine_center_state(blacks, whites, False) * (1 - importance_ratio)
+    for i in range(0, 9):
+        for j in range(0, 9):
+            if current_state[i][j] == ally:
+                allys.append([i, j])
+            if current_state[i][j] == opponent:
+                opponents.append([i, j])
+
+    return determine_cluster_state(ally, opponent) * importance_ratio \
+        + determine_center_state(allys, opponents, False) * (1 - importance_ratio)
 
 
 # finds out how does the state look for each side
 # the more pieces are connected together the better
 # if one side's pieces are split up, this side will have low value
-def determine_cluster_state(blacks, whites, chien=False):
+def determine_cluster_state(ally, opponent, chien=False):
     # num = select_two_pieces_combination_from_ally_locations(blacks)
     b_value = 1
     w_value = 1
@@ -144,7 +147,7 @@ def determine_cluster_state(blacks, whites, chien=False):
 
 
 # finds out how close the pieces are to the center
-def determine_center_state(blacks, whites, calculating_average_value=False, chien=False):
+def determine_center_state(ally, opponent, calculating_average_value=False):
     # calculate black side
     b_value = 0
     b_num = 0
@@ -159,22 +162,17 @@ def determine_center_state(blacks, whites, calculating_average_value=False, chie
         [0, 1, 1, 1, 1, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0]
     ]
-    for p in blacks:
+    for p in ally:
         b_num += 1
         b_value += value_matrix[p[0]][p[1]]
 
     # calculate white side
     w_value = 0
     w_num = 0
-    for p in whites:
+    for p in opponent:
         w_num += 1
         w_value += value_matrix[p[0]][p[1]]
 
-    # decide if the final value is calculated based on the average value of each piece? or the total value
-    if calculating_average_value:
-        b_value /= b_num
-        w_value /= w_num
-    # print("b values: %s ; w values: %s" % (b_value, w_value))
     return b_value/(b_value + w_value)
 
 

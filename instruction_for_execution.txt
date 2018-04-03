@@ -13,3 +13,12 @@ Use pip3 to install Thorpy library: Type "pip3 install thorpy".
 4. Execute the ProjectAbalone - Sandwitch
 Open a terminal (a command line prompt for Windows) and change to the project folder.
 Type: "python main.py" or "python3 main.py" (For some OSs like Apple OS X)
+
+5. Rules on Game Playing
+a. You can stop the game iff the game is playing.
+b. You can start the game iff the game is stopped.
+c. You can reset the game iff the game is stopped.
+d. You can pause the game iff the game is playing.
+e. You can resume the game iff the game is paused.
+f. You can navigate the game states iff the game is paused.
+g. If you resume the game with the past state, all previous moves will be deleted.

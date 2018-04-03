@@ -121,7 +121,6 @@ class GUI:
 
         # Start the time oscillator and gui updater.
         timer.start_time_oscillator(self)
-        timer.start_gui_updater_with_time_start_time_oscillator(self)
 
         # Start initial BGM.
         self.bgm_instance = bgm.BGM()
