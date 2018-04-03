@@ -299,8 +299,37 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
             advanced_coordinates.append((clicked_x - 3, clicked_y + 3))
 
     # Find whether this is 3 to 1 or 3 to 2 sumito.
+    # A set will be generated: ((x1, y1, x2, y2, x3, y3))
+    all_3_to_1_sumitos_set = rules.generate_all_3_to_1_legal_sumitos(old_x1, old_y1, old_x2, old_y2, old_x3, old_y3)
+    all_3_to_2_sumitos_set = rules.generate_all_3_to_2_legal_sumitos(old_x1, old_y1, old_x2, old_y2, old_x3, old_y3)
+
+    new_coordinates_set_1 = set()
+    new_coordinates_set_1.add((new_x1, new_y1, new_x2, new_y2, new_x3, new_y3))
+
+    new_coordinates_set_2 = set()
+    new_coordinates_set_2.add((new_x1, new_y1, new_x3, new_y3, new_x2, new_y2))
+
+    new_coordinates_set_3 = set()
+    new_coordinates_set_3.add((new_x2, new_y2, new_x1, new_y1, new_x3, new_y3))
+
+    new_coordinates_set_4 = set()
+    new_coordinates_set_4.add((new_x2, new_y2, new_x3, new_y3, new_x1, new_y1))
+
+    new_coordinates_set_5 = set()
+    new_coordinates_set_5.add((new_x3, new_y3, new_x2, new_y2, new_x1, new_y1))
+
+    new_coordinates_set_6 = set()
+    new_coordinates_set_6.add((new_x3, new_y3, new_x1, new_y1, new_x2, new_y2))
+
     # 1. 3 to 1 sumito.
-    if rules.generate_all_3_to_1_legal_sumitos(old_x1, old_y1, old_x2, old_y2, old_x3, old_y3) != set():
+    if all_3_to_1_sumitos_set != set() and \
+            (all_3_to_1_sumitos_set.issuperset(new_coordinates_set_1)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_2)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_3)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_4)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_5)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_6)
+            ):
 
         # Memorize the opponent piece.
         piece_opponent = model.global_game_board_state[clicked_x][clicked_y]
@@ -328,7 +357,14 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
 
 
     # 2. 3 to 2 sumito (Normal descriptive statements omitted for computing efficiency).
-    else:
+    elif all_3_to_2_sumitos_set != set() and \
+            (all_3_to_2_sumitos_set.issuperset(new_coordinates_set_1)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_2)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_3)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_4)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_5)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_6)
+            ):
 
         # Memorize the opponent pieces.
         piece_opponent_1 = model.global_game_board_state[clicked_x][clicked_y]
@@ -403,7 +439,15 @@ def get_the_differences_from_sets_for_sumitos(positions_1, positions_2):
 
 
 
+if __name__ == '__main__':
 
+    s = set()
+    s.add((1, 2, 3, 4, 5, 6))
+    s.add((7, 8, 9, 10, 11, 12))
+
+    t = set()
+    t.add((1, 2, 3, 4, 5, 6))
+    print(s.issuperset(t))
 
 
 
