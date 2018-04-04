@@ -1,4 +1,4 @@
-"""
+'''
 Copyright (C) BCIT AI/ML Option 2018 Team with Members Following - All Rights Reserved.
 - Jake Jonghun Choi     jchoi179@my.bcit.ca
 - Justin Carey          justinthomascarey@gmail.com
@@ -6,34 +6,258 @@ Copyright (C) BCIT AI/ML Option 2018 Team with Members Following - All Rights Re
 - Tony Huang	        tonyhuang1996@hotmail.ca
 - Chil Yuqing Qiu       yuqingqiu93@gmail.com
 Unauthorized copying of this file, via any medium is strictly prohibited.
-Written by Chil Yuqing Qiu <yuqingqiu93@gmail.com>
-"""
+Written by Justin Carey <justinthomascarey@gmail.com>
+'''
 
-import os, state_space_generator
+import ai_state_space_generator, model
+import copy
 
 
-# <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
-#
-# The evaluation function MUST have a very strict format, the signature of the pseudocode:
-# int EvaluationFunction(BoardConfiguration board)
-#
-# It has to take a board configuration as input, and return the evaluated integer value.
-# Only integer values are allowed to return because of the efficiency of the sorting later.
-# Technically there is no range limit, but too big number slows the system down.
-# The realistic range would be 0 to 10000, and you can't use any deduction or negative values.
-#
-# If you want to make some multiple evaluation functions, you have to add all scores up at the end.
-# There are ways to do it, but one example should be:
-#
-# TotalEvaluationFunction = EvaluationFunction1 + EvaluationFunction2 + EvaluationFunction3
-#
-# So the final score would be evaluated from the individual functions.
-# You can do whatever you want to do ONLY in this file, but the AI framework will call
-# this get_evaluation_score function to evaluate the state, so do NOT change it.
-#
-# Input: State representation (Game board configuration).
-# Output: Total evaluated score (Double).
-def get_evaluation_score(player, state, piece_weight=0.5):
+def get_evaluation_score(player, state):
+    # Check the side.
+    if player == 'black':
+        ally = 1
+        opponent = 2
+        opponent_color = 'white'
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+        opponent_color = 'black'
+
+    ally_pieces_locations = copy.copy(ai_state_space_generator.get_all_ally_positions(state, player))
+    opp_pieces_locations = copy.copy(ai_state_space_generator.get_all_ally_positions(state, opponent_color))
+
+    # Initialize the score.
+    score = 0
+
+    weight_list_variable =   [1000000, 100000, 1000, 10, 1.5, 1, 1, 1, 1, 1, 1, 1]
+
+    WEIGHT_LIST_DEFAULT =    [1000000, 100000, 1000, 10, 1.5, 1, 1, 1, 1, 1, 1, 1]
+    WEIGHT_LIST_AGGRESSIVE = [1000000, 200000, 1500, 10, 1.2, 1.5, 1, 1.5, 1, 1, 1, 1]
+    WEIGHT_LIST_SPECIAL =    [1000000, 100000, 1000, 10, 1.5, 1, 1, 1, 1, 1, 1, 1]
+
+    # Adjust weight based on the board configuration and moves.
+    if 'standard' == model.global_game_configuration['all']['initial_board_layout']:
+        if 10 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
+        elif 20 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
+        elif 30 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
+
+    elif 'german_daisy' == model.global_game_configuration['all']['initial_board_layout']:
+        if 10 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 20 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 30 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+
+    elif 'belgian_daisy' == model.global_game_configuration['all']['initial_board_layout']:
+        if 0 <= model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_SPECIAL
+        elif 10 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_SPECIAL
+        elif 20 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_SPECIAL
+
+
+    # Tier 00. has someone won this state? This function returns 1000000 if win, -1000000 if loss.
+    score += weight_list_variable[0] * terminal_state(player, state)
+    if abs(score) > 1000000:
+        return score
+    # Tier 01. Calculates the score from the amount of pieces.
+    score += weight_list_variable[1] * piece_count(player, state)
+    if abs(score) > 1000000:
+        return score
+
+    # Tier 02. Can you push the marble to the danger zone?
+    score += weight_list_variable[2] * in_danger_zone(player, state, ally, opponent)
+    if abs(score) > 1000000:
+        return score
+
+    # Tier 03. Calculates the distance from the center.
+    score += weight_list_variable[3] * manhattan_distance(player, state, ally, opponent)
+    if abs(score) > 1000000:
+        return score
+
+    # Tier 04. Calculates how condensed the allied pieces are.
+    score += weight_list_variable[4] * (clumping(player, opponent_color, ally_pieces_locations, opp_pieces_locations, state))
+    if abs(score) > 1000000:
+        return score
+
+    # Tier 05. Calculates how many sumitos are available.
+    score += weight_list_variable[5] * sumito_num(player, ally_pieces_locations, opp_pieces_locations, state)
+    if abs(score) > 1000000:
+        return score
+
+    # Tier 06. Calculates how many pairs are available.
+    score += weight_list_variable[6] * pairs(player, ally_pieces_locations, opp_pieces_locations, state)
+    if abs(score) > 1000000:
+        return score
+
+    # Tier 07. Calculates how many triplets are available.
+    score += weight_list_variable[7] * triplets(player, ally_pieces_locations, opp_pieces_locations, state)
+    if abs(score) > 1000000:
+        return score
+
+    # Tier 08. Calculates how the allied marbles strengthen against the opposing formation.
+    score += weight_list_variable[8] * strengthen_group(player, ally_pieces_locations, state)
+    if abs(score) > 1000000:
+        return score
+
+    # Tier 09. Calculates how the allied marbles strengthen against the opposing formation.
+    #score -= weight_list_variable[9] * strengthen_group(opponent_color, state)
+
+    # Tier 10. Calculates how the allied marbles split the opposing formation.
+    #score += weight_list_variable[10] * attack_modifier * split(player, ally_pieces_locations, opp_pieces_locations, state)
+
+    # Tier 11. score += single_marble_edge(player, ally_pieces_locations, state)
+    #score -= weight_list_variable[11] * single_marble_edge(opponent_color, state)
+
+    # Return the score evaluated.
+    return score
+
+
+FDZ = -15
+SDZ = -5
+
+DANGER_ZONE_INDICATOR = [
+    [-9,    -9,   -9,  -9,  FDZ, FDZ, FDZ, FDZ, FDZ],
+    [-9,    -9,   -9,  FDZ, SDZ, SDZ, SDZ, SDZ, FDZ],
+    [-9,    -9,   FDZ, SDZ,   0,   0,   0, SDZ, FDZ],
+    [-9,    FDZ,  SDZ,   0,   0,   0,   0, SDZ, FDZ],
+    [ FDZ,  SDZ,  0,     0,   0,   0,   0, SDZ, FDZ],
+    [ FDZ,  SDZ,  0,     0,   0,   0, SDZ, FDZ,  -9],
+    [ FDZ,  SDZ,  0,     0,   0, SDZ, FDZ,  -9,  -9],
+    [ FDZ,  SDZ,  SDZ, SDZ, SDZ, FDZ,  -9,  -9,  -9],
+    [ FDZ,  FDZ,  FDZ, FDZ, FDZ,  -9,  -9,  -9,  -9]
+]
+
+def in_danger_zone(player, state, ally, opponent):
+    global DANGER_ZONE_INDICATOR
+
+    score = 0
+
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == ally:
+                score += DANGER_ZONE_INDICATOR[i][j]
+            if state[i][j] == opponent:
+                score -= DANGER_ZONE_INDICATOR[i][j]
+
+    return score
+
+
+def terminal_state(player, state):
+    # Check the side.
+    if player == 'black':
+        ally = 1
+        opponent = 2
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+
+    ally_pieces_count = 0
+    opponent_pieces_count = 0
+
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == ally:
+                ally_pieces_count += 1
+            if state[i][j] == opponent:
+                opponent_pieces_count += 1
+
+    if ally_pieces_count < 9:
+        return -1
+    if opponent_pieces_count < 9:
+        return 1
+    else:
+        return 0
+
+
+MANHATTAN_WEIGHT = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 1, 0],
+    [0, 0, 0, 1, 2, 2, 2, 1, 0],
+    [0, 0, 1, 2, 3, 3, 2, 1, 0],
+    [0, 1, 2, 3, 4, 3, 2, 1, 0],
+    [0, 1, 2, 3, 3, 2, 1, 0, 0],
+    [0, 1, 2, 2, 2, 1, 0, 0, 0],
+    [0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
+
+
+def manhattan_distance(player, state, ally, opponent):
+    score = 0
+
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == ally:
+                score += MANHATTAN_WEIGHT[i][j]
+            if state[i][j] == opponent:
+                score -= MANHATTAN_WEIGHT[i][j]
+
+    return score
+
+
+def clumping(player, opponent_color, ally_pieces_locations, opp_pieces_locations, state):
+    ally_robustness = 0
+    opp_robustness = 0
+
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if x < 8:
+            if state[x][y] == state[x + 1][y]:
+                ally_robustness += 1
+            if y > 0:
+                if state[x][y] == state[x + 1][y - 1]:
+                    ally_robustness += 1
+        if y < 8:
+            if state[x][y] == state[x][y + 1]:
+                ally_robustness += 1
+        if y > 0:
+            if state[x][y] == state[x][y - 1]:
+                ally_robustness += 1
+        if x > 0:
+            if state[x][y] == state[x - 1][y]:
+                ally_robustness += 1
+            if y < 8:
+                if state[x][y] == state[x - 1][y + 1]:
+                    ally_robustness += 1
+
+    for location in opp_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if x < 8:
+            if state[x][y] == state[x + 1][y]:
+                opp_robustness += 1
+            if y > 0:
+                if state[x][y] == state[x + 1][y - 1]:
+                    opp_robustness += 1
+        if y < 8:
+            if state[x][y] == state[x][y + 1]:
+                opp_robustness += 1
+        if y > 0:
+            if state[x][y] == state[x][y - 1]:
+                opp_robustness += 1
+        if x > 0:
+            if state[x][y] == state[x - 1][y]:
+                opp_robustness += 1
+            if y < 8:
+                if state[x][y] == state[x - 1][y + 1]:
+                    opp_robustness += 1
+
+    return ally_robustness - opp_robustness
+
+
+def piece_count(player, state):
+
+    pieces_score = 0
 
     # Check the side.
     if player == 'black':
@@ -43,181 +267,249 @@ def get_evaluation_score(player, state, piece_weight=0.5):
         ally = 2
         opponent = 1
 
-    piece_heuristics = evaluate_pieces(state, ally, opponent)
-    position_heuristics = evaluate_position(state, ally, opponent)
-    # if any side has lost 6 pieces
-    if (piece_heuristics == 1) or (piece_heuristics == 0):
-        return piece_heuristics
-    # if no side has lost 6 pieces yet
-    else:
-        return piece_heuristics * piece_weight + position_heuristics * (1 - piece_weight)
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == ally:
+                pieces_score += 1
+            if state[i][j] == opponent:
+                pieces_score -= 1
+
+    return pieces_score
 
 
-"""
-============================================================================================
-|    Tools for Evaluation Functions
-============================================================================================
-"""
+def sumito_num(player, ally_pieces_locations, opp_pieces_locations, state):
+
+    sumito_power = 0
+
+    two_piece_list = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(ally_pieces_locations)
+    three_piece_list = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(ally_pieces_locations)
+
+    two_to_one_sumito_list = ai_state_space_generator.generate_move_candidates_for_2_to_1_sumito(state, two_piece_list)
+    three_to_one_sumito_list = ai_state_space_generator.generate_move_candidates_for_3_to_1_sumito(state, three_piece_list)
+    three_to_two_sumito_list = ai_state_space_generator.generate_move_candidates_for_3_to_2_sumito(state, three_piece_list)
+
+    for sumito in two_to_one_sumito_list:
+        sumito_power += 20
+
+    for sumito in three_to_one_sumito_list:
+        sumito_power += 20
+
+    for sumito in three_to_two_sumito_list:
+        sumito_power += 20
+
+    two_piece_list = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(opp_pieces_locations)
+    three_piece_list = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(
+        opp_pieces_locations)
+
+    two_to_one_sumito_list = ai_state_space_generator.generate_move_candidates_for_2_to_1_sumito(state, two_piece_list)
+    three_to_one_sumito_list = ai_state_space_generator.generate_move_candidates_for_3_to_1_sumito(state,
+                                                                                                   three_piece_list)
+    three_to_two_sumito_list = ai_state_space_generator.generate_move_candidates_for_3_to_2_sumito(state,
+                                                                                                   three_piece_list)
+
+    for sumito in two_to_one_sumito_list:
+        sumito_power -= 20
+
+    for sumito in three_to_one_sumito_list:
+        sumito_power -= 20
+
+    for sumito in three_to_two_sumito_list:
+        sumito_power -= 20
+
+    return sumito_power
 
 
-# count the marbles of given color
-# PRE: color has to be 'b' for black or 'w' for white
-def count_marbles(state, color):
-    # num_marble = 0
-    # for marble in state:
-    #     if color in marble:
-    #         num_marble += 1
-    # return num_marble
+def pairs(player, ally_pieces_locations, opp_pieces_locations, state):
+    pair_score = 0
 
-    num_marble = 0
-    for i in range(0, 9):
-        for j in range(0, 9):
-            if state[i][j] == color:
-                num_marble += 1
-    return num_marble
+    locations = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(ally_pieces_locations)
+    for location in locations:
+        if is_two_pieces_inline(location[0], location[1], location[2], location[3]):
+            pair_score += 1
 
+    locations = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(opp_pieces_locations)
+    for location in locations:
+        if is_two_pieces_inline(location[0], location[1], location[2], location[3]):
+            pair_score -= 1
 
-# separate state of one line into a list of marbles representing the state
-# PARAM: one_line - one line representing current state
-# RETURN: a list of marbles representing current state
-def one_state(one_line):
-    state = one_line.split(",")
-    return state
+    return pair_score
 
 
-"""
-============================================================================================
-|    Evaluation Functions
-============================================================================================
-"""
+def triplets(player, ally_pieces_locations, opp_pieces_locations, state):
+    triplet_score = 0
+
+    locations = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(ally_pieces_locations)
+    for location in locations:
+        if is_three_pieces_inline(location[0], location[1], location[2], location[3], location[4], location[5]):
+            triplet_score += 3
+
+    locations = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(opp_pieces_locations)
+    for location in locations:
+        if is_three_pieces_inline(location[0], location[1], location[2], location[3], location[4], location[5]):
+            triplet_score -= 3
+
+    return triplet_score
 
 
-# black_remain indicates how many losable pieces for black side(MAX player) remains,
-# initial state value: 6, losing state value: 0
-# white_remain indicates how many losable pieces for white side(MIN player) remains,
-# initial state value: 6, losing state value: 0
-def evaluate_pieces(current_state, ally, opponent):
-    ally_remain = 0
-    opponent_remain = 0
+def split(player, ally_pieces_locations, opp_pieces_locations, state):
+    # Check the side.
+    if player == 'black':
+        ally = 1
+        opponent = 2
+        opponent_color = 'white'
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+        opponent_color = 'black'
 
-    for i in range(0, 9):
-        for j in range(0, 9):
-            if current_state[i][j] == ally:
-                ally_remain += 1
-            elif current_state[i][j] == opponent:
-                opponent_remain += 1
+    ally_split_score = 0
+    opp_split_score = 0
 
-    ally_remain = ally_remain - 8
-    opponent_remain = opponent_remain - 8
-    return ally_remain/(ally_remain + opponent_remain)
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
 
+        if 8 > x > 0:
+            if state[x + 1][y] == opponent and state[x - 1][y] == opponent:
+                ally_split_score += 15
+        if 8 > y > 0:
+            if state[x][y + 1] == opponent and state[x][y - 1] == opponent:
+                ally_split_score += 15
+        if 8 > x > 0 and 8 > y > 0:
+            if state[x + 1][y - 1] == opponent and state[x - 1][y + 1] == opponent:
+                ally_split_score += 15
 
-# evaluates the position of current state
-# return range (0, 1), 0.5 means symmetrical,
-# closer to one means more centered and grouped, closer to 0 means close to edge and split
-# PARAM:
-#   current_state: the board state
-#   importance_ratio: default 0.5, how important is the cluster state to the center state
-#   (if it is more important for the marbles to gather together, raise the ratio, otherwise lower the ratio)
-def evaluate_position(current_state, ally, opponent, importance_ratio=0.5):
-    allys = []
-    opponents = []
+    for location in opp_pieces_locations:
+        x = location[0]
+        y = location[1]
 
-    for i in range(0, 9):
-        for j in range(0, 9):
-            if current_state[i][j] == ally:
-                allys.append([i, j])
-            if current_state[i][j] == opponent:
-                opponents.append([i, j])
+        if 8 > x > 0:
+            if state[x + 1][y] == opponent and state[x - 1][y] == opponent:
+                opp_split_score += 15
+        if 8 > y > 0:
+            if state[x][y + 1] == opponent and state[x][y - 1] == opponent:
+                opp_split_score += 15
+        if 8 > x > 0 and 8 > y > 0:
+            if state[x + 1][y - 1] == opponent and state[x - 1][y + 1] == opponent:
+                opp_split_score += 15
 
-    return determine_cluster_state(ally, opponent) * importance_ratio \
-        + determine_center_state(allys, opponents, False) * (1 - importance_ratio)
-
-
-# finds out how does the state look for each side
-# the more pieces are connected together the better
-# if one side's pieces are split up, this side will have low value
-def determine_cluster_state(ally, opponent, chien=False):
-    # num = select_two_pieces_combination_from_ally_locations(blacks)
-    b_value = 1
-    w_value = 1
-    # TODO: find out how close the marbles are for each side
-    # count the numbers of 2 and 3 combinations
-    return b_value/(b_value + w_value)
+    return ally_split_score - opp_split_score
 
 
-# finds out how close the pieces are to the center
-def determine_center_state(ally, opponent, calculating_average_value=False):
-    # calculate black side
-    b_value = 0
-    b_num = 0
-    value_matrix = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 1, 1, 1, 0],
-        [0, 0, 0, 1, 2, 2, 2, 1, 0],
-        [0, 0, 1, 2, 3, 3, 2, 1, 0],
-        [0, 1, 2, 3, 4, 3, 2, 1, 0],
-        [0, 1, 2, 3, 3, 2, 1, 0, 0],
-        [0, 1, 2, 2, 2, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0]
-    ]
-    for p in ally:
-        b_num += 1
-        b_value += value_matrix[p[0]][p[1]]
+def strengthen_group(player, ally_pieces_locations, state):
+    # Check the side.
+    if player == 'black':
+        ally = 1
+        opponent = 2
+    elif player == 'white':
+        ally = 2
+        opponent = 1
 
-    # calculate white side
-    w_value = 0
-    w_num = 0
-    for p in opponent:
-        w_num += 1
-        w_value += value_matrix[p[0]][p[1]]
+    strength_score = 0
 
-    return b_value/(b_value + w_value)
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if 8 > x > 0:
+            if state[x + 1][y] == opponent and state[x - 1][y] == ally:
+                strength_score += 1
+            if state[x + 1][y] == ally and state[x - 1][y] == opponent:
+                strength_score += 1
+        if 8 > y > 0:
+            if state[x][y + 1] == opponent and state[x][y - 1] == ally:
+                strength_score += 1
+            if state[x][y + 1] == ally and state[x][y - 1] == opponent:
+                strength_score += 1
+        if 8 > x > 0 and 8 > y > 0:
+            if state[x + 1][y - 1] == opponent and state[x - 1][y + 1] == ally:
+                strength_score += 1
+            if state[x + 1][y - 1] == ally and state[x - 1][y + 1] == opponent:
+                strength_score += 1
+
+    return strength_score
 
 
-# manually debug mode: put the testing board under this directory and test with file name Test.board
-if __name__ == "__main__":
-    '''chien's state resolver
-    # for redirect file location
-    this_dir = os.path.dirname(os.path.realpath('__file__'))
-    # for change test files
-    file_name = "ssg_tester_output/Test.board"
-    test_file = this_dir + '/' + file_name
-    try:
-        with open(test_file) as file:
-            content = file.readlines()
-        content = [x.strip() for x in content]
-        for line in content:
-            print(line)
-            print(get_evaluation_score('', one_state(line)))
+def single_marble_edge(player, ally_pieces_locations, state):
+    # Check the side.
+    if player == 'black':
+        ally = 1
+        opponent = 2
+    elif player == 'white':
+        ally = 2
+        opponent = 1
 
-    except FileNotFoundError:
-        print("test file not found:")
-        print(test_file)
-    '''
-    state1 = [
-        [-9, -9, -9, -9,  0,  0,  0,  1,  1],
-        [-9, -9, -9,  0,  0,  0,  0,  1,  1],
-        [-9, -9,  0,  0,  0,  0,  1,  1,  1],
-        [-9,  2,  0,  0,  0,  0,  1,  1,  1],
-        [ 2,  2,  2,  0,  0,  0,  1,  1,  1],
-        [ 2,  2,  2,  0,  0,  0,  0,  1, -9],
-        [ 2,  2,  2,  0,  0,  0,  0, -9, -9],
-        [ 2,  2,  0,  0,  0,  0, -9, -9, -9],
-        [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
-    ]
+    edge_score = 0
 
-    state2 = [
-    [-9, -9, -9, -9,  0,  0,  1,  1,  0],
-    [-9, -9, -9,  0,  0,  1,  1,  1,  0],
-    [-9, -9,  2,  2,  0,  1,  1,  0,  0],
-    [-9,  2,  2,  2,  0,  0,  0,  0,  0],
-    [ 0,  2,  2,  0,  0,  0,  2,  2,  0],
-    [ 0,  0,  0,  0,  0,  2,  2,  2, -9],
-    [ 0,  0,  1,  1,  0,  2,  2, -9, -9],
-    [ 0,  1,  1,  1,  0,  0, -9, -9, -9],
-    [ 0,  1,  1,  0,  0, -9, -9, -9, -9]
-]
-    print(get_evaluation_score('', state1))
-    print(get_evaluation_score('', state2))
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if x == 0 and y > 3:
+            edge_score -= 5
+        if x == 1 and (y == 3 or y == 8):
+            edge_score -= 5
+        if x == 2 and (y == 2 or y == 8):
+            edge_score -= 5
+        if x == 3 and (y == 1 or y == 8):
+            edge_score -= 5
+        if x == 4 and (y == 0 or y == 8):
+            edge_score -= 5
+        if x == 5 and (y == 0 or y == 7):
+            edge_score -= 5
+        if x == 6 and (y == 0 or y == 6):
+            edge_score -= 5
+        if x == 7 and (y == 0 or y == 5):
+            edge_score -= 5
+        if x == 8 and y < 5:
+            edge_score -= 5
+
+    return edge_score
+
+# Determine whether two pieces inline.
+def is_two_pieces_inline(x1, y1, x2, y2):
+
+    # Find out if it's inline.
+    if x1 + 1 == x2 and y1 - 1 == y2:
+        return True
+    elif x1 + 1 == x2 and y1 + 0 == y2:
+        return True
+    elif x1 + 0 == x2 and y1 + 1 == y2:
+        return True
+    elif x2 + 1 == x1 and y2 - 1 == y1:
+        return True
+    elif x2 + 1 == x1 and y2 + 0 == y1:
+        return True
+    elif x2 + 0 == x1 and y2 + 1 == y1:
+        return True
+
+    return False
+
+# Determine whether three pieces inline.
+def is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
+
+    # If all the pieces are not all inlines, then return false.
+    how_many_are_inline = 0
+    if is_two_pieces_inline(x1, y1, x2, y2):
+        how_many_are_inline += 1
+
+    if is_two_pieces_inline(x1, y1, x3, y3):
+        how_many_are_inline += 1
+
+    if is_two_pieces_inline(x2, y2, x3, y3):
+        how_many_are_inline += 1
+
+    if how_many_are_inline != 2:
+        return False
+
+    # Find out if it's inline.
+    if x1 == (x2 + x3) / 2 and y1 == (y2 + y3) / 2:
+        return True
+
+    if x2 == (x1 + x3) / 2 and y2 == (y1 + y3) / 2:
+        return True
+
+    if x3 == (x1 + x2) / 2 and y3 == (y1 + y2) / 2:
+        return True
+
+    return False
