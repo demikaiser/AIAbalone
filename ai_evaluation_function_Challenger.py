@@ -22,8 +22,8 @@ def get_evaluation_score(player, state):
     col_count = len(state)
     ally = 0
     opponent = 0
-    ally_color = 'B'  # color set according to player being 'black;
-    opponent_colorP = 'W'  # color set according to player being 'black;
+    ally_color = 'black'  # color set according to player being 'black;
+    opponent_colorP = 'white'  # color set according to player being 'black;
     rows = range(row_count)
     cols = range(col_count)
 
@@ -40,8 +40,8 @@ def get_evaluation_score(player, state):
         opponent = 1
         opponent_color = 'black'
 
-        ally_color = 'W'
-        opponent_colorP = 'B'
+        ally_color = 'white'
+        opponent_colorP = 'black'
 
     ally_pieces_locations = copy.copy(ai_state_space_generator.get_all_ally_positions(state, player))
     opp_pieces_locations = copy.copy(ai_state_space_generator.get_all_ally_positions(state, opponent_color))
@@ -110,7 +110,7 @@ def get_evaluation_score(player, state):
 
     # enemies on edge
     enemy_on_edge = on_edge(opponent_pieces)
-
+    # print(str(allies_on_edge) + ",\n" + str(enemy_on_edge) + ",\n" + str(battles))
     # use the info gather and analyze
     analyze_result = analyis(allies_on_edge, enemy_on_edge, battles, ally_color)
 
@@ -145,11 +145,15 @@ def get_evaluation_score(player, state):
     # Tier 08. Calculates how the allied marbles strengthen against the opposing formation.
     score += weight_list_variable[8] * strengthen_group_score # strengthen_group(player, ally_pieces_locations, state)
 
-    score += groups_in_danger * -300000000
-    score += enemy_groups_in_danger * 1000000
-    score += losing_sumitos * -1000000
-    score += wining_sumitos * 1000000
-
+    score += groups_in_danger * -8000000000
+    score += enemy_groups_in_danger * 10000
+    score += losing_sumitos * -1000
+    score += wining_sumitos * 1000
+   # print("groups_in_danger: " + str(groups_in_danger))
+    #print("enemy_groups_in_danger: " + str(enemy_groups_in_danger))
+   # print("losing_sumitos: " + str(losing_sumitos))
+   # print("wining_sumitos: " + str(wining_sumitos))
+   # print(score)
     # Tier 09. Calculates how the allied marbles strengthen against the opposing formation.
     #score -= weight_list_variable[9] * strengthen_group(opponent_color, state)
 
@@ -637,9 +641,9 @@ def analyis(allies_on_edge, enemeny_on_edge, battles, ally_color):
     # look at each battle and get stats
     for battle in battles:
         if not battle[1]:
-            if battle[2] == ally_color:
+            if battle[1] != None and battle[2] == ally_color:
                 losing_sumitos += 1
-            else:
+            elif battle[1] != None:
                 wining_sumitos += 1
             for i in range(3, len(battle)):
                 for ally in allies_on_edge:
@@ -694,11 +698,14 @@ def generate_groups_based_on_battle(combo, ally_color, ally_pieces, opponent_pie
     al = create_group(ally, dir, x_or_y, ally_pieces)
     opp = create_group(opponent, -1 * dir, x_or_y, opponent_pieces)
 
-    win = al[0] >= opp[0]
+    win = al[0] > opp[0]
+    if win and al[0] == opp[0]:
+        win = None
+
     al[1] = win
     opp[1] = not win
     al[2] = ally_color
-    opp[2] = 'B' if ally_color == 'W' else 'W'
+    opp[2] = 'black' if ally_color == 'white' else 'white'
     return al, opp
 
 # will return true/false followed byb pieces. true indicating it will win the current battle
@@ -738,7 +745,7 @@ def touching(ally_pieces, opponent_pieces):
     for p in ally_pieces:
         x = p[0]
         y = p[1]
-        color = 'W' if p[2] == 'B' else 'B'
+        color = 'white' if p[2] == 'black' else 'black'
 
         if (x, y + 1, color) in opponent_pieces: result.add((p, (x, y + 1, color)))
         if (x, y - 1, color) in opponent_pieces: result.add((p, (x, y - 1, color)))
