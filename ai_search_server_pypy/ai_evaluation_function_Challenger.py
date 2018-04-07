@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Justin Carey <justinthomascarey@gmail.com>
 '''
 
-import ai_state_space_generator, model, copy
+import ai_state_space_generator, ai_search_distributed, copy
 
 
 def get_evaluation_score(player, state):
@@ -36,32 +36,32 @@ def get_evaluation_score(player, state):
     WEIGHT_LIST_DEFENSIVE =    [1000000, 1000, 1000,   50,    50,         5,     1, 1, 1, 1, 1, 1, 2000]
 
     # Adjust weight based on the board configuration and moves.
-    if 'standard' == model.global_game_configuration['all']['initial_board_layout']:
-        if model.global_game_play_state['black']['moves_taken'] < 10:
+    if 'standard' == ai_search_distributed.global_init_board_configuration:
+        if ai_search_distributed.global_move_taken_already < 10:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif model.global_game_play_state['black']['moves_taken'] < 20:
+        elif ai_search_distributed.global_move_taken_already < 20:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif model.global_game_play_state['black']['moves_taken'] < 30:
+        elif ai_search_distributed.global_move_taken_already < 30:
             weight_list_variable = WEIGHT_LIST_DEFAULT
         else:
             weight_list_variable = WEIGHT_LIST_DEFAULT
 
-    elif 'german_daisy' == model.global_game_configuration['all']['initial_board_layout']:
-        if model.global_game_play_state['black']['moves_taken'] < 10:
+    elif 'german_daisy' == ai_search_distributed.global_init_board_configuration:
+        if ai_search_distributed.global_move_taken_already < 10:
             weight_list_variable = WEIGHT_LIST_DEFENSIVE
-        elif model.global_game_play_state['black']['moves_taken'] < 20:
+        elif ai_search_distributed.global_move_taken_already < 20:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif model.global_game_play_state['black']['moves_taken'] < 30:
+        elif ai_search_distributed.global_move_taken_already < 30:
             weight_list_variable = WEIGHT_LIST_DEFAULT
         else:
             weight_list_variable = WEIGHT_LIST_DEFAULT
 
-    elif 'belgian_daisy' == model.global_game_configuration['all']['initial_board_layout']:
-        if model.global_game_play_state['black']['moves_taken'] < 15:
+    elif 'belgian_daisy' == ai_search_distributed.global_init_board_configuration:
+        if ai_search_distributed.global_move_taken_already < 15:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif model.global_game_play_state['black']['moves_taken'] < 20:
+        elif ai_search_distributed.global_move_taken_already < 20:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif model.global_game_play_state['black']['moves_taken'] < 30:
+        elif ai_search_distributed.global_move_taken_already < 30:
             weight_list_variable = WEIGHT_LIST_DEFAULT
         else:
             weight_list_variable = WEIGHT_LIST_DEFAULT
