@@ -11,6 +11,8 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 
 import view
 
+
+
 global_gui_context = view.GUI()
 global_gui_context.start_gui()
 

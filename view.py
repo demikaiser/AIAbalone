@@ -16,7 +16,6 @@ import bgm, model, rules, movement, gui_adapter, timer, logs
 from pygame.locals import *
 
 class GUI:
-
     # Coordinates constants.
     # The first two are the coordinates, and the last number is an indicator that
     # represents whether there is a piece or not (1 for the PLAYER BLACK and 2 for the PLAYER WHITE).
@@ -83,6 +82,8 @@ class GUI:
     # Start the GUI main loop.
     def start_gui(self):
 
+
+
         pygame.init()
         pygame.font.init()
 
@@ -121,7 +122,6 @@ class GUI:
 
         # Start the time oscillator and gui updater.
         timer.start_time_oscillator(self)
-        timer.start_gui_updater_with_time_start_time_oscillator(self)
 
         # Start initial BGM.
         self.bgm_instance = bgm.BGM()
@@ -827,13 +827,21 @@ class GUI:
         button_secret1 = thorpy.make_button("Func1", func=lambda: controller.button_secret1_callback(self))
         button_secret1.set_size((90, 32))
 
-        button_secret2 = thorpy.make_button("Func2", func=lambda: controller.button_secret2_callback(self))
-        button_secret2.set_size((90, 32))
-
-        button_secret3 = thorpy.make_button("Func3", func=lambda: controller.button_secret3_callback(self))
-        button_secret3.set_size((90, 32))
-
         separation_line_bgm = thorpy.Line.make(size=90, type_="horizontal")
+
+        # Default or Pypy AI searching server selection.
+
+        label_for_search = thorpy.make_text("Search", 16, colors.BROWN)
+
+        self.radio_default_ai_search = thorpy.Checker.make("Default", type_="radio")
+        self.radio_pypy_ai_search = thorpy.Checker.make("Pypy", type_="radio")
+
+        radios_for_ai_search = [self.radio_default_ai_search, self.radio_pypy_ai_search]
+        radio_group_for_ai_search = thorpy.RadioPool(radios_for_ai_search,
+                                                             first_value=radios_for_ai_search[0],
+                                                             always_value=True)
+
+        separation_line_search = thorpy.Line.make(size=90, type_="horizontal")
 
         box_bgm = thorpy.Box.make(elements=[
             separation_line_jukebox,
@@ -845,9 +853,11 @@ class GUI:
             button_volume_down,
             button_get_funk,
             button_secret1,
-            button_secret2,
-            button_secret3,
-            separation_line_bgm
+            separation_line_bgm,
+            label_for_search,
+            self.radio_default_ai_search,
+            self.radio_pypy_ai_search,
+            separation_line_search
         ])
 
         # ThorPy elements for all Part 1.

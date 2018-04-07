@@ -10,7 +10,7 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 
 import copy
-import gameboard, ai_machine
+import gameboard, ai_machine_distributed
 
 # Global game configuration object (Map).
 # This is a multi-layered object (like a JSON),
@@ -140,7 +140,7 @@ def set_global_game_configuration_from_gui(context):
         = context.slider_for_move_limit_black.get_value()
 
     global_game_configuration['black']['time_limitation'] \
-        = context.slider_for_time_limit_black.get_value() - 0.5
+        = context.slider_for_time_limit_black.get_value()
 
     # Get status from white
     if context.radio_human_white.get_value():
@@ -152,7 +152,7 @@ def set_global_game_configuration_from_gui(context):
         = context.slider_for_move_limit_white.get_value()
 
     global_game_configuration['white']['time_limitation'] \
-        = context.slider_for_time_limit_white.get_value() - 0.5
+        = context.slider_for_time_limit_white.get_value()
 
     # Get status from all
     if context.radio_standard.get_value():
@@ -214,7 +214,7 @@ def game_start(context):
         context.update_game_state('started_B_C')
 
         # Start moving by the artificial intelligence machine.
-        ai_machine.make_movement(context, 'black')
+        ai_machine_distributed.make_movement(context, 'black')
 
 # Pause the game.
 def game_pause(context):
@@ -261,13 +261,13 @@ def game_resume(context):
     elif global_game_play_state['all']['game_state'] == 'started_B_Computer':
         context.update_game_state('started_B_C')
         # Start search again from the beginner for the black computer.
-        ai_machine.make_movement(context, 'black')
+        ai_machine_distributed.make_movement(context, 'black')
     elif global_game_play_state['all']['game_state'] == 'started_W_Human':
         context.update_game_state('started_W_H')
     elif global_game_play_state['all']['game_state'] == 'started_W_Computer':
         context.update_game_state('started_W_C')
         # Start search again from the beginner for the white computer.
-        ai_machine.make_movement(context, 'white')
+        ai_machine_distributed.make_movement(context, 'white')
 
     # Delete all global_game_history_stack_for_step_forward
     global_game_history_stack_for_step_forward = [[], []]
@@ -286,6 +286,9 @@ def game_stop(context):
 
     global_game_play_state['all']['game_state'] = 'stopped'
     context.update_game_state('stopped')
+
+    # Clear all coordinates' selection.
+    context.clear_all_selection()
 
 # Reset the game.
 def game_reset(context):
@@ -361,7 +364,7 @@ def update_turn_state(context):
             context.update_game_state('started_W_C')
 
             # Move by the artificial intelligence machine.
-            ai_machine.make_movement(context, 'white')
+            ai_machine_distributed.make_movement(context, 'white')
 
     elif global_game_play_state['all']['game_state'] == 'started_B_Computer':
         if global_game_configuration['white']['agent'] == 'human':
@@ -376,7 +379,7 @@ def update_turn_state(context):
             context.update_game_state('started_W_C')
 
             # Move by the artificial intelligence machine.
-            ai_machine.make_movement(context, 'white')
+            ai_machine_distributed.make_movement(context, 'white')
 
     elif global_game_play_state['all']['game_state'] == 'started_W_Human':
         if global_game_configuration['black']['agent'] == 'human':
@@ -392,7 +395,7 @@ def update_turn_state(context):
             context.update_game_state('started_B_C')
 
             # Move by the artificial intelligence machine.
-            ai_machine.make_movement(context, 'black')
+            ai_machine_distributed.make_movement(context, 'black')
 
     elif global_game_play_state['all']['game_state'] == 'started_W_Computer':
         if global_game_configuration['black']['agent'] == 'human':
@@ -407,7 +410,7 @@ def update_turn_state(context):
             context.update_game_state('started_B_C')
 
             # Move by the artificial intelligence machine.
-            ai_machine.make_movement(context, 'black')
+            ai_machine_distributed.make_movement(context, 'black')
 
     # Clear all coordinates' selection.
     context.clear_all_selection()

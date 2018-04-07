@@ -31,7 +31,7 @@ MINIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH = 0
 MAXIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH = 100
 
 # Maximum states for the forward pruning.
-MAXIMUM_STATES_FOR_FORWARD_PRUNING = 3
+MAXIMUM_STATES_FOR_FORWARD_PRUNING = 10
 
 # ================ ================ Search Functions ================ ================
 
@@ -45,7 +45,7 @@ def get_next_move_and_state_from_ai_search(player, state_from, moves_taken, cont
     # Perform Iterative Deepening Search with time constraint to update the best move.
     # This function updates the global_best_next_move_and_state directly, and terminates
     # after the time specified in the global setting.
-    iterative_deepening_search_with_time_constraint(player, state_from, context)
+    iterative_deepening_search_with_time_constraint(player, state_from, moves_taken, context)
 
     # Get the global_best_next_move_and_state and return the value.
     best_next_move_and_state = model.global_game_play_state[player]['best_next_move_and_state']
@@ -53,7 +53,7 @@ def get_next_move_and_state_from_ai_search(player, state_from, moves_taken, cont
     return best_next_move_and_state
 
 # Iterative deepening tree search with a given time constraint.
-def iterative_deepening_search_with_time_constraint(player, state_from, context):
+def iterative_deepening_search_with_time_constraint(player, state_from, moves_taken, context):
 
     # Clear the candidate moves before start searching.
     model.global_game_play_state[player]['best_next_move_and_state'][0] = []
@@ -125,7 +125,8 @@ def max_value(player, state_from, alpha, beta, depth):
     if depth <= 0 \
         or "started_" not in model.global_game_play_state['all']['game_state'] \
         or model.global_game_configuration[player]['time_limitation'] \
-                <= model.global_game_play_state[player]['time_taken_for_last_move']:
+                <= model.global_game_play_state[player]['time_taken_for_last_move'] \
+        or is_this_terminal_state(state_from):
         return evaluation_function_interface(player, state_from)
 
     # Minimax evaluation with alpha-beta pruning.
@@ -144,7 +145,8 @@ def min_value(player, state_from, alpha, beta, depth):
     if depth <= 0 \
         or "started_" not in model.global_game_play_state['all']['game_state'] \
         or model.global_game_configuration[player]['time_limitation'] \
-                <= model.global_game_play_state[player]['time_taken_for_last_move']:
+                <= model.global_game_play_state[player]['time_taken_for_last_move'] \
+        or is_this_terminal_state(state_from):
         return evaluation_function_interface(player, state_from)
 
     # Minimax evaluation with alpha-beta pruning.
@@ -227,6 +229,27 @@ def generate_pruned_and_ordered_next_moves_and_states(minimax, player, state_fro
     return pruned_and_ordered_next_moves_and_states
 
 # Return true if the state is the terminal state.
+def is_this_terminal_state(state_from):
+    # Setup the variables needed.
+    flag = False
+    black_number = 0
+    white_number = 0
+
+    # Count marbles for each side.
+    for j in range(9):
+        for i in range(9):
+            if state_from[i][j] == 1:
+                black_number += 1
+            elif state_from[i][j] == 2:
+                white_number += 1
+
+    # Define the terminal state of the game.
+    if black_number < 9 or white_number < 9:
+        flag = True
+
+    return flag
+
+# Return true if the state is the terminal state.
 def is_terminal_state_to_finish_up(player, state):
     if player == 'black':
         ally = 1
@@ -261,12 +284,8 @@ def is_terminal_state_to_finish_up(player, state):
 def evaluation_function_interface(player, state_from):
 
     if '_B_' in model.global_game_play_state['all']['game_state']:
-        return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
-    elif '_W_' in model.global_game_play_state['all']['game_state']:
         return ai_evaluation_function_Champion.get_evaluation_score(player, state_from)
-
-
-
-
+    elif '_W_' in model.global_game_play_state['all']['game_state']:
+        return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
 
 

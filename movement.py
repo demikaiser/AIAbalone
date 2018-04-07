@@ -11,6 +11,20 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 
 import model, rules, gameboard
 
+# Representation converter from this project's
+# to chiens board representation (Output Processing Data Structure - 2D Lists).
+chiens_board_representation_output = [
+    [-9, -9, -9, -9, "E1", "D1", "C1", "B1", "A1"],
+    [-9, -9, -9, "F2", "E2", "D2", "C2", "B2", "A2"],
+    [-9, -9, "G3", "F3", "E3", "D3", "C3", "B3", "A3"],
+    [-9, "H4", "G4", "F4", "E4", "D4", "C4", "B4", "A4"],
+    ["I5", "H5", "G5", "F5", "E5", "D5", "C5", "B5", "A5"],
+    ["I6", "H6", "G6", "F6", "E6", "D6", "C6", "B6", -9],
+    ["I7", "H7", "G7", "F7", "E7", "D7", "C7", -9, -9],
+    ["I8", "H8", "G8", "F8", "E8", "D8", -9, -9, -9],
+    ["I9", "H9", "G9", "F9", "E9", -9, -9, -9, -9]
+]
+
 # Move one piece.
 def move_one_piece(old_x, old_y, new_x, new_y, context):
 
@@ -36,8 +50,13 @@ def move_one_piece(old_x, old_y, new_x, new_y, context):
         messages.append("Black made movement as the following:")
     elif model.global_game_board_state[new_x][new_y] == 2:
         messages.append("White made movement as the following:")
+
+    messages.append("STD From : " + str(chiens_board_representation_output[old_x][old_y]))
+    messages.append("STD To   : " + str(chiens_board_representation_output[new_x][new_y]))
+
     messages.append("From : (" + str(old_x) + "," + str(old_y) + ")")
     messages.append("To   : (" + str(new_x) + "," + str(new_y) + ")")
+
     context.log(messages)
 
 # Move two pieces.
@@ -69,6 +88,14 @@ def move_two_pieces(old_x1, old_y1, new_x1, new_y1,
         messages.append("Black made movement as the following:")
     elif model.global_game_board_state[new_x1][new_y1] == 2:
         messages.append("White made movement as the following:")
+
+    messages.append("STD From : "
+                    + str(chiens_board_representation_output[old_x1][old_y1]) + ', '
+                    + str(chiens_board_representation_output[old_x2][old_y2]))
+    messages.append("STD To   : "
+                    + str(chiens_board_representation_output[new_x1][new_y1]) + ', '
+                    + str(chiens_board_representation_output[new_x2][new_y2]))
+
     messages.append("From : (" + str(old_x1) + "," + str(old_y1) + ")"
                    + " " + "(" + str(old_x2) + "," + str(old_y2) + ")")
     messages.append("To   : (" + str(new_x1) + "," + str(new_y1) + ")"
@@ -108,6 +135,16 @@ def move_three_pieces(old_x1, old_y1, new_x1, new_y1,
         messages.append("Black made movement as the following:")
     elif model.global_game_board_state[new_x1][new_y1] == 2:
         messages.append("White made movement as the following:")
+
+    messages.append("STD From : "
+                    + str(chiens_board_representation_output[old_x1][old_y1]) + ', '
+                    + str(chiens_board_representation_output[old_x2][old_y2]) + ', '
+                    + str(chiens_board_representation_output[old_x3][old_y3]))
+    messages.append("STD To   : "
+                    + str(chiens_board_representation_output[new_x1][new_y1]) + ', '
+                    + str(chiens_board_representation_output[new_x2][new_y2]) + ', '
+                    + str(chiens_board_representation_output[new_x3][new_y3]))
+
     messages.append("From : (" + str(old_x1) + "," + str(old_y1) + ")"
                     + " " + "(" + str(old_x2) + "," + str(old_y2) + ")"
                     + " " + "(" + str(old_x3) + "," + str(old_y3) + ")")
@@ -192,9 +229,17 @@ def move_2_to_1_sumito(old_x1, old_y1, new_x1, new_y1,
     # Log the movement information.
     messages = []
     if model.global_game_board_state[new_x1][new_y1] == 1:
-        messages.append("Black made movement (SUMITO!) as the following:")
+        messages.append("Black made movement (SUMITO!):")
     elif model.global_game_board_state[new_x1][new_y1] == 2:
-        messages.append("White made movement (SUMITO!) as the following:")
+        messages.append("White made movement (SUMITO!):")
+
+    messages.append("STD From : "
+                    + str(chiens_board_representation_output[old_x1][old_y1]) + ', '
+                    + str(chiens_board_representation_output[old_x2][old_y2]))
+    messages.append("STD To   : "
+                    + str(chiens_board_representation_output[new_x1][new_y1]) + ', '
+                    + str(chiens_board_representation_output[new_x2][new_y2]))
+
     messages.append("From : (" + str(old_x1) + "," + str(old_y1) + ")"
                     + " " + "(" + str(old_x2) + "," + str(old_y2) + ")")
     messages.append("To   : (" + str(new_x1) + "," + str(new_y1) + ")"
@@ -254,8 +299,37 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
             advanced_coordinates.append((clicked_x - 3, clicked_y + 3))
 
     # Find whether this is 3 to 1 or 3 to 2 sumito.
+    # A set will be generated: ((x1, y1, x2, y2, x3, y3))
+    all_3_to_1_sumitos_set = rules.generate_all_3_to_1_legal_sumitos(old_x1, old_y1, old_x2, old_y2, old_x3, old_y3)
+    all_3_to_2_sumitos_set = rules.generate_all_3_to_2_legal_sumitos(old_x1, old_y1, old_x2, old_y2, old_x3, old_y3)
+
+    new_coordinates_set_1 = set()
+    new_coordinates_set_1.add((new_x1, new_y1, new_x2, new_y2, new_x3, new_y3))
+
+    new_coordinates_set_2 = set()
+    new_coordinates_set_2.add((new_x1, new_y1, new_x3, new_y3, new_x2, new_y2))
+
+    new_coordinates_set_3 = set()
+    new_coordinates_set_3.add((new_x2, new_y2, new_x1, new_y1, new_x3, new_y3))
+
+    new_coordinates_set_4 = set()
+    new_coordinates_set_4.add((new_x2, new_y2, new_x3, new_y3, new_x1, new_y1))
+
+    new_coordinates_set_5 = set()
+    new_coordinates_set_5.add((new_x3, new_y3, new_x2, new_y2, new_x1, new_y1))
+
+    new_coordinates_set_6 = set()
+    new_coordinates_set_6.add((new_x3, new_y3, new_x1, new_y1, new_x2, new_y2))
+
     # 1. 3 to 1 sumito.
-    if rules.generate_all_3_to_1_legal_sumitos(old_x1, old_y1, old_x2, old_y2, old_x3, old_y3) != set():
+    if all_3_to_1_sumitos_set != set() and \
+            (all_3_to_1_sumitos_set.issuperset(new_coordinates_set_1)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_2)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_3)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_4)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_5)
+             or all_3_to_1_sumitos_set.issuperset(new_coordinates_set_6)
+            ):
 
         # Memorize the opponent piece.
         piece_opponent = model.global_game_board_state[clicked_x][clicked_y]
@@ -283,7 +357,14 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
 
 
     # 2. 3 to 2 sumito (Normal descriptive statements omitted for computing efficiency).
-    else:
+    elif all_3_to_2_sumitos_set != set() and \
+            (all_3_to_2_sumitos_set.issuperset(new_coordinates_set_1)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_2)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_3)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_4)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_5)
+             or all_3_to_2_sumitos_set.issuperset(new_coordinates_set_6)
+            ):
 
         # Memorize the opponent pieces.
         piece_opponent_1 = model.global_game_board_state[clicked_x][clicked_y]
@@ -326,9 +407,19 @@ def move_3_to_1_or_3_to_2_sumito(old_x1, old_y1, new_x1, new_y1,
     # Log the movement information.
     messages = []
     if model.global_game_board_state[new_x1][new_y1] == 1:
-        messages.append("Black made movement (SUMITO!) as the following:")
+        messages.append("Black made movement (SUMITO!):")
     elif model.global_game_board_state[new_x1][new_y1] == 2:
-        messages.append("White made movement (SUMITO!) as the following:")
+        messages.append("White made movement (SUMITO!):")
+
+    messages.append("STD From : "
+                    + str(chiens_board_representation_output[old_x1][old_y1]) + ', '
+                    + str(chiens_board_representation_output[old_x2][old_y2]) + ', '
+                    + str(chiens_board_representation_output[old_x3][old_y3]))
+    messages.append("STD To   : "
+                    + str(chiens_board_representation_output[new_x1][new_y1]) + ', '
+                    + str(chiens_board_representation_output[new_x2][new_y2]) + ', '
+                    + str(chiens_board_representation_output[new_x3][new_y3]))
+
     messages.append("From : (" + str(old_x1) + "," + str(old_y1) + ")"
                     + " " + "(" + str(old_x2) + "," + str(old_y2) + ")"
                     + " " + "(" + str(old_x3) + "," + str(old_y3) + ")")
@@ -345,11 +436,4 @@ def get_the_differences_from_sets_for_sumitos(positions_1, positions_2):
 
     new_set = positions_1.difference(positions_2)
     return new_set.pop()
-
-
-
-
-
-
-
 

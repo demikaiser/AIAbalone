@@ -38,6 +38,7 @@ global_game_board_boundary_for_z = {
 
 # ================ ================ Legal Movement Generation ================ ================
 
+
 def generate_all_possible_legal_moves_for_one_piece(state, x1, y1):
     possible_moves = set()
 
@@ -67,6 +68,7 @@ def generate_all_possible_legal_moves_for_one_piece(state, x1, y1):
             possible_moves.add((x1 + 0, y1 - 1))
 
     return possible_moves
+
 
 def generate_all_possible_legal_moves_for_two_pieces(state, x1, y1, x2, y2):
     possible_moves = set()
@@ -98,6 +100,7 @@ def generate_all_possible_legal_moves_for_two_pieces(state, x1, y1, x2, y2):
 
     return possible_moves
 
+
 def generate_all_possible_legal_moves_for_three_pieces(state, x1, y1, x2, y2, x3, y3):
     possible_moves = set()
     if is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
@@ -128,6 +131,7 @@ def generate_all_possible_legal_moves_for_three_pieces(state, x1, y1, x2, y2, x3
 
     return possible_moves
 
+
 def generate_all_2_to_1_legal_sumitos(state, x1, y1, x2, y2):
     possible_moves = set()
     if is_two_pieces_inline(x1, y1, x2, y2):
@@ -139,6 +143,7 @@ def generate_all_2_to_1_legal_sumitos(state, x1, y1, x2, y2):
 
     return possible_moves
 
+
 def generate_all_3_to_1_legal_sumitos(state, x1, y1, x2, y2, x3, y3):
     possible_moves = set()
     if is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
@@ -149,6 +154,7 @@ def generate_all_3_to_1_legal_sumitos(state, x1, y1, x2, y2, x3, y3):
                 possible_moves = get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, x2, y2, x3, y3)
 
     return possible_moves
+
 
 def generate_all_3_to_2_legal_sumitos(state, x1, y1, x2, y2, x3, y3):
     possible_moves = set()
@@ -163,7 +169,9 @@ def generate_all_3_to_2_legal_sumitos(state, x1, y1, x2, y2, x3, y3):
 
 # ================ ================ Sumito Coordinates Calculation ================ ================
 
+
 # Calculate 2 to 1 sumito coordinates on the direction x (y coordinates are same).
+
 def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(state, x1, y1, x2, y2):
 
     # Get the color of the player.
@@ -217,6 +225,7 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_x_axis(state, x1, y1, x2
 
 
 # Calculate 3 to 1 sumito coordinates on the direction x (y coordinates are same).
+
 def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, x2, y2, x3, y3):
 
     # Get the color of the player.
@@ -273,6 +282,7 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, 
     return sumito_coordinates
 
 # Calculate 3 to 2 sumito coordinates on the direction x (y coordinates are same).
+
 def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, x2, y2, x3, y3):
 
     # Get the color of the player.
@@ -335,6 +345,7 @@ def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_x_axis(state, x1, y1, 
     return sumito_coordinates
 
 # Calculate 2 to 1 sumito coordinates on the direction y (x coordinates are same).
+
 def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_y_axis(state, x1, y1, x2, y2):
 
     # Get the color of the player.
@@ -387,6 +398,7 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_y_axis(state, x1, y1, x2
     return sumito_coordinates
 
 # Calculate 3 to 1 sumito coordinates on the direction y (x coordinates are same).
+
 def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(state, x1, y1, x2, y2, x3, y3):
 
     # Get the color of the player.
@@ -443,6 +455,7 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_y_axis(state, x1, y1, 
     return sumito_coordinates
 
 # Calculate 3 to 2 sumito coordinates on the direction y (x coordinates are same).
+
 def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(state, x1, y1, x2, y2, x3, y3):
 
     # Get the color of the player.
@@ -505,6 +518,7 @@ def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_y_axis(state, x1, y1, 
     return sumito_coordinates
 
 # Calculate 2 to 1 sumito coordinates on the direction z (multi-factored with x and y).
+
 def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_z_axis(state, x1, y1, x2, y2):
 
     # Get the color of the player.
@@ -564,6 +578,7 @@ def get_2_to_1_sumito_coordinates_for_two_pieces_on_the_z_axis(state, x1, y1, x2
     return sumito_coordinates
 
 # Calculate 3 to 1 sumito coordinates on the direction z (multi-factored with x and y).
+
 def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, x2, y2, x3, y3):
 
     # Get the color of the player.
@@ -635,6 +650,7 @@ def get_3_to_1_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, 
 
 
 # Calculate 3 to 2 sumito coordinates on the direction z (multi-factored with x and y).
+
 def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, x2, y2, x3, y3):
 
     # Get the color of the player.
@@ -718,12 +734,14 @@ def get_3_to_2_sumito_coordinates_for_three_pieces_on_the_z_axis(state, x1, y1, 
 
 
 # Determine whether the location is currently empty.
+
 def is_the_location_empty(state, x, y):
     if state[x][y] == 0:
         return True
     return False
 
 # Determine whether the location is on the boundary.
+
 def is_the_location_boundary(x, y, direction):
 
     global global_game_board_boundary_for_all
@@ -863,6 +881,7 @@ def search_in_coordinates_tuples_list(key, list):
 
 # Determine whether the position is out of board.
 # positions is a list of tuples: [(x1, y1), (x2, y2), (x3, y3),...]
+
 def is_the_position_inside_of_the_board(state, positions):
     for position in positions:
         if position[0] < 0 or position[0] > 8 or position[1] < 0 or position[1] > 8:

@@ -1,4 +1,4 @@
-"""
+'''
 Copyright (C) BCIT AI/ML Option 2018 Team with Members Following - All Rights Reserved.
 - Jake Jonghun Choi     jchoi179@my.bcit.ca
 - Justin Carey          justinthomascarey@gmail.com
@@ -6,220 +6,747 @@ Copyright (C) BCIT AI/ML Option 2018 Team with Members Following - All Rights Re
 - Tony Huang	        tonyhuang1996@hotmail.ca
 - Chil Yuqing Qiu       yuqingqiu93@gmail.com
 Unauthorized copying of this file, via any medium is strictly prohibited.
-Written by Chil Yuqing Qiu <yuqingqiu93@gmail.com>
-"""
+Written by Justin Carey <justinthomascarey@gmail.com>
+'''
 
-import os, state_space_generator
+import ai_state_space_generator, model
+import copy
 
 
-# <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
-#
-# The evaluation function MUST have a very strict format, the signature of the pseudocode:
-# int EvaluationFunction(BoardConfiguration board)
-#
-# It has to take a board configuration as input, and return the evaluated integer value.
-# Only integer values are allowed to return because of the efficiency of the sorting later.
-# Technically there is no range limit, but too big number slows the system down.
-# The realistic range would be 0 to 10000, and you can't use any deduction or negative values.
-#
-# If you want to make some multiple evaluation functions, you have to add all scores up at the end.
-# There are ways to do it, but one example should be:
-#
-# TotalEvaluationFunction = EvaluationFunction1 + EvaluationFunction2 + EvaluationFunction3
-#
-# So the final score would be evaluated from the individual functions.
-# You can do whatever you want to do ONLY in this file, but the AI framework will call
-# this get_evaluation_score function to evaluate the state, so do NOT change it.
-#
-# Input: State representation (Game board configuration).
-# Output: Total evaluated score (Double).
-def get_evaluation_score(player, state, piece_weight=0.5):
+def get_evaluation_score(player, state):
     # Check the side.
-    # if player == 'black':
-    #     ally = 1
-    #     opponent = 2
-    # elif player == 'white':
-    #     ally = 2
-    #     opponent = 1
-    piece_heuristics = evaluate_pieces(state)
-    position_heuristics = evaluate_position(state)
-    # if any side has lost 6 pieces
-    if (piece_heuristics == 1) or (piece_heuristics == 0):
-        return piece_heuristics
-    # if no side has lost 6 pieces yet
+    if player == 'black':
+        ally = 1
+        opponent = 2
+        opponent_color = 'white'
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+        opponent_color = 'black'
+
+    ally_pieces_locations = copy.copy(ai_state_space_generator.get_all_ally_positions(state, player))
+    opp_pieces_locations = copy.copy(ai_state_space_generator.get_all_ally_positions(state, opponent_color))
+
+    # Initialize the score.
+    score = 0
+    #                           W/L      AllyP EnemyP  Danger Manhattan Clumping Sumito
+    weight_list_variable =     [1000000, 1000, 1000,   50,    10,       1.5,     1, 1, 1, 1, 1, 1, 2000]
+
+    WEIGHT_LIST_DEFAULT =      [1000000, 1000, 1000,   50,    10,       1.5,     1, 1, 1, 1, 1, 1, 2000]
+    WEIGHT_LIST_AGGRESSIVE =   [1000000, 1000, 1000,   50,    10,       1.2,     1, 1, 1, 1, 1, 1, 2000]
+    WEIGHT_LIST_DEFENSIVE =    [1000000, 1000, 1000,   100,   10,       2,       1, 1, 1, 1, 1, 1, 2000]
+
+    # Adjust weight based on the board configuration and moves.
+    if 'standard' == model.global_game_configuration['all']['initial_board_layout']:
+        if 0 <= model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 20 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 30 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+
+    elif 'german_daisy' == model.global_game_configuration['all']['initial_board_layout']:
+        if 0 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 20 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 30 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+
+    elif 'belgian_daisy' == model.global_game_configuration['all']['initial_board_layout']:
+        if 0 <= model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 10 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 20 < model.global_game_play_state['black']['moves_taken']:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+
+    # Tier 00. has someone won this state? This function returns 1000000 if win, -1000000 if loss.
+    score += weight_list_variable[0] * terminal_state(ally, opponent, state)
+
+    if score == 1000000 or score == -1000000:
+        return score
+
+    # Tier 01. Calculates the score from the amount of pieces.
+    score += weight_list_variable[1] * ally_piece_count(ally, state)
+
+    # Tier 01. Calculates the score from the amount of pieces.
+    score -= weight_list_variable[2] * opp_piece_count(opponent, state)
+
+    # Tier 02. Can you push the marble to the danger zone?
+    #score += weight_list_variable[3] * in_danger_zone(ally, opponent, state)
+
+    # Tier 03. Calculates the distance from the center.
+    score += weight_list_variable[4] * manhattan_distance(state, ally, opponent)
+
+    # Tier 04. Calculates how condensed the allied pieces are.
+    score += weight_list_variable[5] * clumping(ally_pieces_locations, opp_pieces_locations, state)
+
+    # Tier 05. Calculates how many sumitos are available.
+    score += weight_list_variable[6] * sumito_num(ally_pieces_locations, opp_pieces_locations, state)
+
+    # Tier 06. Calculates how many pairs are available.
+    #score += weight_list_variable[7] * pairs(player, ally_pieces_locations, opp_pieces_locations, state)
+
+    # Tier 07. Calculates how many triplets are available.
+    #score += weight_list_variable[8] * triplets(player, ally_pieces_locations, opp_pieces_locations, state)
+
+    # Tier 08. Calculates how the allied marbles strengthen against the opposing formation.
+    #score += weight_list_variable[9] * strengthen_group(player, ally_pieces_locations, state)
+
+    # Tier 09. Calculates how the allied marbles strengthen against the opposing formation.
+    #score -= weight_list_variable[10] * strengthen_group(opponent_color, state)
+
+    # Tier 10. Calculates how the allied marbles split the opposing formation.
+    #score += weight_list_variable[11] * attack_modifier * split(player, ally_pieces_locations, opp_pieces_locations, state)
+
+    # Tier 11. score += single_marble_edge(player, ally_pieces_locations, state)
+    score -= weight_list_variable[12] * evade(ally, opponent, ally_pieces_locations, state)
+
+    # Return the score evaluated.
+    return score
+
+
+def terminal_state(ally, opponent, state):
+
+    ally_pieces_count = 0
+    opponent_pieces_count = 0
+
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == ally:
+                ally_pieces_count += 1
+            if state[i][j] == opponent:
+                opponent_pieces_count += 1
+
+    if ally_pieces_count < 9:
+        return -1
+    if opponent_pieces_count < 9:
+        return 1
     else:
-        return piece_heuristics * piece_weight + position_heuristics * (1 - piece_weight)
+        return 0
 
+FDZ = -2
+SDZ = -1
 
-"""
-============================================================================================
-|    Tools for Evaluation Functions
-============================================================================================
-"""
-
-
-# count the marbles of given color
-# PRE: color has to be 'b' for black or 'w' for white
-def count_marbles(state, color):
-    # num_marble = 0
-    # for marble in state:
-    #     if color in marble:
-    #         num_marble += 1
-    # return num_marble
-
-    num_marble = 0
-    for i in range(0, 9):
-        for j in range(0, 9):
-            if state[i][j] == color:
-                num_marble += 1
-    return num_marble
-
-
-# separate state of one line into a list of marbles representing the state
-# PARAM: one_line - one line representing current state
-# RETURN: a list of marbles representing current state
-def one_state(one_line):
-    state = one_line.split(",")
-    return state
-
-
-"""
-============================================================================================
-|    Evaluation Functions
-============================================================================================
-"""
-
-
-# black_remain indicates how many losable pieces for black side(MAX player) remains,
-# initial state value: 6, losing state value: 0
-# white_remain indicates how many losable pieces for white side(MIN player) remains,
-# initial state value: 6, losing state value: 0
-def evaluate_pieces(current_state, chien=False):
-    b = 'b' if chien else 1
-    w = 'w' if chien else 2
-    black_remain = count_marbles(current_state, b) - 8
-    white_remain = count_marbles(current_state, w) - 8
-    return black_remain/(black_remain+white_remain)
-
-
-# evaluates the position of current state
-# return range (0, 1), 0.5 means symmetrical,
-# closer to one means more centered and grouped, closer to 0 means close to edge and split
-# PARAM:
-#   current_state: the board state
-#   importance_ratio: default 0.5, how important is the cluster state to the center state
-#   (if it is more important for the marbles to gather together, raise the ratio, otherwise lower the ratio)
-def evaluate_position(current_state, importance_ratio=0.5, chien=False):
-    blacks = []
-    whites = []
-    # split the marbles into each side's list
-    if chien:  # if running chien's state
-        for marble in current_state:
-            if 'b' in marble:
-                blacks.append(marble)
-            if 'w' in marble:
-                whites.append(marble)
-    else:  # if running our state
-        for i in range(0, 9):
-            for j in range(0, 9):
-                if current_state[i][j] == 1:
-                    blacks.append([i, j])
-                if current_state[i][j] == 2:
-                    whites.append([i, j])
-
-    return determine_cluster_state(blacks, whites) * importance_ratio \
-        + determine_center_state(blacks, whites, False) * (1 - importance_ratio)
-
-
-# finds out how does the state look for each side
-# the more pieces are connected together the better
-# if one side's pieces are split up, this side will have low value
-def determine_cluster_state(blacks, whites, chien=False):
-    # num = select_two_pieces_combination_from_ally_locations(blacks)
-    b_value = 1
-    w_value = 1
-    # TODO: find out how close the marbles are for each side
-    # count the numbers of 2 and 3 combinations
-    return b_value/(b_value + w_value)
-
-
-# finds out how close the pieces are to the center
-def determine_center_state(blacks, whites, calculating_average_value=False, chien=False):
-    # calculate black side
-    b_value = 0
-    b_num = 0
-    value_matrix = [
-        [0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 1, 1, 1, 1, 0],
-        [0, 0, 0, 1, 2, 2, 2, 1, 0],
-        [0, 0, 1, 2, 3, 3, 2, 1, 0],
-        [0, 1, 2, 3, 4, 3, 2, 1, 0],
-        [0, 1, 2, 3, 3, 2, 1, 0, 0],
-        [0, 1, 2, 2, 2, 1, 0, 0, 0],
-        [0, 1, 1, 1, 1, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0]
-    ]
-    for p in blacks:
-        b_num += 1
-        b_value += value_matrix[p[0]][p[1]]
-
-    # calculate white side
-    w_value = 0
-    w_num = 0
-    for p in whites:
-        w_num += 1
-        w_value += value_matrix[p[0]][p[1]]
-
-    # decide if the final value is calculated based on the average value of each piece? or the total value
-    if calculating_average_value:
-        b_value /= b_num
-        w_value /= w_num
-    # print("b values: %s ; w values: %s" % (b_value, w_value))
-    return b_value/(b_value + w_value)
-
-
-# manually debug mode: put the testing board under this directory and test with file name Test.board
-if __name__ == "__main__":
-    '''chien's state resolver
-    # for redirect file location
-    this_dir = os.path.dirname(os.path.realpath('__file__'))
-    # for change test files
-    file_name = "ssg_tester_output/Test.board"
-    test_file = this_dir + '/' + file_name
-    try:
-        with open(test_file) as file:
-            content = file.readlines()
-        content = [x.strip() for x in content]
-        for line in content:
-            print(line)
-            print(get_evaluation_score('', one_state(line)))
-
-    except FileNotFoundError:
-        print("test file not found:")
-        print(test_file)
-    '''
-    state1 = [
-        [-9, -9, -9, -9,  0,  0,  0,  1,  1],
-        [-9, -9, -9,  0,  0,  0,  0,  1,  1],
-        [-9, -9,  0,  0,  0,  0,  1,  1,  1],
-        [-9,  2,  0,  0,  0,  0,  1,  1,  1],
-        [ 2,  2,  2,  0,  0,  0,  1,  1,  1],
-        [ 2,  2,  2,  0,  0,  0,  0,  1, -9],
-        [ 2,  2,  2,  0,  0,  0,  0, -9, -9],
-        [ 2,  2,  0,  0,  0,  0, -9, -9, -9],
-        [ 2,  2,  0,  0,  0, -9, -9, -9, -9]
-    ]
-
-    state2 = [
-    [-9, -9, -9, -9,  0,  0,  1,  1,  0],
-    [-9, -9, -9,  0,  0,  1,  1,  1,  0],
-    [-9, -9,  2,  2,  0,  1,  1,  0,  0],
-    [-9,  2,  2,  2,  0,  0,  0,  0,  0],
-    [ 0,  2,  2,  0,  0,  0,  2,  2,  0],
-    [ 0,  0,  0,  0,  0,  2,  2,  2, -9],
-    [ 0,  0,  1,  1,  0,  2,  2, -9, -9],
-    [ 0,  1,  1,  1,  0,  0, -9, -9, -9],
-    [ 0,  1,  1,  0,  0, -9, -9, -9, -9]
+DANGER_ZONE_INDICATOR = [
+    [-9,    -9,   -9,  -9,  FDZ, FDZ, FDZ, FDZ, FDZ],
+    [-9,    -9,   -9,  FDZ, SDZ, SDZ, SDZ, SDZ, FDZ],
+    [-9,    -9,   FDZ, SDZ,   0,   0,   0, SDZ, FDZ],
+    [-9,    FDZ,  SDZ,   0,   0,   0,   0, SDZ, FDZ],
+    [ FDZ,  SDZ,  0,     0,   0,   0,   0, SDZ, FDZ],
+    [ FDZ,  SDZ,  0,     0,   0,   0, SDZ, FDZ,  -9],
+    [ FDZ,  SDZ,  0,     0,   0, SDZ, FDZ,  -9,  -9],
+    [ FDZ,  SDZ,  SDZ, SDZ, SDZ, FDZ,  -9,  -9,  -9],
+    [ FDZ,  FDZ,  FDZ, FDZ, FDZ,  -9,  -9,  -9,  -9]
 ]
-    print(get_evaluation_score('', state1))
-    print(get_evaluation_score('', state2))
+
+
+def in_danger_zone(ally, opponent, state):
+    global DANGER_ZONE_INDICATOR
+
+    score = 0
+
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == ally:
+                score += DANGER_ZONE_INDICATOR[i][j]
+            if state[i][j] == opponent:
+                score -= DANGER_ZONE_INDICATOR[i][j]
+
+    return score
+
+
+def ally_piece_count(ally, state):
+
+    pieces_score = 0
+
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == ally:
+                pieces_score += 1
+
+    return pieces_score
+
+
+def opp_piece_count(opponent, state):
+
+    pieces_score = 0
+
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == opponent:
+                pieces_score += 1
+
+    return pieces_score
+
+
+MANHATTAN_WEIGHT = [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 1, 1, 1, 1, 0],
+    [0, 0, 0, 1, 2, 2, 2, 1, 0],
+    [0, 0, 1, 2, 3, 3, 2, 1, 0],
+    [0, 1, 2, 3, 4, 3, 2, 1, 0],
+    [0, 1, 2, 3, 3, 2, 1, 0, 0],
+    [0, 1, 2, 2, 2, 1, 0, 0, 0],
+    [0, 1, 1, 1, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0]
+]
+
+
+def manhattan_distance(state, ally, opponent):
+
+    score = 0
+
+    for i in range(9):
+        for j in range(9):
+            if state[i][j] == ally:
+                score += MANHATTAN_WEIGHT[i][j]
+            if state[i][j] == opponent:
+                score -= MANHATTAN_WEIGHT[i][j]
+
+    return score
+
+
+def clumping(ally_pieces_locations, opp_pieces_locations, state):
+    ally_robustness = 0
+    opp_robustness = 0
+
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if x < 8:
+            if state[x][y] == state[x + 1][y]:
+                ally_robustness += 1
+            if y > 0:
+                if state[x][y] == state[x + 1][y - 1]:
+                    ally_robustness += 1
+        if y < 8:
+            if state[x][y] == state[x][y + 1]:
+                ally_robustness += 1
+        if y > 0:
+            if state[x][y] == state[x][y - 1]:
+                ally_robustness += 1
+        if x > 0:
+            if state[x][y] == state[x - 1][y]:
+                ally_robustness += 1
+            if y < 8:
+                if state[x][y] == state[x - 1][y + 1]:
+                    ally_robustness += 1
+
+    for location in opp_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if x < 8:
+            if state[x][y] == state[x + 1][y]:
+                opp_robustness += 1
+            if y > 0:
+                if state[x][y] == state[x + 1][y - 1]:
+                    opp_robustness += 1
+        if y < 8:
+            if state[x][y] == state[x][y + 1]:
+                opp_robustness += 1
+        if y > 0:
+            if state[x][y] == state[x][y - 1]:
+                opp_robustness += 1
+        if x > 0:
+            if state[x][y] == state[x - 1][y]:
+                opp_robustness += 1
+            if y < 8:
+                if state[x][y] == state[x - 1][y + 1]:
+                    opp_robustness += 1
+
+    return ally_robustness - opp_robustness
+
+
+def sumito_num(ally_pieces_locations, opp_pieces_locations, state):
+
+    sumito_power = 0
+
+    two_piece_list = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(ally_pieces_locations)
+    three_piece_list = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(ally_pieces_locations)
+
+    two_to_one_sumito_list = ai_state_space_generator.generate_move_candidates_for_2_to_1_sumito(state, two_piece_list)
+    three_to_one_sumito_list = ai_state_space_generator.generate_move_candidates_for_3_to_1_sumito(state, three_piece_list)
+    three_to_two_sumito_list = ai_state_space_generator.generate_move_candidates_for_3_to_2_sumito(state, three_piece_list)
+
+    for sumito in two_to_one_sumito_list:
+        sumito_power += 1
+
+    for sumito in three_to_one_sumito_list:
+        sumito_power += 1
+
+    for sumito in three_to_two_sumito_list:
+        sumito_power += 1
+
+    two_piece_list = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(opp_pieces_locations)
+    three_piece_list = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(
+        opp_pieces_locations)
+
+    two_to_one_sumito_list = ai_state_space_generator.generate_move_candidates_for_2_to_1_sumito(state, two_piece_list)
+    three_to_one_sumito_list = ai_state_space_generator.generate_move_candidates_for_3_to_1_sumito(state,
+                                                                                                   three_piece_list)
+    three_to_two_sumito_list = ai_state_space_generator.generate_move_candidates_for_3_to_2_sumito(state,
+                                                                                                   three_piece_list)
+
+    for sumito in two_to_one_sumito_list:
+        sumito_power -= 1
+
+    for sumito in three_to_one_sumito_list:
+        sumito_power -= 1
+
+    for sumito in three_to_two_sumito_list:
+        sumito_power -= 1
+
+    return sumito_power
+
+
+def pairs(ally_pieces_locations, opp_pieces_locations):
+    pair_score = 0
+
+    locations = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(ally_pieces_locations)
+    for location in locations:
+        if is_two_pieces_inline(location[0], location[1], location[2], location[3]):
+            pair_score += 1
+
+    locations = ai_state_space_generator.select_two_pieces_combination_from_ally_locations(opp_pieces_locations)
+    for location in locations:
+        if is_two_pieces_inline(location[0], location[1], location[2], location[3]):
+            pair_score -= 1
+
+    return pair_score
+
+
+def triplets(ally_pieces_locations, opp_pieces_locations):
+    triplet_score = 0
+
+    locations = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(ally_pieces_locations)
+    for location in locations:
+        if is_three_pieces_inline(location[0], location[1], location[2], location[3], location[4], location[5]):
+            triplet_score += 3
+
+    locations = ai_state_space_generator.select_three_pieces_combination_from_ally_locations(opp_pieces_locations)
+    for location in locations:
+        if is_three_pieces_inline(location[0], location[1], location[2], location[3], location[4], location[5]):
+            triplet_score -= 3
+
+    return triplet_score
+
+
+def split(opponent, ally_pieces_locations, opp_pieces_locations, state):
+
+    ally_split_score = 0
+    opp_split_score = 0
+
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if 8 > x > 0:
+            if state[x + 1][y] == opponent and state[x - 1][y] == opponent:
+                ally_split_score += 1
+        if 8 > y > 0:
+            if state[x][y + 1] == opponent and state[x][y - 1] == opponent:
+                ally_split_score += 1
+        if 8 > x > 0 and 8 > y > 0:
+            if state[x + 1][y - 1] == opponent and state[x - 1][y + 1] == opponent:
+                ally_split_score += 1
+
+    for location in opp_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if 8 > x > 0:
+            if state[x + 1][y] == opponent and state[x - 1][y] == opponent:
+                opp_split_score += 1
+        if 8 > y > 0:
+            if state[x][y + 1] == opponent and state[x][y - 1] == opponent:
+                opp_split_score += 1
+        if 8 > x > 0 and 8 > y > 0:
+            if state[x + 1][y - 1] == opponent and state[x - 1][y + 1] == opponent:
+                opp_split_score += 1
+
+    return ally_split_score - opp_split_score
+
+
+def strengthen_group(ally, opponent, ally_pieces_locations, state):
+
+    strength_score = 0
+
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if 8 > x > 0:
+            if state[x + 1][y] == opponent and state[x - 1][y] == ally:
+                strength_score += 1
+            if state[x + 1][y] == ally and state[x - 1][y] == opponent:
+                strength_score += 1
+        if 8 > y > 0:
+            if state[x][y + 1] == opponent and state[x][y - 1] == ally:
+                strength_score += 1
+            if state[x][y + 1] == ally and state[x][y - 1] == opponent:
+                strength_score += 1
+        if 8 > x > 0 and 8 > y > 0:
+            if state[x + 1][y - 1] == opponent and state[x - 1][y + 1] == ally:
+                strength_score += 1
+            if state[x + 1][y - 1] == ally and state[x - 1][y + 1] == opponent:
+                strength_score += 1
+
+    return strength_score
+
+
+def evade(ally, opponent, ally_pieces_locations, state):
+
+    threat_level = 0
+
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if x == 4 and y == 0:
+            if state[5][0] == opponent and state[6][0] == opponent:
+                threat_level += 1
+            if state[5][0] == ally and state[6][0] == opponent and state[7][0] == opponent and state[8][0] == opponent:
+                threat_level +=1
+
+            if state[4][1] == opponent and state[4][2] == opponent:
+                threat_level += 1
+            if state[4][1] == ally and state[4][2] == opponent and state[4][3] == opponent and state[4][4] == opponent:
+                threat_level += 1
+
+            if state[3][1] == opponent and state[2][2] == opponent:
+                threat_level += 1
+            if state[3][1] == ally and state[2][2] == opponent and state[1][3] == opponent and state[0][4] == opponent:
+                threat_level += 1
+
+        if x == 5 and y == 0:
+            if state[4][1] == opponent and state[3][2] == opponent:
+                threat_level += 1
+            if state[4][1] == ally and state[3][2] == opponent and state[2][3] == opponent and state[1][4] == opponent:
+                threat_level += 1
+
+            if state[5][1] == opponent and state[5][2] == opponent:
+                threat_level += 1
+            if state[5][1] == ally and state[5][2] == opponent and state[5][3] == opponent and state[5][4] == opponent:
+                threat_level += 1
+
+        if x == 6 and y == 0:
+            if state[5][1] == opponent and state[4][2] == opponent:
+                threat_level += 1
+            if state[5][1] == ally and state[4][2] == opponent and state[3][3] == opponent and state[2][4] == opponent:
+                threat_level += 1
+
+            if state[6][1] == opponent and state[6][2] == opponent:
+                threat_level += 1
+            if state[6][1] == ally and state[6][2] == opponent and state[6][3] == opponent and state[6][4] == opponent:
+                threat_level += 1
+
+        if x == 7 and y == 0:
+            if state[6][1] == opponent and state[5][2] == opponent:
+                threat_level += 1
+            if state[6][1] == ally and state[5][2] == opponent and state[4][3] == opponent and state[3][4] == opponent:
+                threat_level += 1
+
+            if state[7][1] == opponent and state[7][2] == opponent:
+                threat_level += 1
+            if state[7][1] == ally and state[7][2] == opponent and state[7][3] == opponent and state[7][4] == opponent:
+                threat_level += 1
+
+        if x == 8 and y == 0:
+            if state[7][0] == opponent and state[6][0] == opponent:
+                threat_level += 1
+            if state[7][0] == ally and state[6][0] == opponent and state[5][0] == opponent and state[4][0] == opponent:
+                threat_level += 1
+
+            if state[7][1] == opponent and state[6][2] == opponent:
+                threat_level += 1
+            if state[7][1] == ally and state[6][2] == opponent and state[5][3] == opponent and state[4][4] == opponent:
+                threat_level += 1
+
+            if state[8][1] == opponent and state[8][2] == opponent:
+                threat_level += 1
+            if state[8][1] == ally and state[8][2] == opponent and state[8][3] == opponent and state[8][4] == opponent:
+                threat_level += 1
+
+        if x == 8 and y == 1:
+            if state[7][1] == opponent and state[6][1] == opponent:
+                threat_level += 1
+            if state[7][1] == ally and state[6][1] == opponent and state[5][1] == opponent and state[4][1] == opponent:
+                threat_level += 1
+
+            if state[7][2] == opponent and state[6][3] == opponent:
+                threat_level += 1
+            if state[7][2] == ally and state[6][3] == opponent and state[5][4] == opponent and state[4][5] == opponent:
+                threat_level += 1
+
+        if x == 8 and y == 2:
+            if state[7][2] == opponent and state[6][2] == opponent:
+                threat_level += 1
+            if state[7][2] == ally and state[6][2] == opponent and state[5][2] == opponent and state[4][2] == opponent:
+                threat_level += 1
+
+            if state[7][3] == opponent and state[6][4] == opponent:
+                threat_level += 1
+            if state[7][3] == ally and state[6][4] == opponent and state[5][4] == opponent and state[4][6] == opponent:
+                threat_level += 1
+
+        if x == 8 and y == 3:
+            if state[7][3] == opponent and state[6][3] == opponent:
+                threat_level += 1
+            if state[7][3] == ally and state[6][3] == opponent and state[5][3] == opponent and state[4][3] == opponent:
+                threat_level += 1
+
+            if state[7][4] == opponent and state[6][5] == opponent:
+                threat_level += 1
+            if state[7][4] == ally and state[6][5] == opponent and state[5][6] == opponent and state[4][7] == opponent:
+                threat_level += 1
+
+        if x == 8 and y == 4:
+            if state[7][5] == opponent and state[6][6] == opponent:
+                threat_level += 1
+            if state[7][5] == ally and state[6][6] == opponent and state[5][7] == opponent and state[4][8] == opponent:
+                threat_level += 1
+
+            if state[7][4] == opponent and state[6][4] == opponent:
+                threat_level += 1
+            if state[7][4] == ally and state[6][4] == opponent and state[5][4] == opponent and state[4][4] == opponent:
+                threat_level += 1
+
+            if state[8][3] == opponent and state[8][2] == opponent:
+                threat_level += 1
+            if state[8][3] == ally and state[8][2] == opponent and state[8][1] == opponent and state[8][0] == opponent:
+                threat_level += 1
+
+        if x == 7 and y == 5:
+            if state[6][5] == opponent and state[5][5] == opponent:
+                threat_level += 1
+            if state[6][5] == ally and state[5][5] == opponent and state[4][5] == opponent and state[3][5] == opponent:
+                threat_level += 1
+
+            if state[7][4] == opponent and state[7][3] == opponent:
+                threat_level += 1
+            if state[7][4] == ally and state[7][3] == opponent and state[7][2] == opponent and state[7][1] == opponent:
+                threat_level += 1
+
+        if x == 6 and y == 6:
+            if state[5][6] == opponent and state[4][6] == opponent:
+                threat_level += 1
+            if state[5][6] == ally and state[4][6] == opponent and state[3][6] == opponent and state[2][6] == opponent:
+                threat_level += 1
+
+            if state[6][5] == opponent and state[6][4] == opponent:
+                threat_level += 1
+            if state[6][5] == ally and state[6][4] == opponent and state[6][3] == opponent and state[6][2] == opponent:
+                threat_level += 1
+
+        if x == 5 and y == 7:
+            if state[4][7] == opponent and state[3][7] == opponent:
+                threat_level += 1
+            if state[4][7] == ally and state[3][7] == opponent and state[2][7] == opponent and state[1][7] == opponent:
+                threat_level += 1
+
+            if state[5][6] == opponent and state[5][5] == opponent:
+                threat_level += 1
+            if state[5][6] == ally and state[5][5] == opponent and state[5][4] == opponent and state[5][3] == opponent:
+                threat_level += 1
+
+        if x == 4 and y == 8:
+            if state[3][8] == opponent and state[2][8] == opponent:
+                threat_level += 1
+            if state[3][8] == ally and state[2][8] == opponent and state[1][8] == opponent and state[0][8] == opponent:
+                threat_level += 1
+
+            if state[4][7] == opponent and state[4][6] == opponent:
+                threat_level += 1
+            if state[4][7] == ally and state[4][6] == opponent and state[4][5] == opponent and state[4][4] == opponent:
+                threat_level += 1
+
+            if state[5][7] == opponent and state[6][6] == opponent:
+                threat_level += 1
+            if state[5][7] == ally and state[6][6] == opponent and state[7][5] == opponent and state[8][4] == opponent:
+                threat_level += 1
+
+        if x == 3 and y == 8:
+            if state[3][7] == opponent and state[3][6] == opponent:
+                threat_level += 1
+            if state[3][7] == ally and state[3][6] == opponent and state[3][5] == opponent and state[3][4] == opponent:
+                threat_level += 1
+
+            if state[4][7] == opponent and state[5][6] == opponent:
+                threat_level += 1
+            if state[4][7] == ally and state[5][6] == opponent and state[6][5] == opponent and state[7][4] == opponent:
+                threat_level += 1
+
+        if x == 2 and y == 8:
+            if state[2][7] == opponent and state[2][6] == opponent:
+                threat_level += 1
+            if state[2][7] == ally and state[2][6] == opponent and state[2][5] == opponent and state[2][4] == opponent:
+                threat_level += 1
+
+            if state[3][7] == opponent and state[4][6] == opponent:
+                threat_level += 1
+            if state[3][7] == ally and state[4][6] == opponent and state[5][5] == opponent and state[6][4] == opponent:
+                threat_level += 1
+
+        if x == 1 and y == 8:
+            if state[1][7] == opponent and state[1][6] == opponent:
+                threat_level += 1
+            if state[1][7] == ally and state[1][6] == opponent and state[1][5] == opponent and state[1][4] == opponent:
+                threat_level += 1
+
+            if state[2][7] == opponent and state[3][6] == opponent:
+                threat_level += 1
+            if state[2][7] == ally and state[3][6] == opponent and state[4][5] == opponent and state[5][4] == opponent:
+                threat_level += 1
+
+        if x == 0 and y == 8:
+            if state[0][7] == opponent and state[0][6] == opponent:
+                threat_level += 1
+            if state[0][7] == ally and state[0][6] == opponent and state[0][5] == opponent and state[0][4] == opponent:
+                threat_level += 1
+
+            if state[1][7] == opponent and state[2][6] == opponent:
+                threat_level += 1
+            if state[1][7] == ally and state[2][6] == opponent and state[3][5] == opponent and state[4][4] == opponent:
+                threat_level += 1
+
+            if state[1][8] == opponent and state[2][8] == opponent:
+                threat_level += 1
+            if state[1][8] == ally and state[2][8] == opponent and state[3][8] == opponent and state[4][8] == opponent:
+                threat_level += 1
+
+        if x == 0 and y == 7:
+            if state[1][7] == opponent and state[2][7] == opponent:
+                threat_level += 1
+            if state[1][7] == ally and state[2][7] == opponent and state[3][7] == opponent and state[4][7] == opponent:
+                threat_level += 1
+
+            if state[1][6] == opponent and state[2][5] == opponent:
+                threat_level += 1
+            if state[1][6] == ally and state[2][5] == opponent and state[3][4] == opponent and state[4][3] == opponent:
+                threat_level += 1
+
+        if x == 0 and y == 6:
+            if state[1][6] == opponent and state[2][6] == opponent:
+                threat_level += 1
+            if state[1][6] == ally and state[2][6] == opponent and state[3][6] == opponent and state[4][6] == opponent:
+                threat_level += 1
+
+            if state[1][5] == opponent and state[2][4] == opponent:
+                threat_level += 1
+            if state[1][5] == ally and state[2][4] == opponent and state[3][3] == opponent and state[4][2] == opponent:
+                threat_level += 1
+
+        if x == 0 and y == 5:
+            if state[1][5] == opponent and state[2][5] == opponent:
+                threat_level += 1
+            if state[1][5] == ally and state[2][5] == opponent and state[3][5] == opponent and state[4][5] == opponent:
+                threat_level += 1
+
+            if state[1][4] == opponent and state[2][3] == opponent:
+                threat_level += 1
+            if state[1][4] == ally and state[2][3] == opponent and state[3][2] == opponent and state[4][1] == opponent:
+                threat_level += 1
+
+        if x == 0 and y == 4:
+            if state[0][5] == opponent and state[0][6] == opponent:
+                threat_level += 1
+            if state[0][5] == ally and state[0][6] == opponent and state[0][7] == opponent and state[0][8] == opponent:
+                threat_level += 1
+
+            if state[1][4] == opponent and state[2][4] == opponent:
+                threat_level += 1
+            if state[1][4] == ally and state[2][4] == opponent and state[3][4] == opponent and state[4][4] == opponent:
+                threat_level += 1
+
+            if state[1][3] == opponent and state[2][2] == opponent:
+                threat_level += 1
+            if state[1][3] == ally and state[2][2] == opponent and state[3][1] == opponent and state[4][1] == opponent:
+                threat_level += 1
+
+        if x == 1 and y == 3:
+            if state[1][4] == opponent and state[1][5] == opponent:
+                threat_level += 1
+            if state[1][4] == ally and state[1][5] == opponent and state[1][6] == opponent and state[1][7] == opponent:
+                threat_level += 1
+
+            if state[2][3] == opponent and state[3][3] == opponent:
+                threat_level += 1
+            if state[2][3] == ally and state[3][3] == opponent and state[4][3] == opponent and state[5][3] == opponent:
+                threat_level += 1
+
+        if x == 2 and y == 2:
+            if state[2][3] == opponent and state[2][4] == opponent:
+                threat_level += 1
+            if state[2][3] == ally and state[2][4] == opponent and state[2][5] == opponent and state[2][6] == opponent:
+                threat_level += 1
+
+            if state[3][2] == opponent and state[4][2] == opponent:
+                threat_level += 1
+            if state[3][2] == ally and state[4][2] == opponent and state[5][2] == opponent and state[6][2] == opponent:
+                threat_level += 1
+
+        if x == 3 and y == 1:
+            if state[3][2] == opponent and state[3][3] == opponent:
+                threat_level += 1
+            if state[3][2] == ally and state[3][3] == opponent and state[3][4] == opponent and state[3][5] == opponent:
+                threat_level += 1
+
+            if state[4][1] == opponent and state[5][1] == opponent:
+                threat_level += 1
+            if state[4][1] == ally and state[4][2] == opponent and state[4][3] == opponent and state[4][4] == opponent:
+                threat_level += 1
+
+    return threat_level
+
+
+# Determine whether two pieces inline.
+def is_two_pieces_inline(x1, y1, x2, y2):
+
+    # Find out if it's inline.
+    if x1 + 1 == x2 and y1 - 1 == y2:
+        return True
+    elif x1 + 1 == x2 and y1 + 0 == y2:
+        return True
+    elif x1 + 0 == x2 and y1 + 1 == y2:
+        return True
+    elif x2 + 1 == x1 and y2 - 1 == y1:
+        return True
+    elif x2 + 1 == x1 and y2 + 0 == y1:
+        return True
+    elif x2 + 0 == x1 and y2 + 1 == y1:
+        return True
+
+    return False
+
+# Determine whether three pieces inline.
+def is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
+
+    # If all the pieces are not all inlines, then return false.
+    how_many_are_inline = 0
+    if is_two_pieces_inline(x1, y1, x2, y2):
+        how_many_are_inline += 1
+
+    if is_two_pieces_inline(x1, y1, x3, y3):
+        how_many_are_inline += 1
+
+    if is_two_pieces_inline(x2, y2, x3, y3):
+        how_many_are_inline += 1
+
+    if how_many_are_inline != 2:
+        return False
+
+    # Find out if it's inline.
+    if x1 == (x2 + x3) / 2 and y1 == (y2 + y3) / 2:
+        return True
+
+    if x2 == (x1 + x3) / 2 and y2 == (y1 + y3) / 2:
+        return True
+
+    if x3 == (x1 + x2) / 2 and y3 == (y1 + y2) / 2:
+        return True
+
+    return False
