@@ -18,8 +18,10 @@ Type: "python main.py" or "python3 main.py" (For some OSs like Apple OS X)
 NOTE: THIS WILL WORK ONLY FOR THE WINDOWS MACHINES COMPATIBLE WITH LAB COMPUTERS.
 NOTE: CLOSE THE APPLICATION THAT USES TCP PORT 6666, OR THIS WON'T WORK.
 
-Go to the Pypy official homepate (https://pypy.org/download.html),
-and install the Pypy3. Do NOT forget adding the environment path of pypy3.exe.
+Go to the Pypy official homepage (https://pypy.org/download.html),
+and install the Pypy3.
+There is a zip file, you can just extract it to the folder "C:\pypy3".
+Do NOT forget adding the environment path of pypy3.exe.
 Open the command prompt, navigate to the folder named "ai_search_server_pypy".
 Type: "pypy3 ai_server_distributed.py" to start the AI search server.
 You have to choose "pypy" on the GUI menu to use this function.
