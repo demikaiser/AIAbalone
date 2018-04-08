@@ -81,7 +81,7 @@ def iterative_deepening_search_with_time_constraint(client_socket, state_from, p
         global_transposition_table.clear()
 
         # Generate the search space.
-        all_next_moves_and_states = generate_pruned_and_ordered_next_moves_and_states('max', player, state_from)
+        all_next_moves_and_states = generate_pruned_and_ordered_next_moves_and_states(player, state_from)
         all_next_moves = all_next_moves_and_states[0]
         all_next_states = all_next_moves_and_states[1]
 
@@ -139,7 +139,7 @@ def max_value(player, state_from, alpha, beta, depth):
 
     # Minimax evaluation with alpha-beta pruning.
     value = NEGATIVE_INFINITY
-    for successor_state in generate_pruned_and_ordered_next_moves_and_states('max', player, state_from)[1]:
+    for successor_state in generate_pruned_and_ordered_next_moves_and_states(player, state_from)[1]:
         value = max(value, min_value(player, successor_state, alpha, beta, depth - 1))
         if value >= beta:
             return value
@@ -166,7 +166,7 @@ def min_value(player, state_from, alpha, beta, depth):
     elif 'white' == player:
         opponent_player = 'black'
 
-    for successor_state in generate_pruned_and_ordered_next_moves_and_states('min', opponent_player, state_from)[1]:
+    for successor_state in generate_pruned_and_ordered_next_moves_and_states(opponent_player, state_from)[1]:
         value = min(value, max_value(player, successor_state, alpha, beta, depth - 1))
         if value <= alpha:
             return value
@@ -178,7 +178,7 @@ def min_value(player, state_from, alpha, beta, depth):
 # 1. Forward Pruning with Evaluation Functions
 # 2. Move Re-Ordering for ABP Efficiency (Best-Move First Policy)
 # 3. Repeated States Removal by Using Transposition Table
-def generate_pruned_and_ordered_next_moves_and_states(minimax, player, state_from):
+def generate_pruned_and_ordered_next_moves_and_states(player, state_from):
 
     # Use the global transposition table.
     global global_transposition_table
@@ -211,28 +211,17 @@ def generate_pruned_and_ordered_next_moves_and_states(minimax, player, state_fro
     # Select the move and state with the highest score.
     index_for_forward_pruning = 0
 
-    if minimax == 'max':
-        for key, value in sorted(evaluation_score_dictionary.items(), reverse=True):
+    for key, value in sorted(evaluation_score_dictionary.items(), reverse=True):
 
-            # Only count n numbers of next moves & states.
-            if index_for_forward_pruning >= MAXIMUM_STATES_FOR_FORWARD_PRUNING:
-                break
+        # Only count n numbers of next moves & states.
+        if index_for_forward_pruning >= MAXIMUM_STATES_FOR_FORWARD_PRUNING:
+            break
 
-            if key != NEGATIVE_INFINITY:
-                pruned_and_ordered_next_moves_and_states[0].append(all_next_moves_and_states[0][value])
-                pruned_and_ordered_next_moves_and_states[1].append(all_next_moves_and_states[1][value])
-                index_for_forward_pruning += 1
-    elif minimax == 'min':
-        for key, value in sorted(evaluation_score_dictionary.items(), reverse=False):
+        if key != NEGATIVE_INFINITY:
+            pruned_and_ordered_next_moves_and_states[0].append(all_next_moves_and_states[0][value])
+            pruned_and_ordered_next_moves_and_states[1].append(all_next_moves_and_states[1][value])
+            index_for_forward_pruning += 1
 
-            # Only count n numbers of next moves & states.
-            if index_for_forward_pruning >= MAXIMUM_STATES_FOR_FORWARD_PRUNING:
-                break
-
-            if key != NEGATIVE_INFINITY:
-                pruned_and_ordered_next_moves_and_states[0].append(all_next_moves_and_states[0][value])
-                pruned_and_ordered_next_moves_and_states[1].append(all_next_moves_and_states[1][value])
-                index_for_forward_pruning += 1
 
     return pruned_and_ordered_next_moves_and_states
 
