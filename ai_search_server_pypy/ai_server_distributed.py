@@ -11,6 +11,18 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 import copy, threading, ai_search_distributed, ai_state_space_generator
 import time, pickle, socket, sys, os
 
+initial_game_board_state_german_daisy = [
+    [-9, -9, -9, -9,  0,  0,  1,  1,  0],
+    [-9, -9, -9,  0,  0,  1,  1,  1,  0],
+    [-9, -9,  2,  2,  0,  1,  1,  0,  0],
+    [-9,  2,  2,  2,  0,  0,  0,  0,  0],
+    [ 0,  2,  2,  0,  0,  0,  2,  2,  0],
+    [ 0,  0,  0,  0,  0,  2,  2,  2, -9],
+    [ 0,  0,  1,  1,  0,  2,  2, -9, -9],
+    [ 0,  1,  1,  1,  0,  0, -9, -9, -9],
+    [ 0,  1,  1,  0,  0, -9, -9, -9, -9]
+]
+
 information_from_client_to_server_for_search_request = {
     'state_to_search': [],
     'color': '',
@@ -43,6 +55,12 @@ def run_server():
     # Start listening on socket.
     socket_server.listen(WAITING_QUEUE_SIZE)
     print('AI Search Server: Socket now listening for a request...')
+
+    # Compile process for pypy3.
+    print('======== ======== Initiating Server, Wait Several Seconds ======== ========')
+    client_socket_fake = 0
+    start_search(client_socket_fake, initial_game_board_state_german_daisy, 'black', 10, 'german_daisy', 10)
+    print('======== ======== Server Ready to Go ======== ========')
 
     # Keep talking with the client and respond to the request.
     while True:
