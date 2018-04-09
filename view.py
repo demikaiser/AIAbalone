@@ -838,7 +838,7 @@ class GUI:
 
         radios_for_ai_search = [self.radio_default_ai_search, self.radio_pypy_ai_search]
         radio_group_for_ai_search = thorpy.RadioPool(radios_for_ai_search,
-                                                             first_value=radios_for_ai_search[0],
+                                                             first_value=radios_for_ai_search[1],
                                                              always_value=True)
 
         separation_line_search = thorpy.Line.make(size=90, type_="horizontal")

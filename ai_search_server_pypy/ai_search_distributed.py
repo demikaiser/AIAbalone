@@ -263,6 +263,6 @@ def evaluation_function_interface(player, state_from):
     global global_player_color
 
     if 'black' == global_player_color:
-        return ai_evaluation_function_Champion.get_evaluation_score(player, state_from)
+        return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
     elif 'white' == global_player_color:
         return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)

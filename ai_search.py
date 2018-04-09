@@ -277,7 +277,7 @@ def is_terminal_state_to_finish_up(player, state):
 def evaluation_function_interface(player, state_from):
 
     if '_B_' in model.global_game_play_state['all']['game_state']:
-        return ai_evaluation_function_Champion.get_evaluation_score(player, state_from)
+        return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
     elif '_W_' in model.global_game_play_state['all']['game_state']:
         return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
 
