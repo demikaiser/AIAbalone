@@ -13,6 +13,11 @@ import model, math
 import ai_state_space_generator
 import ai_evaluation_function_Champion
 import ai_evaluation_function_Challenger
+import ai_evaluation_function_Challenger_1
+import ai_evaluation_function_Challenger_2
+import ai_evaluation_function_Challenger_3
+import ai_evaluation_function_Challenger_4
+import ai_evaluation_function_Challenger_5
 
 # ================ ================ Global Variables for Search Process ================ ================
 
