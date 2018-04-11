@@ -33,7 +33,7 @@ NEGATIVE_INFINITY = -math.inf
 
 # Minimum and maximum depth for iterative deepening search.
 MINIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH = 0
-MAXIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH = 100
+MAXIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH = 3
 
 # Maximum states for the forward pruning.
 MAXIMUM_STATES_FOR_FORWARD_PRUNING = 10
@@ -263,6 +263,6 @@ def evaluation_function_interface(player, state_from):
     global global_player_color
 
     if 'black' == global_player_color:
-        return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
+        return ai_evaluation_function_Champion.get_evaluation_score(player, state_from)
     elif 'white' == global_player_color:
         return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)

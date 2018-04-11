@@ -9,6 +9,9 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Justin Carey <justinthomascarey@gmail.com>
 '''
 
+
+import model, math
+
 def get_evaluation_score(player, state):
     # Check the side.
     if player == 'black':
@@ -60,3 +63,7 @@ def get_evaluation_score(player, state):
     # Return the score evaluated.
     return score_closeness_to_center_by_manhattan + score_adjacency
 
+
+
+if __name__ == '__main__':
+    print (math.inf)

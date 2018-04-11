@@ -28,43 +28,39 @@ def get_evaluation_score(player, state):
 
     # Initialize the score.
     score = 0
-    #                           W/L      AllyP EnemyP  Danger Manhattan Clumping Sumito            Evade
-    weight_list_variable =     [1000000, 1000, 1000,   50,    10,       1.5,     1, 1, 1, 1, 1, 1, 2000]
 
-    WEIGHT_LIST_DEFAULT =      [1000000, 1000, 1000,   50,    10,       1.5,     1, 1, 1, 1, 1, 1, 2000]
-    WEIGHT_LIST_AGGRESSIVE =   [1000000, 1000, 2000,   50,    5,          1,     1, 1, 1, 1, 1, 1, 2000]
-    WEIGHT_LIST_DEFENSIVE =    [1000000, 1000, 1000,   50,    50,         5,     1, 1, 1, 1, 1, 1, 2000]
+    ##########################################################################################
+    #                           W/L      AllyP EnemyP  Danger Manhattan Clumping Sumito            Evade
+    weight_list_variable = [1000000, 1000, 1000, 50, 10, 1.5, 1, 1, 1, 1, 1, 1, 2000]
+
+    WEIGHT_LIST_DEFAULT = [1000000, 1000, 1000, 50, 10, 1.5, 1, 1, 1, 1, 1, 1, 2000]
+    WEIGHT_LIST_AGGRESSIVE = [1000000, 1000, 2000, 50, 5, 1, 1, 1, 1, 1, 1, 1, 2000]
+    WEIGHT_LIST_DEFENSIVE = [1000000, 1000, 1000, 50, 50, 5, 1, 1, 1, 1, 1, 1, 2000]
 
     # Adjust weight based on the board configuration and moves.
     if 'standard' == ai_search_distributed.global_init_board_configuration:
-        if ai_search_distributed.global_move_taken_already < 10:
+        if 10 > ai_search_distributed.global_move_taken_already:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif ai_search_distributed.global_move_taken_already < 20:
+        elif 20 > ai_search_distributed.global_move_taken_already:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif ai_search_distributed.global_move_taken_already < 30:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
-        else:
+        elif 30 > ai_search_distributed.global_move_taken_already:
             weight_list_variable = WEIGHT_LIST_DEFAULT
 
     elif 'german_daisy' == ai_search_distributed.global_init_board_configuration:
-        if ai_search_distributed.global_move_taken_already < 10:
+        if 10 > ai_search_distributed.global_move_taken_already:
             weight_list_variable = WEIGHT_LIST_DEFENSIVE
-        elif ai_search_distributed.global_move_taken_already < 20:
+        elif 20 > ai_search_distributed.global_move_taken_already:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif ai_search_distributed.global_move_taken_already < 30:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
-        else:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif 30 > ai_search_distributed.global_move_taken_already:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
 
     elif 'belgian_daisy' == ai_search_distributed.global_init_board_configuration:
-        if ai_search_distributed.global_move_taken_already < 15:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif ai_search_distributed.global_move_taken_already < 20:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif ai_search_distributed.global_move_taken_already < 30:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
-        else:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
+        if 10 > ai_search_distributed.global_move_taken_already:
+            weight_list_variable = WEIGHT_LIST_DEFENSIVE
+        elif 20 > ai_search_distributed.global_move_taken_already:
+            weight_list_variable = WEIGHT_LIST_DEFENSIVE
+        elif 30 > ai_search_distributed.global_move_taken_already:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
 
     # Tier 00. has someone won this state? This function returns 1000000 if win, -1000000 if loss.
     score += weight_list_variable[0] * terminal_state(ally, opponent, state)
