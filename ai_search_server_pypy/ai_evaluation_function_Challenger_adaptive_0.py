@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Justin Carey <justinthomascarey@gmail.com>
 '''
 
-import ai_state_space_generator, model, copy
+import ai_state_space_generator, ai_search_distributed, copy
 
 
 def get_evaluation_score(player, state):
@@ -28,38 +28,47 @@ def get_evaluation_score(player, state):
 
     # Initialize the score.
     score = 0
-    #                           W/L      AllyP EnemyP  Danger Manhattan Clumping Sumito            Evade
-    weight_list_variable =     [1000000, 1000, 1000,   50,    10,       1.5,     1, 1, 1, 1, 1, 1, 2000]
+    manhattan_score = 0
+    cluster_score = 0
 
-    WEIGHT_LIST_DEFAULT =      [1000000, 1000, 1000,   50,    10,       1.5,     1, 1, 1, 1, 1, 1, 2000]
-    WEIGHT_LIST_AGGRESSIVE =   [1000000, 1000, 2000,   50,    5,          1,     1, 1, 1, 1, 1, 1, 2000]
-    WEIGHT_LIST_DEFENSIVE =    [1000000, 1000, 1000,   50,    50,         5,     1, 1, 1, 1, 1, 1, 2000]
+    manhattan_score = manhattan_distance(state, ally, opponent)
 
+    cluster_score = clumping(ally_pieces_locations, opp_pieces_locations, state)
+
+    #                         W/L      AllyP EnemyP  Danger Manhattan Clumping Sumito            Evade
+    weight_list_variable =   [1000000, 1000, 1000,   50,    10,       3,       1, 1, 1, 1, 1, 1, 2000]
+
+    WEIGHT_LIST_DEFAULT =    [1000000, 1000, 1000,   50,    10,       3,       1, 1, 1, 1, 1, 1, 2000]
+    WEIGHT_LIST_AGGRESSIVE = [1000000, 1000, 2000,   50,    8,        2,       1, 1, 1, 1, 1, 1, 2000]
+    WEIGHT_LIST_DEFENSIVE =  [1000000, 2000, 1000,   50,    15,       5,       1, 1, 1, 1, 1, 1, 3000]
 
     # Adjust weight based on the board configuration and moves.
-    if 'standard' == model.global_game_configuration['all']['initial_board_layout']:
-        if 10 < model.global_game_play_state['black']['moves_taken']:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif 20 < model.global_game_play_state['black']['moves_taken']:
-            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
-        elif 30 < model.global_game_play_state['black']['moves_taken']:
-            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
-
-    elif 'german_daisy' == model.global_game_configuration['all']['initial_board_layout']:
-        if 10 < model.global_game_play_state['black']['moves_taken']:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif 20 < model.global_game_play_state['black']['moves_taken']:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif 30 < model.global_game_play_state['black']['moves_taken']:
-            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
-
-    elif 'belgian_daisy' == model.global_game_configuration['all']['initial_board_layout']:
-        if 0 <= model.global_game_play_state['black']['moves_taken']:
+    if 'standard' == ai_search_distributed.global_init_board_configuration:
+        if manhattan_score + cluster_score < 0:
             weight_list_variable = WEIGHT_LIST_DEFENSIVE
-        elif 10 < model.global_game_play_state['black']['moves_taken']:
+        elif manhattan_score + cluster_score > 5:
             weight_list_variable = WEIGHT_LIST_DEFAULT
-        elif 20 < model.global_game_play_state['black']['moves_taken']:
+        elif manhattan_score + cluster_score > 8:
             weight_list_variable = WEIGHT_LIST_AGGRESSIVE
+
+    elif 'german_daisy' == ai_search_distributed.global_init_board_configuration:
+        if manhattan_score + cluster_score < 0:
+            weight_list_variable = WEIGHT_LIST_DEFENSIVE
+        elif manhattan_score + cluster_score > 5:
+            weight_list_variable = WEIGHT_LIST_DEFAULT
+        elif manhattan_score + cluster_score > 8:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
+
+    elif 'belgian_daisy' == ai_search_distributed.global_init_board_configuration:
+        if manhattan_score + cluster_score < 0:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
+        elif manhattan_score + cluster_score > 5:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
+        elif manhattan_score + cluster_score > 8:
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
+
+    manhattan_score *= weight_list_variable[4]
+    cluster_score *= weight_list_variable[5]
 
     # Tier 00. has someone won this state? This function returns 1000000 if win, -1000000 if loss.
     score += weight_list_variable[0] * terminal_state(ally, opponent, state)
@@ -67,41 +76,49 @@ def get_evaluation_score(player, state):
     if score == 1000000 or score == -1000000:
         return score
 
-    # Tier 01. Calculates the score from the amount of ally pieces.
-    score += weight_list_variable[1] * piece_count(ally, state)
+    print("================================")
 
-    # Tier 01. Calculates the score from the amount of enemy pieces.
-    score -= weight_list_variable[2] * piece_count(opponent, state)
+    print("Manhattan: ", manhattan_score)
 
-    # Tier 02. Can you push the marble to the danger zone?
-    #score += weight_list_variable[3] * in_danger_zone(ally, opponent, state)
+    print("Clustering", cluster_score)
 
-    # Tier 03. Calculates the distance from the center.
-    score += weight_list_variable[4] * manhattan_distance(state, ally, opponent)
+    ally_pieces = weight_list_variable[1] * piece_count(ally, state)
+    print("Ally pieces: ", ally_pieces)
 
-    # Tier 04. Calculates how condensed the allied pieces are.
-    score += weight_list_variable[5] * clumping(ally_pieces_locations, opp_pieces_locations, state)
+    opp_pieces = weight_list_variable[2] * piece_count(opponent, state)
+    print("Opp pieces: ", opp_pieces)
 
-    # Tier 05. Calculates how many sumitos are available.
-    score += weight_list_variable[6] * sumito_num(ally_pieces_locations, opp_pieces_locations, state)
+    sumito_score= weight_list_variable[6] * sumito_num(ally_pieces_locations, opp_pieces_locations, state)
+    print("Sumito score: ", sumito_score)
 
-    # Tier 06. Calculates how many pairs are available.
+    evade_score = weight_list_variable[12] * evade(ally, opponent, ally_pieces_locations, state)
+    print("Evade score: ", evade_score * -1)
+
+    score += ally_pieces
+    score -= opp_pieces
+    score += sumito_score
+    score -= evade_score
+
+    score += manhattan_score
+    score += cluster_score
+
+    print("Total score: ", score)
+
+    # score += weight_list_variable[3] * in_danger_zone(ally, opponent, state)
+
     #score += weight_list_variable[7] * pairs(player, ally_pieces_locations, opp_pieces_locations, state)
 
-    # Tier 07. Calculates how many triplets are available.
+
     #score += weight_list_variable[8] * triplets(player, ally_pieces_locations, opp_pieces_locations, state)
 
-    # Tier 08. Calculates how the allied marbles strengthen against the opposing formation.
+
     #score += weight_list_variable[9] * strengthen_group(player, ally_pieces_locations, state)
 
-    # Tier 09. Calculates how the allied marbles strengthen against the opposing formation.
+
     #score -= weight_list_variable[10] * strengthen_group(opponent_color, state)
 
-    # Tier 10. Calculates how the allied marbles split the opposing formation.
-    #score += weight_list_variable[11] * attack_modifier * split(player, ally_pieces_locations, opp_pieces_locations, state)
 
-    # Tier 11. score += single_marble_edge(player, ally_pieces_locations, state)
-    score -= weight_list_variable[12] * evade(ally, opponent, ally_pieces_locations, state)
+    #score += weight_list_variable[11] * attack_modifier * split(player, ally_pieces_locations, opp_pieces_locations, state)
 
     # Return the score evaluated.
     return score

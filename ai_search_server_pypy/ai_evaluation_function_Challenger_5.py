@@ -9,8 +9,6 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Chil Yuqing Qiu <yuqingqiu93@gmail.com>
 """
 
-import os, state_space_generator
-
 
 # <GUIDE TO MAKE THE EVALUATION FUNCTION INDIVIDUALLY>
 #

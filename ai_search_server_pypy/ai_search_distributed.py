@@ -10,6 +10,15 @@ Written by Jake Jonghun Choi <jchoi179@my.bcit.ca>
 '''
 import ai_state_space_generator, math, time, copy, pickle, sys, os
 import ai_evaluation_function_Champion, ai_evaluation_function_Challenger
+import ai_evaluation_function_Challenger
+import ai_evaluation_function_Challenger_1
+import ai_evaluation_function_Challenger_2
+import ai_evaluation_function_Challenger_3
+import ai_evaluation_function_Challenger_4
+import ai_evaluation_function_Challenger_5
+import ai_evaluation_function_Challenger_6
+import ai_evaluation_function_Challenger_7
+import ai_evaluation_function_Challenger_adaptive_0
 # ================ ================ ================ ================ ================ ================
 # ================ ================             AI Search             ================ ================
 # ================ ================ ================ ================ ================ ================
@@ -265,4 +274,4 @@ def evaluation_function_interface(player, state_from):
     if 'black' == global_player_color:
         return ai_evaluation_function_Champion.get_evaluation_score(player, state_from)
     elif 'white' == global_player_color:
-        return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
+        return ai_evaluation_function_Challenger_adaptive_0.get_evaluation_score(player, state_from)

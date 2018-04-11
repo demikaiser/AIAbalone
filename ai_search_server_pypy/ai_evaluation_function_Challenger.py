@@ -33,6 +33,8 @@ def get_evaluation_score(player, state):
     #                           W/L      AllyP EnemyP  Danger Manhattan Clumping Sumito            Evade
     weight_list_variable = [1000000, 1000, 1000, 50, 10, 1.5, 1, 1, 1, 1, 1, 1, 2000]
 
+    WEIGHT_LIST_STANDARD = [1000000, 1000, 1000, 50, 10, 1.5, 1, 1, 1, 1, 1, 1, 0]
+
     WEIGHT_LIST_DEFAULT = [1000000, 1000, 1000, 50, 10, 1.5, 1, 1, 1, 1, 1, 1, 2000]
     WEIGHT_LIST_AGGRESSIVE = [1000000, 1000, 2000, 50, 5, 1, 1, 1, 1, 1, 1, 1, 2000]
     WEIGHT_LIST_DEFENSIVE = [1000000, 1000, 1000, 50, 50, 5, 1, 1, 1, 1, 1, 1, 2000]
@@ -40,15 +42,15 @@ def get_evaluation_score(player, state):
     # Adjust weight based on the board configuration and moves.
     if 'standard' == ai_search_distributed.global_init_board_configuration:
         if 10 > ai_search_distributed.global_move_taken_already:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
+            weight_list_variable = WEIGHT_LIST_STANDARD
         elif 20 > ai_search_distributed.global_move_taken_already:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
+            weight_list_variable = WEIGHT_LIST_STANDARD
         elif 30 > ai_search_distributed.global_move_taken_already:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
+            weight_list_variable = WEIGHT_LIST_STANDARD
 
     elif 'german_daisy' == ai_search_distributed.global_init_board_configuration:
         if 10 > ai_search_distributed.global_move_taken_already:
-            weight_list_variable = WEIGHT_LIST_DEFENSIVE
+            weight_list_variable = WEIGHT_LIST_DEFAULT
         elif 20 > ai_search_distributed.global_move_taken_already:
             weight_list_variable = WEIGHT_LIST_DEFAULT
         elif 30 > ai_search_distributed.global_move_taken_already:
@@ -58,7 +60,7 @@ def get_evaluation_score(player, state):
         if 10 > ai_search_distributed.global_move_taken_already:
             weight_list_variable = WEIGHT_LIST_DEFENSIVE
         elif 20 > ai_search_distributed.global_move_taken_already:
-            weight_list_variable = WEIGHT_LIST_DEFENSIVE
+            weight_list_variable = WEIGHT_LIST_DEFAULT
         elif 30 > ai_search_distributed.global_move_taken_already:
             weight_list_variable = WEIGHT_LIST_AGGRESSIVE
 

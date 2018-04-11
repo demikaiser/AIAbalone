@@ -10,7 +10,7 @@ Written by Justin Carey <justinthomascarey@gmail.com>
 '''
 
 
-import model, math
+import math
 
 def get_evaluation_score(player, state):
     # Check the side.

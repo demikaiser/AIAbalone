@@ -9,7 +9,7 @@ Unauthorized copying of this file, via any medium is strictly prohibited.
 Written by Justin Carey <justinthomascarey@gmail.com>
 '''
 
-import ai_state_space_generator, model
+import ai_state_space_generator
 import copy
 
 
