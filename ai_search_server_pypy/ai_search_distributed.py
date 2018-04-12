@@ -87,21 +87,16 @@ def iterative_deepening_search_with_time_constraint(client_socket, state_from, p
     for depth in range(MINIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH, MAXIMUM_DEPTH_FOR_ITERATIVE_DEEPENING_SEARCH):
         print("ITERATION DEPTH: " + str(depth) + " for " + player + " player")
 
-        # Clear the transposition table at the beginning of each depth iteration.
-        global_transposition_table.clear()
-
-        # Generate the search space.
-        all_next_moves_and_states = generate_pruned_and_ordered_next_moves_and_states(player, state_from)
-        all_next_moves = all_next_moves_and_states[0]
-        all_next_states = all_next_moves_and_states[1]
-
-        #TODO: EXPERIMENTAL - EAT, EAT, EAT, MATHAFUCKA (Kick out while you can)!
+        # TODO: EXPERIMENTAL 2 - EAT, EAT, EAT, MATHAFUCKA (Kick out while you can)!
+        all_next_moves_and_states_for_eat = ai_state_space_generator.generate_all_next_moves_and_states(player, state_from)
+        all_next_moves_for_eat = all_next_moves_and_states_for_eat[0]
+        all_next_states_for_eat = all_next_moves_and_states_for_eat[1]
         current_score_differnce = get_difference_between_piece_count(player, state_from)
         counter_for_eating = 0
-        for state_for_eat in all_next_states:
+        for state_for_eat in all_next_states_for_eat:
             if current_score_differnce < get_difference_between_piece_count(player, state_for_eat):
-                global_best_next_move_and_state[0] = all_next_moves[counter_for_eating]
-                global_best_next_move_and_state[1] = all_next_states[counter_for_eating]
+                global_best_next_move_and_state[0] = all_next_moves_for_eat[counter_for_eating]
+                global_best_next_move_and_state[1] = all_next_states_for_eat[counter_for_eating]
                 print("AI UPDATED MOVES: " + str(global_best_next_move_and_state))
 
                 # Send the information to the client.
@@ -110,7 +105,8 @@ def iterative_deepening_search_with_time_constraint(client_socket, state_from, p
                 updated_best_next_move_and_state['best_next_move_and_state'] = copy.deepcopy(
                     global_best_next_move_and_state)
 
-                print('<<<< <<<< <<<< <<<< <<<< <<<< <<<< <<<< FINISH UP A MARBLE >>>> >>>> >>>> >>>> >>>> >>>> >>>> >>>>')
+                print(
+                    '<<<< <<<< <<<< <<<< <<<< <<<< <<<< <<<< FINISH UP A MARBLE >>>> >>>> >>>> >>>> >>>> >>>> >>>> >>>>')
 
                 try:
                     client_socket.send(pickle.dumps(updated_best_next_move_and_state))
@@ -122,6 +118,43 @@ def iterative_deepening_search_with_time_constraint(client_socket, state_from, p
 
                 return
             counter_for_eating += 1
+
+
+        # Clear the transposition table at the beginning of each depth iteration.
+        global_transposition_table.clear()
+
+        # Generate the search space.
+        all_next_moves_and_states = generate_pruned_and_ordered_next_moves_and_states(player, state_from)
+        all_next_moves = all_next_moves_and_states[0]
+        all_next_states = all_next_moves_and_states[1]
+
+        #TODO: EXPERIMENTAL 1 - EAT, EAT, EAT, MATHAFUCKA (Kick out while you can)!
+        # current_score_differnce = get_difference_between_piece_count(player, state_from)
+        # counter_for_eating = 0
+        # for state_for_eat in all_next_states:
+        #     if current_score_differnce < get_difference_between_piece_count(player, state_for_eat):
+        #         global_best_next_move_and_state[0] = all_next_moves[counter_for_eating]
+        #         global_best_next_move_and_state[1] = all_next_states[counter_for_eating]
+        #         print("AI UPDATED MOVES: " + str(global_best_next_move_and_state))
+        #
+        #         # Send the information to the client.
+        #         updated_best_next_move_and_state = copy.deepcopy(
+        #             information_from_server_to_client_for_updating_result)
+        #         updated_best_next_move_and_state['best_next_move_and_state'] = copy.deepcopy(
+        #             global_best_next_move_and_state)
+        #
+        #         print('<<<< <<<< <<<< <<<< <<<< <<<< <<<< <<<< FINISH UP A MARBLE >>>> >>>> >>>> >>>> >>>> >>>> >>>> >>>>')
+        #
+        #         try:
+        #             client_socket.send(pickle.dumps(updated_best_next_move_and_state))
+        #         except:
+        #             print("Connection closed by the client.")
+        #             return
+        #         finally:
+        #             pass
+        #
+        #         return
+        #     counter_for_eating += 1
 
         # Start search and update the best move & state.
         value = NEGATIVE_INFINITY
@@ -324,3 +357,4 @@ def evaluation_function_interface(player, state_from):
         return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
     elif 'white' == global_player_color:
         return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
+
