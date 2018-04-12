@@ -40,7 +40,7 @@ def get_evaluation_score(player, state):
 
     WEIGHT_LIST_DEFAULT =    [1000000, 1000, 1000,   50,    10,       3,       1, 1, 1, 1, 1, 1, 2000]
     WEIGHT_LIST_AGGRESSIVE = [1000000, 1000, 2000,   50,    8,        2,       1, 1, 1, 1, 1, 1, 2000]
-    WEIGHT_LIST_DEFENSIVE =  [1000000, 2000, 1000,   50,    15,       5,       1, 1, 1, 1, 1, 1, 3000]
+    WEIGHT_LIST_DEFENSIVE =  [1000000, 1000, 1000,   50,    12,       3.5,     1, 1, 1, 1, 1, 1, 2000]
 
     # Adjust weight based on the board configuration and moves.
     if 'standard' == ai_search_distributed.global_init_board_configuration:
@@ -55,7 +55,7 @@ def get_evaluation_score(player, state):
         if manhattan_score + cluster_score < 0:
             weight_list_variable = WEIGHT_LIST_DEFENSIVE
         elif manhattan_score + cluster_score > 5:
-            weight_list_variable = WEIGHT_LIST_DEFAULT
+            weight_list_variable = WEIGHT_LIST_AGGRESSIVE
         elif manhattan_score + cluster_score > 8:
             weight_list_variable = WEIGHT_LIST_AGGRESSIVE
 
@@ -92,10 +92,13 @@ def get_evaluation_score(player, state):
     evade_score = weight_list_variable[12] * evade(ally, opponent, ally_pieces_locations, state)
     # print("Evade score: ", evade_score * -1)
 
+    split_score = split(player, ally_pieces_locations, opp_pieces_locations, state)
+
     score += ally_pieces
     score -= opp_pieces
     score += sumito_score
     score -= evade_score
+    score += split_score
 
     score += manhattan_score
     score += cluster_score
@@ -754,3 +757,47 @@ def is_three_pieces_inline(x1, y1, x2, y2, x3, y3):
         return True
 
     return False
+
+def split(player, ally_pieces_locations, opp_pieces_locations, state):
+    # Check the side.
+    if player == 'black':
+        ally = 1
+        opponent = 2
+        opponent_color = 'white'
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+        opponent_color = 'black'
+
+    ally_split_score = 0
+    opp_split_score = 0
+
+    for location in ally_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if 8 > x > 0:
+            if state[x + 1][y] == opponent and state[x - 1][y] == opponent:
+                ally_split_score += 5
+        if 8 > y > 0:
+            if state[x][y + 1] == opponent and state[x][y - 1] == opponent:
+                ally_split_score += 5
+        if 8 > x > 0 and 8 > y > 0:
+            if state[x + 1][y - 1] == opponent and state[x - 1][y + 1] == opponent:
+                ally_split_score += 5
+
+    for location in opp_pieces_locations:
+        x = location[0]
+        y = location[1]
+
+        if 8 > x > 0:
+            if state[x + 1][y] == opponent and state[x - 1][y] == opponent:
+                opp_split_score += 5
+        if 8 > y > 0:
+            if state[x][y + 1] == opponent and state[x][y - 1] == opponent:
+                opp_split_score += 5
+        if 8 > x > 0 and 8 > y > 0:
+            if state[x + 1][y - 1] == opponent and state[x - 1][y + 1] == opponent:
+                opp_split_score += 5
+
+    return ally_split_score - opp_split_score
