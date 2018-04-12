@@ -61,6 +61,7 @@ global_move_taken_already = 0
 def iterative_deepening_search_with_time_constraint(client_socket, state_from, player, time_limitation,
                                                     init_board_configuration, move_taken_already):
     # Use the global transposition table.
+    global information_from_server_to_client_for_updating_result
     global global_transposition_table
     global global_best_next_move_and_state
     global global_player_color
@@ -93,6 +94,34 @@ def iterative_deepening_search_with_time_constraint(client_socket, state_from, p
         all_next_moves_and_states = generate_pruned_and_ordered_next_moves_and_states(player, state_from)
         all_next_moves = all_next_moves_and_states[0]
         all_next_states = all_next_moves_and_states[1]
+
+        #TODO: EXPERIMENTAL - EAT, EAT, EAT, MATHAFUCKA (Kick out while you can)!
+        current_score_differnce = get_difference_between_piece_count(player, state_from)
+        counter_for_eating = 0
+        for state_for_eat in all_next_states:
+            if current_score_differnce < get_difference_between_piece_count(player, state_for_eat):
+                global_best_next_move_and_state[0] = all_next_moves[counter_for_eating]
+                global_best_next_move_and_state[1] = all_next_states[counter_for_eating]
+                print("AI UPDATED MOVES: " + str(global_best_next_move_and_state))
+
+                # Send the information to the client.
+                updated_best_next_move_and_state = copy.deepcopy(
+                    information_from_server_to_client_for_updating_result)
+                updated_best_next_move_and_state['best_next_move_and_state'] = copy.deepcopy(
+                    global_best_next_move_and_state)
+
+                print('<<<< <<<< <<<< <<<< <<<< <<<< <<<< <<<< FINISH UP A MARBLE >>>> >>>> >>>> >>>> >>>> >>>> >>>> >>>>')
+
+                try:
+                    client_socket.send(pickle.dumps(updated_best_next_move_and_state))
+                except:
+                    print("Connection closed by the client.")
+                    return
+                finally:
+                    pass
+
+                return
+            counter_for_eating += 1
 
         # Start search and update the best move & state.
         value = NEGATIVE_INFINITY
@@ -255,6 +284,26 @@ def is_terminal_state_to_finish_up(player, state):
     else:
         return False
 
+# Return true if the state is the terminal state.
+def get_difference_between_piece_count(player, state):
+    if player == 'black':
+        ally = 1
+        opponent = 2
+    elif player == 'white':
+        ally = 2
+        opponent = 1
+
+    ally_pieces_count = 0
+    opponent_pieces_count = 0
+
+    for j in range(9):
+        for i in range(9):
+            if state[i][j] == ally:
+                ally_pieces_count += 1
+            elif state[i][j] == opponent:
+                opponent_pieces_count += 1
+
+    return abs(ally_pieces_count - opponent_pieces_count)
 
 # The interface for evaluation function testers.
 # IMPORTANT: HOW TO UPGRADE (IMPROVE) EVAL FUNCTION.
@@ -272,6 +321,6 @@ def evaluation_function_interface(player, state_from):
     global global_player_color
 
     if 'black' == global_player_color:
-        return ai_evaluation_function_Champion.get_evaluation_score(player, state_from)
+        return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)
     elif 'white' == global_player_color:
-        return ai_evaluation_function_Challenger_adaptive_0.get_evaluation_score(player, state_from)
+        return ai_evaluation_function_Challenger.get_evaluation_score(player, state_from)

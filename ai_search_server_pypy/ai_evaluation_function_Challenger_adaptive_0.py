@@ -76,23 +76,21 @@ def get_evaluation_score(player, state):
     if score == 1000000 or score == -1000000:
         return score
 
-    print("================================")
-
-    print("Manhattan: ", manhattan_score)
-
-    print("Clustering", cluster_score)
+    # print("================================")
+    # print("Manhattan: ", manhattan_score)
+    # print("Clustering", cluster_score)
 
     ally_pieces = weight_list_variable[1] * piece_count(ally, state)
-    print("Ally pieces: ", ally_pieces)
+    # print("Ally pieces: ", ally_pieces)
 
     opp_pieces = weight_list_variable[2] * piece_count(opponent, state)
-    print("Opp pieces: ", opp_pieces)
+    # print("Opp pieces: ", opp_pieces)
 
     sumito_score= weight_list_variable[6] * sumito_num(ally_pieces_locations, opp_pieces_locations, state)
-    print("Sumito score: ", sumito_score)
+    # print("Sumito score: ", sumito_score)
 
     evade_score = weight_list_variable[12] * evade(ally, opponent, ally_pieces_locations, state)
-    print("Evade score: ", evade_score * -1)
+    # print("Evade score: ", evade_score * -1)
 
     score += ally_pieces
     score -= opp_pieces
@@ -102,7 +100,7 @@ def get_evaluation_score(player, state):
     score += manhattan_score
     score += cluster_score
 
-    print("Total score: ", score)
+    #print("Total score: ", score)
 
     # score += weight_list_variable[3] * in_danger_zone(ally, opponent, state)
 
